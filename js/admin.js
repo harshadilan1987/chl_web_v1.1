@@ -35,13 +35,13 @@ function initAdminAuth() {
     e.preventDefault();
     const pass = document.getElementById('admin-pass').value;
     // Default password (can be changed in settings)
-    if (pass === 'admin123' || pass === 'chl2026') {
+    if (pass === 'chl@pw123#') {
       sessionStorage.setItem('chl_admin_logged_in', 'true');
       gate.style.display = 'none';
       app.style.display = 'flex';
       loadAllAdminData();
     } else {
-      alert('Incorrect passcode. Please try again or use: admin123');
+      alert('Incorrect password. Please try again.');
     }
   });
 
