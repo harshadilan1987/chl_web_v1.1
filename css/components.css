@@ -207,6 +207,7 @@ body {
   align-items: center;
   gap: 0.85rem;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .site-logo img {
@@ -215,11 +216,13 @@ body {
   max-width: 175px;
   object-fit: contain;
   border-radius: var(--radius-sm);
+  flex-shrink: 0;
 }
 
 .logo-text-group {
   display: flex;
   flex-direction: column;
+  overflow: visible;
 }
 
 .logo-title {
