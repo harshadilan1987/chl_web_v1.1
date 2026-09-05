@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Outer Circular Shield with Organic Leaf Motif -->
+  <circle cx="100" cy="100" r="94" fill="#ffffff" stroke="#166534" stroke-width="7"/>
+  
+  <!-- Stylized Sun and Sprout Elements of Organic JAS -->
+  <path d="M42 125 C45 80, 85 46, 130 52 C158 56, 168 76, 165 92 C155 82, 140 76, 122 76 C85 76, 56 102, 50 135 Z" fill="#166534"/>
+  <path d="M52 138 C56 112, 78 92, 108 92 C134 92, 150 106, 155 125 C146 122, 134 120, 120 120 C92 120, 68 130, 58 148 Z" fill="#166534"/>
+  
+  <!-- Central Bar & Rounded Oval -->
+  <rect x="35" y="115" width="130" height="42" rx="8" fill="#166534"/>
+  
+  <!-- JAS Letters -->
+  <text x="100" y="146" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="34" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="2">JAS</text>
+  
+  <!-- Subtitle Text -->
+  <text x="100" y="180" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="12" font-weight="800" fill="#166534" text-anchor="middle" letter-spacing="1">ORGANIC</text>
+  <text x="100" y="38" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="13" font-weight="800" fill="#166534" text-anchor="middle" letter-spacing="2">有機JAS</text>
+</svg>

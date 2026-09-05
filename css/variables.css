@@ -1,0 +1,117 @@
+/* ==========================================================================
+   Celebration Holdings (CHL) - Modern Design Tokens & Variables
+   Theme: Organic Luxury, Ceylon Heritage, High-Trust Global Export
+   ========================================================================== */
+
+:root {
+  /* Brand Palette - Ceylon Organic & Botanical */
+  --color-primary: #0c4d2f;         /* Rich botanical deep green */
+  --color-primary-dark: #062a19;    /* Dark forest pine */
+  --color-primary-light: #15803d;   /* Vibrant lush organic green */
+  --color-primary-soft: #e8f5ed;    /* Subtle tinted green background */
+  
+  --color-accent: #c68b2c;          /* Warm Ceylon spice gold / honey */
+  --color-accent-dark: #9e6918;     /* Rich roasted amber */
+  --color-accent-light: #dfa84f;    /* Bright warm gold */
+  --color-accent-soft: #fbf4e8;     /* Soft warm cream tint */
+
+  /* Earth & Cocoa Tones (Tahoma-inspired warm layer) */
+  --color-earth: #845A42;           /* Warm cocoa / terracotta */
+  --color-earth-dark: #5c3d2b;      /* Deep roasted mahogany */
+  --color-earth-light: #c9a07c;     /* Sandy warm caramel */
+  --color-earth-soft: #f5ede4;      /* Pale parchment / linen */
+  --color-forest-deep: #114639;     /* Tahoma deep emerald forest */
+
+  /* Neutral & Canvas Tones */
+  --color-bg: #faf9f5;             /* Warm organic ivory / linen */
+  --color-surface: #ffffff;        /* Pure card white */
+  --color-surface-elevated: #ffffff;
+  --color-surface-muted: #f2efe7;  /* Gentle stone gray/sand */
+  --color-surface-dark: #0f1c15;   /* Ultra-deep dark pine surface */
+
+  /* Typography Colors */
+  --color-text: #17241c;           /* Deep botanical charcoal */
+  --color-text-muted: #4b5950;     /* Balanced medium charcoal */
+  --color-text-subtle: #79877e;    /* Soft gray-green */
+  --color-text-inverse: #f7faf8;   /* Bright white for dark surfaces */
+  --color-text-inverse-muted: #b9c7bf;
+
+  /* Borders & Dividers */
+  --color-border: #e2ddd3;
+  --color-border-light: #ede9e1;
+  --color-border-focus: #0c4d2f;
+
+  /* State / Utility Colors */
+  --color-success: #15803d;
+  --color-success-soft: #dcfce7;
+  --color-warning: #b45309;
+  --color-danger: #b91c1c;
+  --color-info: #0369a1;
+
+  /* Typography System */
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-editorial: 'Fraunces', Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Fluid Font Sizes (clamp) */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.8125rem);
+  --text-sm: clamp(0.84rem, 0.8rem + 0.2vw, 0.9375rem);
+  --text-base: clamp(0.95rem, 0.9rem + 0.25vw, 1.0625rem);
+  --text-lg: clamp(1.1rem, 1.02rem + 0.4vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.45rem);
+  --text-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem);
+  --text-3xl: clamp(1.85rem, 1.6rem + 1.25vw, 2.375rem);
+  --text-4xl: clamp(2.25rem, 1.9rem + 1.75vw, 3.125rem);
+  --text-5xl: clamp(2.75rem, 2.2rem + 2.75vw, 4.25rem);
+
+  /* Spacing Scale */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4.5rem;
+  --space-4xl: 6rem;
+
+  /* Layout Containers */
+  --container-max: 1280px;
+  --container-wide: 1400px;
+  --container-narrow: 960px;
+  --container-padding: clamp(1rem, 4vw, 2rem);
+
+  /* Border Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(12, 77, 47, 0.04);
+  --shadow-md: 0 4px 12px rgba(12, 77, 47, 0.07), 0 2px 4px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 12px 30px rgba(12, 77, 47, 0.09), 0 4px 10px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 45px rgba(12, 77, 47, 0.12), 0 8px 16px rgba(0, 0, 0, 0.05);
+  --shadow-inner: inset 0 2px 4px rgba(0,0,0,0.04);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Glassmorphism & Header */
+  --glass-bg: rgba(255, 255, 255, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-blur: blur(14px);
+  --header-height: 80px;
+  --topbar-height: 40px;
+
+  /* Z-index layers */
+  --z-sticky: 100;
+  --z-overlay: 500;
+  --z-drawer: 600;
+  --z-modal: 1000;
+  --z-toast: 1100;
+}
