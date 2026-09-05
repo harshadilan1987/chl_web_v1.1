@@ -242,24 +242,37 @@ body {
   letter-spacing: normal;
   text-transform: none;
   display: inline-flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
   gap: 0.22rem;
   align-items: baseline;
   margin-top: 0.15rem;
 }
 
+.logo-tagline span {
+  white-space: nowrap;
+}
+
 /* Responsive: tighten tagline on tablet & mobile */
+@media (max-width: 1024px) {
+  .logo-tagline {
+    font-size: 1.1rem;
+    gap: 0.15rem;
+  }
+}
+
 @media (max-width: 768px) {
   .logo-tagline {
-    font-size: 1.05rem;
-    gap: 0.15rem;
+    font-size: 0.95rem;
+    gap: 0.12rem;
     margin-top: 0.1rem;
   }
 }
 
 @media (max-width: 480px) {
   .logo-tagline {
-    font-size: 0.9rem;
-    gap: 0.1rem;
+    font-size: 0.82rem;
+    gap: 0.08rem;
   }
 }
 
