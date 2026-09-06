@@ -151,6 +151,7 @@ function initProductCatalog() {
   window.addEventListener('chl_db_updated', () => {
     renderCategoryTabs();
     renderProductCatalog();
+    renderSampleBundles();
     renderHomeBlogPreview();
   });
 
@@ -161,6 +162,7 @@ function initProductCatalog() {
 
 function renderCategoryTabs() {
   const container = document.querySelector('.product-tabs');
+  const banner = document.getElementById('category-description-banner');
   if (!container || typeof CHL_DB === 'undefined') return;
 
   const categories = CHL_DB.getCategories();
@@ -172,11 +174,38 @@ function renderCategoryTabs() {
     </button>
   `).join('');
 
+  const updateBanner = () => {
+    if (!banner) return;
+    if (activeCategory === 'all') {
+      banner.style.display = 'none';
+      banner.innerHTML = '';
+    } else {
+      const cat = categories.find(c => c.id === activeCategory);
+      if (cat && cat.desc) {
+        banner.style.display = 'block';
+        banner.innerHTML = `
+          <div class="category-desc-card">
+            <span class="category-desc-icon">${cat.icon || '🌿'}</span>
+            <div class="category-desc-content">
+              <strong>${cat.name}</strong>
+              <p>${cat.desc}</p>
+            </div>
+          </div>
+        `;
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+  };
+
+  updateBanner();
+
   container.querySelectorAll('.tab-btn').forEach(tab => {
     tab.addEventListener('click', () => {
       container.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       activeCategory = tab.getAttribute('data-category');
+      updateBanner();
       renderProductCatalog();
     });
   });
@@ -254,10 +283,12 @@ window.renderProductCatalog = renderProductCatalog;
 /* --------------------------------------------------------------------------
    Latest News & Exhibitions Preview for Home Page
    -------------------------------------------------------------------------- */
-/* ---- Blog Carousel State ---- */
+/* ---- Blog Carousel & Nested Inner Photo Carousel State ---- */
 let _blogCarouselIdx = 0;
 let _blogCarouselTotal = 0;
 let _blogCarouselTimer = null;
+let _innerPhotoTimer = null;
+const _innerPhotoStates = {}; // postId -> { current: 0, total: N }
 const _BLOG_VISIBLE = () => window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : 3;
 
 function renderHomeBlogPreview() {
@@ -271,22 +302,57 @@ function renderHomeBlogPreview() {
   _blogCarouselTotal = posts.length;
   _blogCarouselIdx = 0;
 
-  track.innerHTML = posts.map(p => `
-    <article class="blog-carousel-card">
-      <div class="blog-carousel-img-wrap">
-        <img src="${p.coverImage || 'assets/images/banner/hero-bg.jpg'}" alt="${p.title}" loading="lazy">
-        <span class="blog-carousel-badge">${p.category}</span>
-      </div>
-      <div class="blog-carousel-body">
-        <div class="blog-carousel-meta">📅 ${p.publishedDate} &nbsp;•&nbsp; ⏱️ ${p.readingTime || '4 min'}</div>
-        <h4 class="blog-carousel-title">${p.title}</h4>
-        <p class="blog-carousel-excerpt">${p.excerpt}</p>
-        <a href="blog.html#${p.slug}" class="btn btn-outline btn-sm" style="align-self:flex-start;margin-top:auto;">Read Story →</a>
-      </div>
-    </article>
-  `).join('');
+  track.innerHTML = posts.map(p => {
+    const photos = (p.photos && Array.isArray(p.photos) && p.photos.length > 0) ? p.photos.slice(0, 10) : [p.coverImage || 'assets/images/banner/hero-bg.jpg'];
+    _innerPhotoStates[p.id] = { current: 0, total: photos.length };
 
-  // Build dots (one per slide-group of 3)
+    const hasMultiPhotos = photos.length > 1;
+
+    return `
+      <article class="blog-carousel-card">
+        <div class="blog-carousel-img-wrap">
+          ${hasMultiPhotos ? `
+            <div class="inner-photo-slider" id="inner-slider-${p.id}">
+              <div class="inner-photo-track" id="inner-track-${p.id}" style="width: ${photos.length * 100}%;">
+                ${photos.map((img, idx) => `
+                  <div class="inner-photo-slide" style="width: ${100 / photos.length}%;">
+                    <img src="${img}" alt="${p.title} - Photo ${idx + 1}" loading="lazy" onerror="this.src='assets/images/banner/hero-bg.jpg'">
+                  </div>
+                `).join('')}
+              </div>
+
+              <!-- Inner Carousel Mini Navigation Arrows -->
+              <button type="button" class="inner-photo-btn inner-prev" onclick="event.stopPropagation(); innerPhotoMove('${p.id}', -1)" aria-label="Previous photo">‹</button>
+              <button type="button" class="inner-photo-btn inner-next" onclick="event.stopPropagation(); innerPhotoMove('${p.id}', 1)" aria-label="Next photo">›</button>
+
+              <!-- Inner Photo Counter Badge -->
+              <span class="inner-photo-counter" id="inner-counter-${p.id}">📷 1/${photos.length}</span>
+
+              <!-- Inner Photo Dots -->
+              <div class="inner-photo-dots" id="inner-dots-${p.id}">
+                ${photos.map((_, dotIdx) => `
+                  <span class="inner-dot ${dotIdx === 0 ? 'active' : ''}" onclick="event.stopPropagation(); innerPhotoGoTo('${p.id}', ${dotIdx})"></span>
+                `).join('')}
+              </div>
+            </div>
+          ` : `
+            <div class="inner-photo-slider">
+              <img src="${photos[0]}" alt="${p.title}" loading="lazy" onerror="this.src='assets/images/banner/hero-bg.jpg'">
+            </div>
+          `}
+          <span class="blog-carousel-badge">${p.category}</span>
+        </div>
+        <div class="blog-carousel-body">
+          <div class="blog-carousel-meta">📅 ${p.publishedDate || '—'} &nbsp;•&nbsp; ⏱️ ${p.readingTime || '4 min'}</div>
+          <h4 class="blog-carousel-title">${p.title}</h4>
+          <p class="blog-carousel-excerpt">${p.excerpt}</p>
+          <a href="blog.html#${p.slug}" class="btn btn-outline btn-sm" style="align-self:flex-start;margin-top:auto;">Read Story →</a>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  // Build dots (one per slide-group)
   if (dotsEl) {
     const groups = Math.ceil(_blogCarouselTotal / _BLOG_VISIBLE());
     dotsEl.innerHTML = Array.from({length: groups}, (_, i) =>
@@ -296,8 +362,9 @@ function renderHomeBlogPreview() {
 
   _blogCarouselApply();
   _blogAutoPlay();
+  _initInnerPhotosAutoPlay();
 
-  // Pause on hover
+  // Pause outer auto-play on hover
   const carousel = document.getElementById('blog-carousel');
   if (carousel) {
     carousel.addEventListener('mouseenter', () => clearInterval(_blogCarouselTimer));
@@ -351,6 +418,55 @@ function _blogAutoPlay() {
   }, 5000);
 }
 
+/* Inner Photo Carousel Controller */
+function innerPhotoMove(postId, dir) {
+  const state = _innerPhotoStates[postId];
+  if (!state || state.total <= 1) return;
+  state.current = (state.current + dir + state.total) % state.total;
+  _applyInnerPhoto(postId);
+}
+window.innerPhotoMove = innerPhotoMove;
+
+function innerPhotoGoTo(postId, idx) {
+  const state = _innerPhotoStates[postId];
+  if (!state) return;
+  state.current = idx;
+  _applyInnerPhoto(postId);
+}
+window.innerPhotoGoTo = innerPhotoGoTo;
+
+function _applyInnerPhoto(postId) {
+  const state = _innerPhotoStates[postId];
+  if (!state) return;
+  const track = document.getElementById(`inner-track-${postId}`);
+  const counter = document.getElementById(`inner-counter-${postId}`);
+  const dots = document.querySelectorAll(`#inner-dots-${postId} .inner-dot`);
+
+  if (track) {
+    const shift = state.current * (100 / state.total);
+    track.style.transform = `translateX(-${shift}%)`;
+  }
+  if (counter) {
+    counter.textContent = `📷 ${state.current + 1}/${state.total}`;
+  }
+  if (dots) {
+    dots.forEach((d, i) => d.classList.toggle('active', i === state.current));
+  }
+}
+
+function _initInnerPhotosAutoPlay() {
+  clearInterval(_innerPhotoTimer);
+  _innerPhotoTimer = setInterval(() => {
+    Object.keys(_innerPhotoStates).forEach(postId => {
+      const state = _innerPhotoStates[postId];
+      if (state && state.total > 1) {
+        state.current = (state.current + 1) % state.total;
+        _applyInnerPhoto(postId);
+      }
+    });
+  }, 4000);
+}
+
 // Re-calc on resize
 window.addEventListener('resize', () => {
   if (_blogCarouselTotal > 0) { _blogCarouselIdx = 0; _blogCarouselApply(); }
@@ -369,30 +485,47 @@ window.resetFilters = resetFilters;
 
 function renderSampleBundles() {
   const container = document.getElementById('sample-kits-container');
-  if (!container || typeof SAMPLE_BUNDLES === 'undefined') return;
+  if (!container) return;
 
-  container.innerHTML = SAMPLE_BUNDLES.map(kit => `
-    <div class="card" style="padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid var(--color-accent);">
-      <div>
-        <span class="badge badge-gold" style="margin-bottom: 0.75rem;">Export Testing Kit</span>
-        <h4 style="font-size: 1.15rem; color: var(--color-primary-dark); margin-bottom: 0.5rem;">${kit.name}</h4>
-        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1rem;">${kit.desc}</p>
-        <div style="background: var(--color-surface-muted); padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; margin-bottom: 1.25rem;">
-          <strong>Included Samples:</strong><br>
-          <span style="color: var(--color-text-subtle);">${kit.items}</span>
+  const kits = (typeof CHL_DB !== 'undefined' && typeof CHL_DB.getSampleKits === 'function') 
+    ? CHL_DB.getSampleKits() 
+    : (typeof SAMPLE_BUNDLES !== 'undefined' ? SAMPLE_BUNDLES : []);
+
+  if (!kits || kits.length === 0) return;
+
+  container.innerHTML = kits.map(kit => {
+    const imgUrl = kit.image || 'assets/images/products/coconut/Virgin Coconut Oil.jpeg';
+    const badgeText = kit.badge || 'Export Testing Kit';
+    const priceFormatted = window.Cart ? window.Cart.formatPrice(kit.priceUSD) : '$' + parseFloat(kit.priceUSD || 0).toFixed(2);
+
+    return `
+      <article class="card sample-kit-card">
+        <div class="sample-kit-img-wrap">
+          <img src="${imgUrl}" alt="${kit.name}" loading="lazy" onerror="this.src='assets/images/logo/chl-logo.jpg'">
+          <span class="badge badge-gold sample-kit-badge">${badgeText}</span>
         </div>
-      </div>
-      <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--color-border-light); padding-top: 1rem;">
-        <div>
-          <span style="font-size: 0.75rem; color: var(--color-text-subtle); display: block;">Kit Price</span>
-          <strong style="font-size: 1.25rem; color: var(--color-primary);">${window.Cart ? window.Cart.formatPrice(kit.priceUSD) : '$' + kit.priceUSD.toFixed(2)}</strong>
+        <div class="sample-kit-body">
+          <div>
+            <h4 class="sample-kit-title">${kit.name}</h4>
+            <p class="sample-kit-desc">${kit.desc}</p>
+            <div class="sample-kit-samples-box">
+              <strong class="sample-kit-samples-header">📦 Included Laboratory Samples:</strong>
+              <span class="sample-kit-samples-text">${kit.items}</span>
+            </div>
+          </div>
+          <div class="sample-kit-footer">
+            <div>
+              <span class="sample-kit-price-label">Kit Price</span>
+              <strong class="sample-kit-price">${priceFormatted}</strong>
+            </div>
+            <button class="btn btn-accent btn-sm" onclick='addToSampleCart(${JSON.stringify(kit).replace(/'/g, "&apos;")})'>
+              Order Sample Kit
+            </button>
+          </div>
         </div>
-        <button class="btn btn-accent btn-sm" onclick='addToSampleCart(${JSON.stringify(kit).replace(/'/g, "&apos;")})'>
-          Order Sample Kit
-        </button>
-      </div>
-    </div>
-  `).join('');
+      </article>
+    `;
+  }).join('');
 }
 
 function addToSampleCart(prod) {
@@ -477,6 +610,30 @@ function openProductModal(id) {
       const contactSec = document.getElementById('contact-section');
       contactSec?.scrollIntoView({ behavior: 'smooth' });
     };
+  }
+
+  // Official TDS & MSDS Documentation
+  const specBtn = document.getElementById('modal-spec-btn');
+  const msdsBtn = document.getElementById('modal-msds-btn');
+  const docsWrap = document.getElementById('modal-docs-container');
+  if (specBtn) {
+    if (prod.specDocUrl) {
+      specBtn.href = prod.specDocUrl;
+      specBtn.style.display = 'inline-flex';
+    } else {
+      specBtn.style.display = 'none';
+    }
+  }
+  if (msdsBtn) {
+    if (prod.msdsDocUrl) {
+      msdsBtn.href = prod.msdsDocUrl;
+      msdsBtn.style.display = 'inline-flex';
+    } else {
+      msdsBtn.style.display = 'none';
+    }
+  }
+  if (docsWrap) {
+    docsWrap.style.display = (prod.specDocUrl || prod.msdsDocUrl) ? 'block' : 'none';
   }
 
   modal?.classList.add('active');
