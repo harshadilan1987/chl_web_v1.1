@@ -2845,4 +2845,34 @@ body {
   line-height: 1.4;
   text-align: center;
 }
+/* Team Director Contact Links */
+.team-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border-light);
+}
 
+.team-contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+  word-break: break-all;
+}
+
+.team-contact-link:hover {
+  color: var(--color-accent-dark);
+  text-decoration: underline;
+}
+
+.team-contact-link svg {
+  flex-shrink: 0;
+  opacity: 0.75;
+}
