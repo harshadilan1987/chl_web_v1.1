@@ -608,6 +608,8 @@ const SAMPLE_BUNDLES = [
     name: "Organic Coconut Importer Sample Kit",
     category: "kit",
     priceUSD: 45.00,
+    badge: "Export Testing Kit",
+    image: "assets/images/products/coconut/Virgin Coconut Oil.jpeg",
     items: "Virgin Coconut Oil (100ml), MCT Oil (100ml), Coconut Milk Powder (150g), Flour (100g), Desiccated High Fat (100g)",
     desc: "Complete testing pack with technical specifications, COA, and EU/USDA certificates for food buyers."
   },
@@ -616,6 +618,8 @@ const SAMPLE_BUNDLES = [
     name: "Ceylon Spices & True Cinnamon Connoisseur Kit",
     category: "kit",
     priceUSD: 55.00,
+    badge: "Export Testing Kit",
+    image: "assets/images/products/spices/Ceylon Alba Cinnamon.jpg",
     items: "Alba Cinnamon Quills (50g), 550 GL Black Pepper (100g), Curcumin Turmeric (100g), Cardamom (50g), Gourmet Vanilla Pods (2 pcs)",
     desc: "Premier grade Ceylon spices with laboratory coumarin & piperine assay reports."
   },
@@ -624,6 +628,8 @@ const SAMPLE_BUNDLES = [
     name: "Pure Ceylon Essential Oils Master Tasting Pack",
     category: "kit",
     priceUSD: 65.00,
+    badge: "Export Testing Kit",
+    image: "assets/images/products/oils/Cinnamon Bark Oil.jpg",
     items: "Cinnamon Bark Oil (5ml), Lemongrass Oil (10ml), Black Pepper Oil (5ml), Clove Bud Oil (10ml), Vetiver Oil (5ml)",
     desc: "GC-MS tested pharmaceutical & perfumery pure distillates with dropper vials."
   }
