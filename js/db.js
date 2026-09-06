@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Celebration Holdings (Pvt) Ltd - Unified Database Engine
  * Manages Products, Categories, Blog Posts, Coconut Harvest Line, Sample Kits & Persistence
  */
@@ -21,6 +21,11 @@ const CHL_DEFAULT_BLOG_POSTS = [
     author: "Suresh Jayasinghe, Director Operations",
     readingTime: "4 min read",
     coverImage: "assets/images/banner/hero-bg.jpg",
+    photos: [
+      "assets/images/banner/hero-bg.jpg",
+      "assets/images/about/about-harvest-spread.jpg",
+      "assets/images/about/about-ceylon-cinnamon.jpg"
+    ],
     excerpt: "Representing Sri Lanka at Nuremberg's prestigious BIOFACH Organic Trade Fair, CHL connected with leading European organic distributors seeking ultra-low coumarin True Ceylon Cinnamon and single-origin Virgin Coconut Oil.",
     content: `
       <h3>Connecting with European Organic Leaders at Nuremberg</h3>
@@ -52,6 +57,11 @@ const CHL_DEFAULT_BLOG_POSTS = [
     author: "Dilan Fernando, Director Marketing & Finance",
     readingTime: "5 min read",
     coverImage: "assets/images/services/traditional-sekku.jpg",
+    photos: [
+      "assets/images/services/traditional-sekku.jpg",
+      "assets/images/banner/service-bg.jpg",
+      "assets/images/about/about-growers.jpg"
+    ],
     excerpt: "Ancient Ceylon stone-squeezing mortar extraction transforms the modern wellness industry. Discover how our engineered Sekkuwa protects fragile antioxidant compounds below 38°C.",
     content: `
       <h3>The Science Behind Stone-Squeezing (Sekkuwa)</h3>
@@ -80,6 +90,11 @@ const CHL_DEFAULT_BLOG_POSTS = [
     author: "Sharmen Perera, Director HR & Administration",
     readingTime: "3 min read",
     coverImage: "assets/images/banner/service.jpg",
+    photos: [
+      "assets/images/banner/service.jpg",
+      "assets/images/banner/carousel-tropical-climate.jpg",
+      "assets/images/banner/carousel-ceylon-hospitality.jpg"
+    ],
     excerpt: "Celebration Holdings outlines its 2030 strategic export roadmap, announcing new cold-chain logistics agreements and expanded grower cooperative networks in Kurunegala and Matale.",
     content: `
       <h3>Our Strategic Horizon 2030</h3>
@@ -105,6 +120,12 @@ const CHL_DEFAULT_BLOG_POSTS = [
     author: "Bhagya Neththikumara, Director Quality Assurance",
     readingTime: "4 min read",
     coverImage: "assets/images/certifications/cert-1.jpg",
+    photos: [
+      "assets/images/certifications/cert-1.jpg",
+      "assets/images/certifications/cert-2.jpg",
+      "assets/images/certifications/cert-3.jpg",
+      "assets/images/certifications/jas-organic.png"
+    ],
     excerpt: "A deep dive into our rigorous farm-to-shipment audit processes under Control Union CU 853200, guaranteeing non-GMO, pesticide-free pure Ceylon produce.",
     content: `
       <h3>Organic You Can Trust Across the Globe</h3>
@@ -393,6 +414,11 @@ const CHL_DB = {
     return category;
   },
 
+  getCategoryById(catId) {
+    const list = this.getCategories();
+    return list.find(c => c.id === catId) || null;
+  },
+
   deleteCategory(catId) {
     let list = this.getCategories();
     list = list.filter(c => c.id !== catId);
@@ -507,6 +533,15 @@ const CHL_DB = {
       if (publishedOnly) {
         posts = posts.filter(p => p.status === 'Published');
       }
+      // Ensure photos array exists (up to 10 photos)
+      posts.forEach(p => {
+        if (!p.photos || !Array.isArray(p.photos) || p.photos.length === 0) {
+          p.photos = p.coverImage ? [p.coverImage] : ['assets/images/banner/hero-bg.jpg'];
+        }
+        if (p.photos.length > 10) {
+          p.photos = p.photos.slice(0, 10);
+        }
+      });
       return posts; // Respects saved array order for manual prioritization
     } catch (e) {
       return CHL_DEFAULT_BLOG_POSTS;
@@ -528,6 +563,16 @@ const CHL_DB = {
     }
     if (!post.publishedDate) {
       post.publishedDate = new Date().toISOString().split('T')[0];
+    }
+    // Handle photos array (up to 10 photos)
+    if (!post.photos || !Array.isArray(post.photos) || post.photos.length === 0) {
+      post.photos = post.coverImage ? [post.coverImage] : ['assets/images/banner/hero-bg.jpg'];
+    }
+    if (post.photos.length > 10) {
+      post.photos = post.photos.slice(0, 10);
+    }
+    if (!post.coverImage && post.photos.length > 0) {
+      post.coverImage = post.photos[0];
     }
 
     const idx = list.findIndex(p => p.id === post.id);
