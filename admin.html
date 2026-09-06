@@ -772,7 +772,7 @@
        MODAL 3: Add / Edit Blog Post
        ========================================================================= -->
   <div id="blog-edit-modal" class="modal-overlay" role="dialog">
-    <div class="modal-card" style="max-width: 820px; padding: 2rem;">
+    <div class="modal-card" style="max-width: 840px; padding: 2rem; max-height: 90vh; overflow-y: auto;">
       <button class="modal-close-btn" onclick="closeBlogEditModal()">✕</button>
       <h2 id="post-modal-title" style="font-size: 1.5rem; color: var(--color-primary-dark); margin-bottom: 1.25rem;">Write Blog Article</h2>
 
@@ -784,7 +784,7 @@
           <input type="text" id="edit-post-title" class="form-control" required placeholder="e.g. Celebration Holdings Showcases True Ceylon Cinnamon at BIOFACH Germany">
         </div>
 
-        <div class="grid-3" style="gap: 1rem; margin-bottom: 0;">
+        <div class="grid-4" style="gap: 1rem; margin-bottom: 0;">
           <div class="form-group">
             <label class="form-label">Category *</label>
             <select id="edit-post-category" class="form-control" required>
@@ -794,6 +794,10 @@
               <option value="Certifications">Certifications</option>
               <option value="Sustainability">Sustainability</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Published Date *</label>
+            <input type="date" id="edit-post-date" class="form-control" required>
           </div>
           <div class="form-group">
             <label class="form-label">Author Name</label>
@@ -808,14 +812,36 @@
           </div>
         </div>
 
-        <div class="grid-2" style="gap: 1rem; margin-bottom: 0;">
-          <div class="form-group">
-            <label class="form-label">Cover Image URL</label>
-            <input type="text" id="edit-post-image" class="form-control" placeholder="assets/images/banner/hero-bg.jpg">
+        <div class="form-group">
+          <label class="form-label">Reading Time (Estimate)</label>
+          <input type="text" id="edit-post-readingtime" class="form-control" placeholder="4 min read">
+        </div>
+
+        <!-- Multi-Photo Gallery Manager (Up to 10 Photos) -->
+        <div class="form-group" style="background: var(--color-surface-muted); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <div>
+              <strong style="color: var(--color-primary-dark); font-size: 0.95rem;">📸 Article Photo Gallery (Carousel inside post)</strong>
+              <span style="font-size: 0.8rem; color: var(--color-text-muted); display: block;">
+                Add up to 10 photos. If more than 1 photo is added, they will smoothly cycle like a carousel inside the home post card!
+              </span>
+            </div>
+            <span id="post-photo-count-badge" class="badge" style="background: var(--color-primary-soft); color: var(--color-primary-dark); font-weight: 700;">0 / 10 Photos</span>
           </div>
-          <div class="form-group">
-            <label class="form-label">Reading Time (Estimate)</label>
-            <input type="text" id="edit-post-readingtime" class="form-control" placeholder="4 min read">
+
+          <!-- Add Photo Controls -->
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+            <input type="text" id="edit-post-single-url" class="form-control" style="flex: 1; min-width: 240px;" placeholder="Paste Image URL (e.g. assets/images/...)">
+            <button type="button" class="btn btn-outline btn-sm" onclick="addPostPhotoByUrl()">+ Add URL</button>
+            <label class="btn btn-primary btn-sm" style="cursor: pointer; margin: 0; white-space: nowrap;">
+              📁 Browse &amp; Upload Files (Max 10)
+              <input type="file" id="edit-post-photos-file" multiple accept="image/*" style="display: none;" onchange="handlePostPhotosUpload(this)">
+            </label>
+          </div>
+
+          <!-- Photo Thumbnails List -->
+          <div id="edit-post-photos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.75rem;">
+            <!-- Rendered dynamically by js/admin.js -->
           </div>
         </div>
 
@@ -832,6 +858,48 @@
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
           <button type="button" class="btn btn-outline btn-sm" onclick="closeBlogEditModal()">Cancel</button>
           <button type="submit" class="btn btn-accent btn-sm">Save &amp; Publish Article</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 4: Add / Edit Product Category
+       ========================================================================= -->
+  <div id="category-edit-modal" class="modal-overlay" role="dialog">
+    <div class="modal-card" style="max-width: 600px; padding: 2rem; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-close-btn" onclick="closeCategoryEditModal()">✕</button>
+      <h2 id="cat-modal-title" style="font-size: 1.5rem; color: var(--color-primary-dark); margin-bottom: 1.25rem;">Edit Product Category</h2>
+
+      <form id="category-form" onsubmit="event.preventDefault(); saveCategoryForm();">
+        <input type="hidden" id="edit-cat-original-id">
+
+        <div class="grid-2" style="gap: 1rem; margin-bottom: 0;">
+          <div class="form-group">
+            <label class="form-label">Category Name *</label>
+            <input type="text" id="edit-cat-name" class="form-control" required placeholder="e.g. Organic Coconut Range" oninput="autoGenerateCatId(this.value)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category Icon / Emoji *</label>
+            <input type="text" id="edit-cat-icon" class="form-control" required placeholder="e.g. 🥥 or 🌿">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Category Identifier (Slug / Filter ID) *</label>
+          <input type="text" id="edit-cat-id" class="form-control" required placeholder="e.g. coconut">
+          <small style="color: var(--color-text-subtle); font-size: 0.75rem;">Unique internal ID matching product category codes (e.g. coconut, spices, sesame, fruits, oils).</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description *</label>
+          <textarea id="edit-cat-desc" class="form-control" rows="3" required placeholder="e.g. Certified organic virgin coconut oil, MCT, milk powder, flour, and aminos."></textarea>
+          <small style="color: var(--color-text-subtle); font-size: 0.75rem;">Displayed to buyers on the website catalog header when this range is selected.</small>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="closeCategoryEditModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Save Category</button>
         </div>
       </form>
     </div>
