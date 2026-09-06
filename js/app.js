@@ -254,34 +254,108 @@ window.renderProductCatalog = renderProductCatalog;
 /* --------------------------------------------------------------------------
    Latest News & Exhibitions Preview for Home Page
    -------------------------------------------------------------------------- */
-function renderHomeBlogPreview() {
-  const container = document.getElementById('home-blog-preview-grid');
-  if (!container || typeof CHL_DB === 'undefined') return;
+/* ---- Blog Carousel State ---- */
+let _blogCarouselIdx = 0;
+let _blogCarouselTotal = 0;
+let _blogCarouselTimer = null;
+const _BLOG_VISIBLE = () => window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : 3;
 
-  const posts = CHL_DB.getPosts(true).slice(0, 3); // Latest 3 posts
-  container.innerHTML = posts.map(p => `
-    <article class="card" style="overflow: hidden; display: flex; flex-direction: column;">
-      <div style="height: 190px; overflow: hidden; position: relative;">
-        <img src="${p.coverImage || 'assets/images/banner/hero-bg.jpg'}" alt="${p.title}" style="width: 100%; height: 100%; object-fit: cover; transition: transform var(--transition-slow);">
-        <span class="badge" style="position: absolute; top: 12px; left: 12px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">${p.category}</span>
+function renderHomeBlogPreview() {
+  const track = document.getElementById('home-blog-preview-grid');
+  const dotsEl = document.getElementById('blog-carousel-dots');
+  if (!track || typeof CHL_DB === 'undefined') return;
+
+  const posts = CHL_DB.getPosts(true); // all posts in stored order
+  if (!posts.length) { track.innerHTML = '<p style="color:var(--color-text-subtle);padding:2rem 0;">No posts yet.</p>'; return; }
+
+  _blogCarouselTotal = posts.length;
+  _blogCarouselIdx = 0;
+
+  track.innerHTML = posts.map(p => `
+    <article class="blog-carousel-card">
+      <div class="blog-carousel-img-wrap">
+        <img src="${p.coverImage || 'assets/images/banner/hero-bg.jpg'}" alt="${p.title}" loading="lazy">
+        <span class="blog-carousel-badge">${p.category}</span>
       </div>
-      <div style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
-        <div style="font-size: 0.75rem; color: var(--color-text-subtle); margin-bottom: 0.5rem;">
-          📅 ${p.publishedDate} • ⏱️ ${p.readingTime || '4 min'}
-        </div>
-        <h4 style="font-size: 1.05rem; color: var(--color-primary-dark); margin-bottom: 0.5rem; line-height: 1.4;">
-          ${p.title}
-        </h4>
-        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1.25rem; flex-grow: 1; line-height: 1.6;">
-          ${p.excerpt}
-        </p>
-        <a href="blog.html#${p.slug}" class="btn btn-outline btn-sm" style="align-self: flex-start;">
-          Read Story →
-        </a>
+      <div class="blog-carousel-body">
+        <div class="blog-carousel-meta">📅 ${p.publishedDate} &nbsp;•&nbsp; ⏱️ ${p.readingTime || '4 min'}</div>
+        <h4 class="blog-carousel-title">${p.title}</h4>
+        <p class="blog-carousel-excerpt">${p.excerpt}</p>
+        <a href="blog.html#${p.slug}" class="btn btn-outline btn-sm" style="align-self:flex-start;margin-top:auto;">Read Story →</a>
       </div>
     </article>
   `).join('');
+
+  // Build dots (one per slide-group of 3)
+  if (dotsEl) {
+    const groups = Math.ceil(_blogCarouselTotal / _BLOG_VISIBLE());
+    dotsEl.innerHTML = Array.from({length: groups}, (_, i) =>
+      `<button class="blog-dot${i===0?' active':''}" aria-label="Slide ${i+1}" onclick="blogCarouselGoTo(${i})"></button>`
+    ).join('');
+  }
+
+  _blogCarouselApply();
+  _blogAutoPlay();
+
+  // Pause on hover
+  const carousel = document.getElementById('blog-carousel');
+  if (carousel) {
+    carousel.addEventListener('mouseenter', () => clearInterval(_blogCarouselTimer));
+    carousel.addEventListener('mouseleave', _blogAutoPlay);
+  }
 }
+
+function _blogCarouselApply() {
+  const visible = _BLOG_VISIBLE();
+  const maxIdx = Math.max(0, _blogCarouselTotal - visible);
+  _blogCarouselIdx = Math.min(Math.max(_blogCarouselIdx, 0), maxIdx);
+
+  const track = document.getElementById('home-blog-preview-grid');
+  if (track) {
+    const pct = (_blogCarouselIdx / _blogCarouselTotal) * 100;
+    track.style.transform = `translateX(-${pct}%)`;
+  }
+
+  // Update dots
+  const dots = document.querySelectorAll('.blog-dot');
+  const groupIdx = Math.round(_blogCarouselIdx / visible);
+  dots.forEach((d, i) => d.classList.toggle('active', i === groupIdx));
+
+  // Arrow visibility
+  const prev = document.getElementById('blog-prev');
+  const next = document.getElementById('blog-next');
+  if (prev) prev.style.opacity = _blogCarouselIdx <= 0 ? '0.35' : '1';
+  if (next) next.style.opacity = _blogCarouselIdx >= Math.max(0, _blogCarouselTotal - visible) ? '0.35' : '1';
+}
+
+function blogCarouselMove(dir) {
+  const visible = _BLOG_VISIBLE();
+  _blogCarouselIdx = Math.min(Math.max(_blogCarouselIdx + dir, 0), Math.max(0, _blogCarouselTotal - visible));
+  _blogCarouselApply();
+}
+window.blogCarouselMove = blogCarouselMove;
+
+function blogCarouselGoTo(groupIdx) {
+  _blogCarouselIdx = groupIdx * _BLOG_VISIBLE();
+  _blogCarouselApply();
+}
+window.blogCarouselGoTo = blogCarouselGoTo;
+
+function _blogAutoPlay() {
+  clearInterval(_blogCarouselTimer);
+  _blogCarouselTimer = setInterval(() => {
+    const visible = _BLOG_VISIBLE();
+    const max = Math.max(0, _blogCarouselTotal - visible);
+    _blogCarouselIdx = _blogCarouselIdx >= max ? 0 : _blogCarouselIdx + 1;
+    _blogCarouselApply();
+  }, 5000);
+}
+
+// Re-calc on resize
+window.addEventListener('resize', () => {
+  if (_blogCarouselTotal > 0) { _blogCarouselIdx = 0; _blogCarouselApply(); }
+});
+
 
 function resetFilters() {
   activeCategory = 'all';
