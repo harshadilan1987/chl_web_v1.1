@@ -417,46 +417,144 @@ window.deleteCategoryConfirm = deleteCategoryConfirm;
 
 /* --------------------------------------------------------------------------
    6. Blog & Exhibitions Manager
+/* --------------------------------------------------------------------------
+   6. Company Blog Manager (Multi-Photo & Published Date)
    -------------------------------------------------------------------------- */
+let currentPostPhotos = [];
+
 function renderBlogTable() {
   const tbody = document.getElementById('admin-blog-tbody');
   if (!tbody) return;
 
   const posts = CHL_DB.getPosts();
-  tbody.innerHTML = posts.map(p => `
-    <tr>
-      <td style="text-align: center;">
-        <div style="display: flex; gap: 4px; justify-content: center;">
-          <button type="button" class="btn-order" onclick="movePost('${p.id}', 'up')" title="Move Up">↑</button>
-          <button type="button" class="btn-order" onclick="movePost('${p.id}', 'down')" title="Move Down">↓</button>
-        </div>
-      </td>
-      <td>
-        <strong style="color: #0c4d2f; display: block;">${p.title}</strong>
-        <span style="font-size: 0.75rem; color: #79877e;">Slug: /blog/${p.slug}</span>
-      </td>
-      <td><span class="badge" style="background: #e0f2fe; color: #0369a1;">${p.category}</span></td>
-      <td>${p.author || 'CHL Editorial'}</td>
-      <td>${p.publishedDate}</td>
-      <td>
-        <span class="stock-badge ${p.status === 'Published' ? 'stock-in' : 'stock-limited'}">${p.status}</span>
-      </td>
-      <td style="text-align: right;">
-        <button class="btn btn-sm" style="padding: 4px 8px; background: #e0f2fe; color: #0369a1;" onclick="openEditPostModal('${p.id}')">Edit</button>
-        <button class="btn btn-sm" style="padding: 4px 8px; background: #fee2e2; color: #991b1b;" onclick="deletePostConfirm('${p.id}')">Del</button>
-      </td>
-    </tr>
+  tbody.innerHTML = posts.map(p => {
+    const photoCount = (p.photos && Array.isArray(p.photos)) ? p.photos.length : (p.coverImage ? 1 : 0);
+    const cover = (p.photos && p.photos[0]) || p.coverImage || 'assets/images/banner/hero-bg.jpg';
+
+    return `
+      <tr>
+        <td style="text-align: center;">
+          <div style="display: flex; gap: 4px; justify-content: center;">
+            <button type="button" class="btn-order" onclick="movePost('${p.id}', 'up')" title="Move Up">↑</button>
+            <button type="button" class="btn-order" onclick="movePost('${p.id}', 'down')" title="Move Down">↓</button>
+          </div>
+        </td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="${cover}" alt="" style="width: 44px; height: 44px; object-fit: cover; border-radius: 4px; flex-shrink: 0;" onerror="this.src='assets/images/banner/hero-bg.jpg'">
+            <div>
+              <strong style="color: #0c4d2f; display: block;">${p.title}</strong>
+              <div style="display: flex; gap: 6px; align-items: center; margin-top: 2px;">
+                <span style="font-size: 0.72rem; color: #79877e;">/blog/${p.slug}</span>
+                <span class="badge" style="background: #f0fdf4; color: #166534; font-size: 0.68rem; padding: 1px 6px;">📸 ${photoCount} ${photoCount === 1 ? 'photo' : 'photos'}</span>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge" style="background: #e0f2fe; color: #0369a1;">${p.category}</span></td>
+        <td>${p.author || 'CHL Editorial'}</td>
+        <td><strong>${p.publishedDate || '—'}</strong></td>
+        <td>
+          <span class="stock-badge ${p.status === 'Published' ? 'stock-in' : 'stock-limited'}">${p.status}</span>
+        </td>
+        <td style="text-align: right;">
+          <button class="btn btn-sm" style="padding: 4px 8px; background: #e0f2fe; color: #0369a1;" onclick="openEditPostModal('${p.id}')">Edit</button>
+          <button class="btn btn-sm" style="padding: 4px 8px; background: #fee2e2; color: #991b1b;" onclick="deletePostConfirm('${p.id}')">Del</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderPostPhotosManager() {
+  const grid = document.getElementById('edit-post-photos-grid');
+  const badge = document.getElementById('post-photo-count-badge');
+  if (badge) {
+    badge.textContent = `${currentPostPhotos.length} / 10 Photos`;
+    badge.style.background = currentPostPhotos.length >= 10 ? '#fee2e2' : '#e8f5ed';
+    badge.style.color = currentPostPhotos.length >= 10 ? '#991b1b' : '#0c4d2f';
+  }
+  if (!grid) return;
+
+  if (currentPostPhotos.length === 0) {
+    grid.innerHTML = `<div style="grid-column: 1 / -1; padding: 1rem; text-align: center; color: var(--color-text-subtle); font-size: 0.85rem;">No photos added yet. Browse files or enter URL above (up to 10 photos).</div>`;
+    return;
+  }
+
+  grid.innerHTML = currentPostPhotos.map((url, i) => `
+    <div style="position: relative; border-radius: 6px; overflow: hidden; border: 2px solid ${i === 0 ? 'var(--color-accent)' : 'var(--color-border)'}; aspect-ratio: 1; background: #ffffff; box-shadow: var(--shadow-sm);">
+      <img src="${url}" alt="Photo ${i+1}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='assets/images/banner/hero-bg.jpg'">
+      <span style="position: absolute; top: 4px; left: 4px; background: rgba(6,42,25,0.85); color: #ffffff; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;">
+        ${i === 0 ? '★ Cover' : '#' + (i + 1)}
+      </span>
+      <button type="button" onclick="removePostPhoto(${i})" style="position: absolute; top: 4px; right: 4px; background: #ef4444; color: #ffffff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.3);" title="Remove Photo">✕</button>
+    </div>
   `).join('');
 }
+
+function handlePostPhotosUpload(input) {
+  if (!input.files || input.files.length === 0) return;
+  const remaining = 10 - currentPostPhotos.length;
+  if (remaining <= 0) {
+    alert('Maximum limit of 10 photos already reached for this post.');
+    input.value = '';
+    return;
+  }
+
+  const filesToAdd = Array.from(input.files).slice(0, remaining);
+  let loaded = 0;
+
+  filesToAdd.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      currentPostPhotos.push(e.target.result);
+      loaded++;
+      if (loaded === filesToAdd.length) {
+        renderPostPhotosManager();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+
+  input.value = '';
+}
+window.handlePostPhotosUpload = handlePostPhotosUpload;
+
+function addPostPhotoByUrl() {
+  const input = document.getElementById('edit-post-single-url');
+  if (!input) return;
+  const url = input.value.trim();
+  if (!url) {
+    alert('Please enter an image URL first.');
+    return;
+  }
+  if (currentPostPhotos.length >= 10) {
+    alert('Maximum 10 photos allowed per article.');
+    return;
+  }
+  currentPostPhotos.push(url);
+  input.value = '';
+  renderPostPhotosManager();
+}
+window.addPostPhotoByUrl = addPostPhotoByUrl;
+
+function removePostPhoto(index) {
+  currentPostPhotos.splice(index, 1);
+  renderPostPhotosManager();
+}
+window.removePostPhoto = removePostPhoto;
 
 function openAddPostModal() {
   document.getElementById('post-modal-title').textContent = "Write New Blog Story";
   document.getElementById('blog-form').reset();
   document.getElementById('edit-post-id').value = "";
   document.getElementById('edit-post-status').value = "Published";
-  document.getElementById('edit-post-image').value = "assets/images/banner/hero-bg.jpg";
+  document.getElementById('edit-post-date').value = new Date().toISOString().split('T')[0];
   document.getElementById('edit-post-author').value = "Suresh Jayasinghe, Director Operations";
   document.getElementById('edit-post-readingtime').value = "4 min read";
+
+  currentPostPhotos = ["assets/images/banner/hero-bg.jpg"];
+  renderPostPhotosManager();
 
   const modal = document.getElementById('blog-edit-modal');
   modal.classList.add('active');
@@ -471,12 +569,22 @@ function openEditPostModal(id) {
   document.getElementById('edit-post-id').value = post.id;
   document.getElementById('edit-post-title').value = post.title;
   document.getElementById('edit-post-category').value = post.category;
+  document.getElementById('edit-post-date').value = post.publishedDate || new Date().toISOString().split('T')[0];
   document.getElementById('edit-post-author').value = post.author || '';
   document.getElementById('edit-post-status').value = post.status || 'Published';
-  document.getElementById('edit-post-image').value = post.coverImage || '';
   document.getElementById('edit-post-readingtime').value = post.readingTime || '4 min read';
   document.getElementById('edit-post-excerpt').value = post.excerpt || '';
   document.getElementById('edit-post-content').value = post.content || '';
+
+  // Load photos (up to 10)
+  if (post.photos && Array.isArray(post.photos) && post.photos.length > 0) {
+    currentPostPhotos = [...post.photos].slice(0, 10);
+  } else if (post.coverImage) {
+    currentPostPhotos = [post.coverImage];
+  } else {
+    currentPostPhotos = [];
+  }
+  renderPostPhotosManager();
 
   const modal = document.getElementById('blog-edit-modal');
   modal.classList.add('active');
@@ -491,13 +599,17 @@ window.closeBlogEditModal = closeBlogEditModal;
 document.getElementById('blog-form')?.addEventListener('submit', (e) => {
   e.preventDefault();
   const id = document.getElementById('edit-post-id').value;
+  const publishedDate = document.getElementById('edit-post-date').value || new Date().toISOString().split('T')[0];
+
   const postData = {
     id: id || undefined,
     title: document.getElementById('edit-post-title').value.trim(),
     category: document.getElementById('edit-post-category').value,
+    publishedDate: publishedDate,
     author: document.getElementById('edit-post-author').value.trim(),
     status: document.getElementById('edit-post-status').value,
-    coverImage: document.getElementById('edit-post-image').value.trim(),
+    photos: currentPostPhotos.slice(0, 10),
+    coverImage: currentPostPhotos[0] || 'assets/images/banner/hero-bg.jpg',
     readingTime: document.getElementById('edit-post-readingtime').value.trim(),
     excerpt: document.getElementById('edit-post-excerpt').value.trim(),
     content: document.getElementById('edit-post-content').value.trim()
@@ -505,15 +617,165 @@ document.getElementById('blog-form')?.addEventListener('submit', (e) => {
 
   CHL_DB.savePost(postData);
   closeBlogEditModal();
-  alert('Blog article saved and published!');
+  renderBlogTable();
+  alert('Blog article saved successfully!');
 });
 
 function deletePostConfirm(id) {
   if (confirm("Are you sure you want to delete this article?")) {
     CHL_DB.deletePost(id);
+    renderBlogTable();
   }
 }
 window.deletePostConfirm = deletePostConfirm;
+
+/* --------------------------------------------------------------------------
+   7. Product Categories Manager (Edit Name, Icon, Description, Slug)
+   -------------------------------------------------------------------------- */
+function renderCategoriesTable() {
+  const tbody = document.getElementById('admin-categories-tbody');
+  if (!tbody) return;
+
+  const categories = CHL_DB.getCategories();
+  const products = CHL_DB.getProducts();
+
+  if (categories.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #79877e;">No categories found. Click "+ Add New Category" to create one.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = categories.map(cat => {
+    const prodCount = products.filter(p => p.category === cat.id).length;
+    return `
+      <tr>
+        <td style="text-align: center; font-size: 1.5rem;">${cat.icon || '📦'}</td>
+        <td>
+          <strong style="color: var(--color-primary-dark); display: block; font-size: 0.95rem;">${cat.name}</strong>
+          <span style="font-size: 0.75rem; color: var(--color-text-subtle);">${prodCount} products linked</span>
+        </td>
+        <td>
+          <code style="background: var(--color-surface-muted); padding: 2px 8px; border-radius: 4px; font-size: 0.82rem; color: var(--color-primary);">${cat.id}</code>
+        </td>
+        <td style="max-width: 320px; font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.5;">
+          ${cat.desc || '<span style="color:#9ca3af; font-style:italic;">No description provided</span>'}
+        </td>
+        <td style="text-align: right;">
+          <button class="btn btn-sm" style="padding: 4px 10px; background: #e0f2fe; color: #0369a1;" onclick="openEditCategoryModal('${cat.id}')">Edit</button>
+          <button class="btn btn-sm" style="padding: 4px 8px; background: #fee2e2; color: #991b1b;" onclick="deleteCategoryConfirm('${cat.id}', '${cat.name.replace(/'/g, "\\'")}')">Del</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+window.renderCategoriesTable = renderCategoriesTable;
+
+function populateCategoryDropdowns() {
+  const categories = CHL_DB.getCategories();
+
+  // 1. Admin product filter
+  const catFilter = document.getElementById('admin-cat-filter');
+  if (catFilter) {
+    const currentVal = catFilter.value;
+    catFilter.innerHTML = `<option value="all">All Categories</option>` +
+      categories.map(c => `<option value="${c.id}">${c.icon || ''} ${c.name}</option>`).join('');
+    catFilter.value = currentVal || 'all';
+  }
+
+  // 2. Product edit modal category selector
+  const editProdCat = document.getElementById('edit-prod-category');
+  if (editProdCat) {
+    const currentVal = editProdCat.value;
+    editProdCat.innerHTML = categories.map(c => `<option value="${c.id}">${c.icon || ''} ${c.name}</option>`).join('');
+    if (currentVal) editProdCat.value = currentVal;
+  }
+}
+window.populateCategoryDropdowns = populateCategoryDropdowns;
+
+function autoGenerateCatId(name) {
+  const idInput = document.getElementById('edit-cat-id');
+  const originalId = document.getElementById('edit-cat-original-id').value;
+  // Only auto-generate if this is a new category
+  if (!originalId && idInput) {
+    idInput.value = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+}
+window.autoGenerateCatId = autoGenerateCatId;
+
+function openAddCategoryModal() {
+  document.getElementById('cat-modal-title').textContent = "Add New Category";
+  document.getElementById('category-form').reset();
+  document.getElementById('edit-cat-original-id').value = "";
+  document.getElementById('edit-cat-id').readOnly = false;
+
+  const modal = document.getElementById('category-edit-modal');
+  modal.classList.add('active');
+}
+window.openAddCategoryModal = openAddCategoryModal;
+
+function openEditCategoryModal(catId) {
+  const cat = CHL_DB.getCategoryById(catId);
+  if (!cat) return;
+
+  document.getElementById('cat-modal-title').textContent = "Edit Product Category";
+  document.getElementById('edit-cat-original-id').value = cat.id;
+  document.getElementById('edit-cat-name').value = cat.name || '';
+  document.getElementById('edit-cat-icon').value = cat.icon || '';
+  document.getElementById('edit-cat-id').value = cat.id || '';
+  document.getElementById('edit-cat-id').readOnly = true; // Lock slug to preserve product linkages
+  document.getElementById('edit-cat-desc').value = cat.desc || '';
+
+  const modal = document.getElementById('category-edit-modal');
+  modal.classList.add('active');
+}
+window.openEditCategoryModal = openEditCategoryModal;
+
+function closeCategoryEditModal() {
+  document.getElementById('category-edit-modal').classList.remove('active');
+}
+window.closeCategoryEditModal = closeCategoryEditModal;
+
+function saveCategoryForm() {
+  const originalId = document.getElementById('edit-cat-original-id').value;
+  const id = (originalId || document.getElementById('edit-cat-id').value.trim()).toLowerCase();
+  const name = document.getElementById('edit-cat-name').value.trim();
+  const icon = document.getElementById('edit-cat-icon').value.trim();
+  const desc = document.getElementById('edit-cat-desc').value.trim();
+
+  if (!id || !name) {
+    alert('Please provide category Name and ID.');
+    return;
+  }
+
+  const categoryData = { id, name, icon, desc };
+  CHL_DB.saveCategory(categoryData);
+
+  closeCategoryEditModal();
+  renderCategoriesTable();
+  populateCategoryDropdowns();
+  renderOverviewStats();
+  alert(`Category "${name}" saved successfully! Website category tabs and descriptions have been updated.`);
+}
+window.saveCategoryForm = saveCategoryForm;
+
+function deleteCategoryConfirm(catId, name) {
+  const products = CHL_DB.getProducts();
+  const linked = products.filter(p => p.category === catId);
+  if (linked.length > 0) {
+    if (!confirm(`Warning: ${linked.length} products currently belong to category "${name}". Deleting this category may affect catalog filters. Continue?`)) {
+      return;
+    }
+  } else {
+    if (!confirm(`Are you sure you want to delete category "${name}"?`)) {
+      return;
+    }
+  }
+
+  CHL_DB.deleteCategory(catId);
+  renderCategoriesTable();
+  populateCategoryDropdowns();
+  renderOverviewStats();
+}
+window.deleteCategoryConfirm = deleteCategoryConfirm;
 
 /* --------------------------------------------------------------------------
    7. Coconut Harvest (5 Items) Manager
