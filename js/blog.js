@@ -94,9 +94,16 @@ function renderBlogPosts() {
       return;
     }
 
-    grid.innerHTML = filtered.map(post => `
+    grid.innerHTML = filtered.map(post => {
+      const photos = (post.photos && Array.isArray(post.photos) && post.photos.length > 0) ? post.photos : [post.coverImage || 'assets/images/banner/hero-bg.jpg'];
+      const hasMulti = photos.length > 1;
+
+      return `
       <article class="blog-card">
-        <img src="${post.coverImage || 'assets/images/banner/hero-bg.jpg'}" alt="${post.title}" class="blog-card-img" loading="lazy">
+        <div style="position: relative; overflow: hidden;">
+          <img src="${photos[0]}" alt="${post.title}" class="blog-card-img" loading="lazy">
+          ${hasMulti ? `<span class="badge" style="position: absolute; top: 12px; right: 12px; background: rgba(12,77,47,0.85); color: #fff; font-size: 0.72rem; backdrop-filter: blur(4px);">📷 ${photos.length} Photos</span>` : ''}
+        </div>
         <div class="blog-card-body">
           <div class="blog-meta-row">
             <span class="badge" style="background: #e0f2fe; color: #0369a1;">${post.category}</span>
@@ -116,7 +123,8 @@ function renderBlogPosts() {
           </div>
         </div>
       </article>
-    `).join('');
+    `;
+    }).join('');
   }
 }
 
@@ -134,12 +142,26 @@ function openArticleReader(slugOrId) {
   document.getElementById('read-date').textContent = post.publishedDate;
   document.getElementById('read-time').textContent = post.readingTime || "4 min read";
 
-  const coverImg = document.getElementById('read-cover-img');
-  if (post.coverImage) {
-    coverImg.src = post.coverImage;
-    document.getElementById('read-cover-wrap').style.display = 'block';
+  const coverWrap = document.getElementById('read-cover-wrap');
+  const photos = (post.photos && Array.isArray(post.photos) && post.photos.length > 0) ? post.photos : (post.coverImage ? [post.coverImage] : []);
+
+  if (photos.length > 1) {
+    coverWrap.style.display = 'block';
+    coverWrap.innerHTML = `
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; border-radius: 12px; overflow: hidden; margin-bottom: 1rem;">
+        ${photos.map((pUrl, i) => `
+          <div style="position: relative; border-radius: 8px; overflow: hidden; height: 190px; background: #0c4d2f;">
+            <img src="${pUrl}" alt="${post.title} - Photo ${i+1}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onerror="this.src='assets/images/banner/hero-bg.jpg'">
+            <span style="position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.65); color: #fff; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px;">#${i+1}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else if (photos.length === 1) {
+    coverWrap.style.display = 'block';
+    coverWrap.innerHTML = `<img id="read-cover-img" src="${photos[0]}" alt="${post.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">`;
   } else {
-    document.getElementById('read-cover-wrap').style.display = 'none';
+    coverWrap.style.display = 'none';
   }
 
   document.getElementById('read-article-content').innerHTML = post.content || `<p>${post.excerpt}</p>`;
