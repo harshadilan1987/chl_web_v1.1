@@ -4,20 +4,26 @@
  */
 
 const CURRENCIES = {
+  LKR: { symbol: "Rs. ", rate: 305.0, label: "LKR (Rs)" },
   USD: { symbol: "$", rate: 1.0, label: "USD ($)" },
   EUR: { symbol: "€", rate: 0.92, label: "EUR (€)" },
   GBP: { symbol: "£", rate: 0.78, label: "GBP (£)" },
   AUD: { symbol: "A$", rate: 1.52, label: "AUD (A$)" },
-  JPY: { symbol: "¥", rate: 152.0, label: "JPY (¥)" },
-  LKR: { symbol: "Rs. ", rate: 305.0, label: "LKR (Rs)" }
+  JPY: { symbol: "¥", rate: 152.0, label: "JPY (¥)" }
 };
 
 const Cart = {
   items: [],
-  currentCurrency: 'USD',
+  currentCurrency: 'LKR',
   flatShippingUSD: 18.00, // Standard international express courier for samples
 
   init() {
+    // Ensure default initial currency is LKR
+    if (!localStorage.getItem('chl_currency_initial_lkr_v1')) {
+      localStorage.setItem('chl_currency', 'LKR');
+      localStorage.setItem('chl_currency_initial_lkr_v1', 'true');
+    }
+
     // Load persisted cart from localStorage
     const saved = localStorage.getItem('chl_cart_items');
     if (saved) {
@@ -31,6 +37,9 @@ const Cart = {
     const savedCur = localStorage.getItem('chl_currency');
     if (savedCur && CURRENCIES[savedCur]) {
       this.currentCurrency = savedCur;
+    } else {
+      this.currentCurrency = 'LKR';
+      localStorage.setItem('chl_currency', 'LKR');
     }
 
     this.bindEvents();
@@ -96,9 +105,12 @@ const Cart = {
   },
 
   formatPrice(usdAmount) {
-    const cur = CURRENCIES[this.currentCurrency] || CURRENCIES.USD;
+    const cur = CURRENCIES[this.currentCurrency] || CURRENCIES.LKR || CURRENCIES.USD;
     const converted = usdAmount * cur.rate;
     if (this.currentCurrency === 'JPY') {
+      return `${cur.symbol}${Math.round(converted).toLocaleString()}`;
+    }
+    if (this.currentCurrency === 'LKR') {
       return `${cur.symbol}${Math.round(converted).toLocaleString()}`;
     }
     return `${cur.symbol}${converted.toFixed(2)}`;
@@ -159,9 +171,12 @@ const Cart = {
     }
     if (typeof CHL_DB !== 'undefined' && typeof CHL_DB.getSalesConfig === 'function') {
       const cfg = CHL_DB.getSalesConfig();
+      if (this.currentCurrency === 'LKR' && cfg.domesticShippingLKR) {
+        return parseFloat(cfg.domesticShippingLKR) / (CURRENCIES.LKR ? CURRENCIES.LKR.rate : 305.0);
+      }
       return parseFloat(cfg.domesticShippingUSD || 3.00);
     }
-    return 3.00;
+    return this.currentCurrency === 'LKR' ? (650 / 305.0) : 3.00;
   },
 
   getTotalUSD(country = 'Sri Lanka') {

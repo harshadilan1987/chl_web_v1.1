@@ -79,12 +79,12 @@
           <label for="top-currency-select" class="sr-only">Select Currency</label>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="22"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
           <select id="top-currency-select" class="currency-selector" title="Select Currency">
+            <option value="LKR" selected>LKR (Rs)</option>
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (€)</option>
             <option value="GBP">GBP (£)</option>
             <option value="AUD">AUD (A$)</option>
             <option value="JPY">JPY (¥)</option>
-            <option value="LKR">LKR (Rs)</option>
           </select>
         </div>
 
@@ -1518,15 +1518,15 @@
     <div class="cart-footer">
       <div class="cart-summary-row">
         <span>Sample Subtotal:</span>
-        <strong id="cart-subtotal-val">$0.00</strong>
+        <strong id="cart-subtotal-val">Rs. 0</strong>
       </div>
       <div class="cart-summary-row">
-        <span>Express Courier (DHL/FedEx):</span>
-        <strong id="cart-shipping-val">$18.00</strong>
+        <span>Domestic Express Delivery:</span>
+        <strong id="cart-shipping-val">Rs. 650</strong>
       </div>
       <div class="cart-total-row">
         <span>Total Payable:</span>
-        <span id="cart-total-val" style="color: var(--color-primary);">$18.00</span>
+        <span id="cart-total-val" style="color: var(--color-primary);">Rs. 650</span>
       </div>
 
       <button id="cart-checkout-btn" class="btn btn-primary btn-lg" style="width: 100%;">
@@ -1691,22 +1691,22 @@
           <div id="modal-order-items-list" style="margin-bottom: 1rem;"></div>
           <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.35rem;">
             <span>Sample Subtotal:</span>
-            <strong id="modal-subtotal-val">$0.00</strong>
+            <strong id="modal-subtotal-val">Rs. 0</strong>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.35rem;">
             <span id="modal-shipping-label">Islandwide Express Shipping:</span>
-            <strong id="modal-shipping-val">$3.00</strong>
+            <strong id="modal-shipping-val">Rs. 650</strong>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 1.15rem; font-weight: 800; color: var(--color-primary); padding-top: 0.5rem; border-top: 1px solid var(--color-border);">
             <span id="modal-total-label">Total Payable:</span>
-            <span id="modal-total-val">$3.00</span>
+            <span id="modal-total-val">Rs. 650</span>
           </div>
         </div>
 
         <div style="margin-top: 1.5rem;">
           <!-- Domestic Order Button -->
           <button type="submit" id="pay-submit-btn" class="btn btn-primary btn-lg" style="width: 100%;">
-            <span>🔒 Place Sample Order (Sri Lanka)</span> <strong id="btn-pay-amount">($3.00)</strong>
+            <span>🔒 Place Sample Order (Sri Lanka)</span> <strong id="btn-pay-amount">(Rs. 650)</strong>
           </button>
           <!-- Overseas Freight Calculation Button -->
           <button type="button" id="freight-calc-btn" class="btn btn-accent btn-lg" style="width: 100%; display: none;" onclick="PaymentGateway.submitOverseasFreight()">

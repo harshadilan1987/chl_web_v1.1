@@ -446,7 +446,7 @@ const CHL_DB = {
     if (!localStorage.getItem(this.STORAGE_KEYS.CONFIG)) {
       localStorage.setItem(this.STORAGE_KEYS.CONFIG, JSON.stringify({
         storeName: "Celebration Holdings (Pvt) Ltd",
-        currency: "USD",
+        currency: "LKR",
         adminEmail: "info@celebrationholdings.lk",
         cloudSync: {
           enabled: false,
