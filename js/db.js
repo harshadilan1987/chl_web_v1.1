@@ -222,6 +222,31 @@ const CHL_DEFAULT_SAMPLE_KITS = [
   }
 ];
 
+// Default Hero Carousel
+const CHL_DEFAULT_HERO_CAROUSEL = [
+  {
+    id: "hero-01",
+    eyebrow: "100% Certified Organic • Ceylon Agriculture",
+    title: "Pure Bounty of<br><em>Sri Lankan Organic</em><br>Harvest",
+    desc: "Sourced directly from certified organic smallholder networks and bio-diverse estates. From pristine cold-pressed Virgin Coconut Oil and hand-peeled True Ceylon Cinnamon to organic turmeric, black pepper, and tropical fruits—cultivated without synthetic inputs, chemicals, or GMOs.",
+    image: "assets/images/banner/carousel-organic-harvest.jpg"
+  },
+  {
+    id: "hero-02",
+    eyebrow: "Equatorial Paradise • Lush Island Ecosystems",
+    title: "Enriched by Ceylon's<br><em>Tropical Climate</em><br>&amp; Island Nature",
+    desc: "Surrounded by the warm Indian Ocean and bathed in equatorial sunshine with dual monsoonal rains, Sri Lanka's fertile microclimates nurture botanicals with peerless aroma, high active nutritional density, and therapeutic essential oil potency.",
+    image: "assets/images/banner/carousel-tropical-climate.jpg"
+  },
+  {
+    id: "hero-03",
+    eyebrow: "Millennia of Heritage • Heartfelt Warmth",
+    title: "Ceylon Hospitality<br><em>&amp; Ancient Food</em><br>Processing Wisdom",
+    desc: "Rooted in over two millennia of culinary culture, from our ancestral granite Sekkuwa cold stone-squeezing to natural sun curation. We unite Sri Lanka's world-famous heartfelt hospitality and traditional craftsmanship with modern cleanroom HACCP export standards.",
+    image: "assets/images/banner/carousel-ceylon-hospitality.jpg"
+  }
+];
+
 /**
  * Intelligent mapper for authentic Celebration Holdings Technical Specs & MSDS documents
  */
@@ -292,6 +317,7 @@ const CHL_DB = {
     BLOG: "chl_db_blog_posts_v2",
     COCONUT_HARVEST: "chl_db_coconut_harvest_v2",
     SAMPLE_KITS: "chl_db_sample_kits_v2",
+    HERO_CAROUSEL: "chl_db_hero_carousel_v2",
     CONFIG: "chl_db_config_v2"
   },
 
@@ -367,7 +393,12 @@ const CHL_DB = {
       localStorage.setItem(this.STORAGE_KEYS.SAMPLE_KITS, JSON.stringify(CHL_DEFAULT_SAMPLE_KITS));
     }
 
-    // 6. Config
+    // 6. Hero Carousel
+    if (!localStorage.getItem(this.STORAGE_KEYS.HERO_CAROUSEL)) {
+      localStorage.setItem(this.STORAGE_KEYS.HERO_CAROUSEL, JSON.stringify(CHL_DEFAULT_HERO_CAROUSEL));
+    }
+
+    // 7. Config
     if (!localStorage.getItem(this.STORAGE_KEYS.CONFIG)) {
       localStorage.setItem(this.STORAGE_KEYS.CONFIG, JSON.stringify({
         storeName: "Celebration Holdings (Pvt) Ltd",
@@ -766,6 +797,40 @@ const CHL_DB = {
     window.dispatchEvent(new CustomEvent('chl_db_updated', {
       detail: { timestamp: Date.now() }
     }));
+  },
+
+  // ==========================================
+  // HERO CAROUSEL CRUD
+  // ==========================================
+  getHeroCarousel() {
+    try {
+      const data = localStorage.getItem(this.STORAGE_KEYS.HERO_CAROUSEL);
+      return data ? JSON.parse(data) : CHL_DEFAULT_HERO_CAROUSEL;
+    } catch (e) {
+      return CHL_DEFAULT_HERO_CAROUSEL;
+    }
+  },
+
+  saveHeroCarousel(carouselArray) {
+    if (Array.isArray(carouselArray)) {
+      // Enforce max 3 items
+      const limited = carouselArray.slice(0, 3);
+      localStorage.setItem(this.STORAGE_KEYS.HERO_CAROUSEL, JSON.stringify(limited));
+      this.broadcastChange();
+    }
+  },
+
+  saveHeroCarouselItem(item) {
+    let list = this.getHeroCarousel();
+    const idx = list.findIndex(c => c.id === item.id);
+    if (idx > -1) {
+      list[idx] = { ...list[idx], ...item };
+    } else if (list.length < 3) {
+      if (!item.id) item.id = 'hero-' + Date.now().toString(36);
+      list.push(item);
+    }
+    this.saveHeroCarousel(list);
+    return item;
   }
 };
 
