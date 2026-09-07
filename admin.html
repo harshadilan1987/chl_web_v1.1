@@ -248,6 +248,9 @@
         <div class="admin-nav-item" data-tab="tab-coconut-harvest">
           <span>🥥</span> Coconut Harvest (5 Items)
         </div>
+        <div class="admin-nav-item" data-tab="tab-hero-carousel">
+          <span>🖼️</span> Home Carousel (Max 3)
+        </div>
         <div class="admin-nav-item" data-tab="tab-sample-kits">
           <span>🎁</span> Sample Evaluation Kits
         </div>
@@ -438,6 +441,19 @@
             <tbody id="admin-categories-tbody"></tbody>
           </table>
         </div>
+      </section>
+
+      <!-- HERO CAROUSEL TAB -->
+      <section id="tab-hero-carousel" class="admin-tab-content" style="display: none;">
+        <div class="admin-header-bar">
+          <div>
+            <h2 style="font-size: 1.4rem; color: var(--color-primary-dark); margin-bottom: 0.2rem;">Home Carousel (Max 3)</h2>
+            <span style="font-size: 0.85rem; color: var(--color-text-muted);">Manage the 3 main banners on the homepage.</span>
+          </div>
+        </div>
+
+        <!-- Rendered by JS -->
+        <div id="admin-hero-carousel-container" class="harvest-edit-grid"></div>
       </section>
 
       <!-- 6. COMPANY BLOG TAB -->
@@ -763,6 +779,46 @@
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
           <button type="button" class="btn btn-outline btn-sm" onclick="closeSampleKitModal()">Cancel</button>
           <button type="submit" class="btn btn-primary btn-sm">Save Sample Kit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: Edit Hero Carousel Item
+       ========================================================================= -->
+  <div id="hero-edit-modal" class="modal-overlay" role="dialog">
+    <div class="modal-card" style="max-width: 700px; padding: 2rem;">
+      <button class="modal-close-btn" onclick="closeHeroEditModal()">✕</button>
+      <h2 style="font-size: 1.5rem; color: var(--color-primary-dark); margin-bottom: 1.25rem;">Edit Home Banner</h2>
+      <form id="hero-form">
+        <input type="hidden" id="edit-hero-id">
+        <div class="form-group">
+          <label class="form-label">Banner Image URL *</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="url" id="edit-hero-image" class="form-control" required placeholder="https://...">
+            <label class="btn btn-outline" style="cursor: pointer; flex-shrink: 0; margin: 0;">
+              Browse
+              <input type="file" id="hero-img-upload" accept="image/*" style="display: none;">
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Topic / Eyebrow Text *</label>
+          <input type="text" id="edit-hero-eyebrow" class="form-control" required placeholder="100% Certified Organic...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Main Heading (Title) *</label>
+          <input type="text" id="edit-hero-title" class="form-control" required placeholder="Use <br> for line breaks and <em> for italics...">
+          <small style="color: var(--color-text-muted); display: block; margin-top: 4px;">HTML allowed: <code>&lt;br&gt;</code> for new lines, <code>&lt;em&gt;</code> for stylish text.</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description / Wording *</label>
+          <textarea id="edit-hero-desc" class="form-control" rows="4" required placeholder="Short description..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+          <button type="button" class="btn btn-outline" onclick="closeHeroEditModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Banner</button>
         </div>
       </form>
     </div>
