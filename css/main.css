@@ -32,6 +32,11 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
+  background-color: var(--color-bg);
+  background-image: url('../assets/images/decorations/ceylon-mandala-seamless-pattern.png');
+  background-repeat: repeat;
+  background-size: 580px 580px;
+  background-attachment: fixed;
 }
 
 /* Accessible focus styles */
@@ -128,11 +133,17 @@ ul, ol {
 }
 
 .section-muted {
-  background-color: var(--color-surface-muted);
+  background-color: rgba(242, 239, 231, 0.75);
+  background-image: url('../assets/images/decorations/ceylon-mandala-seamless-pattern.png');
+  background-repeat: repeat;
+  background-size: 580px 580px;
 }
 
 .section-dark {
   background-color: var(--color-surface-dark);
+  background-image: url('../assets/images/decorations/ceylon-mandala-gold-pattern.png');
+  background-repeat: repeat;
+  background-size: 580px 580px;
   color: var(--color-text-inverse);
 }
 
@@ -396,3 +407,63 @@ textarea.form-control {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* ==========================================================================
+   Ceylon Heritage Mandala Watermark Accents (Close to 90% transparent)
+   ========================================================================== */
+.watermark-mandala {
+  position: absolute;
+  width: clamp(300px, 34vw, 520px);
+  height: clamp(300px, 34vw, 520px);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.08; /* Close to 90% transparent */
+  user-select: none;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.04));
+  transition: transform 0.8s ease, opacity 0.4s ease;
+}
+
+.watermark-mandala-right {
+  top: 50%;
+  right: -140px;
+  transform: translateY(-50%) rotate(12deg);
+}
+
+.watermark-mandala-left {
+  top: 45%;
+  left: -140px;
+  transform: translateY(-50%) rotate(-12deg);
+}
+
+.watermark-mandala-top-right {
+  top: -80px;
+  right: -80px;
+  transform: rotate(20deg);
+}
+
+.watermark-mandala-bottom-left {
+  bottom: -80px;
+  left: -80px;
+  transform: rotate(-20deg);
+}
+
+/* Ensure section containers sit above background watermarks */
+.section > .container,
+.section > .container-fluid {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .watermark-mandala {
+    opacity: 0.05;
+    width: 260px;
+    height: 260px;
+  }
+  .watermark-mandala-right { right: -90px; }
+  .watermark-mandala-left { left: -90px; }
+}
+

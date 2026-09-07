@@ -1584,7 +1584,10 @@ body {
    13. Modern Footer
    -------------------------------------------------------------------------- */
 .site-footer {
-  background: #061a10;
+  background-color: #061a10;
+  background-image: url('../assets/images/decorations/ceylon-mandala-gold-pattern.png');
+  background-repeat: repeat;
+  background-size: 580px 580px;
   color: rgba(255, 255, 255, 0.8);
   padding-top: 5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -2522,6 +2525,9 @@ body {
 .quote-banner-card {
   position: relative;
   background: linear-gradient(135deg, var(--color-primary-dark) 0%, #173d22 100%);
+  background-image: url('../assets/images/decorations/ceylon-mandala-gold-pattern.png');
+  background-repeat: repeat;
+  background-size: 520px 520px;
   border-radius: var(--radius-xl);
   padding: clamp(2.5rem, 5vw, 3.75rem);
   color: #ffffff;
