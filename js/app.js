@@ -169,6 +169,7 @@ function renderCategoryTabs() {
   container.innerHTML = `
     <button class="tab-btn ${activeCategory === 'all' ? 'active' : ''}" data-category="all">All Products (100+)</button>
   ` + categories.map(cat => `
+    ${(cat.name.includes('Fruits') || cat.id === 'fruits') ? '<div style="flex-basis: 100%; height: 0; margin: 0;"></div>' : ''}
     <button class="tab-btn ${activeCategory === cat.id ? 'active' : ''}" data-category="${cat.id}">
       ${cat.icon || ''} ${cat.name}
     </button>
@@ -931,3 +932,4 @@ function initLanguageSelector() {
     showToast(greetings[val] || greetings.en, 'info');
   });
 }
+
