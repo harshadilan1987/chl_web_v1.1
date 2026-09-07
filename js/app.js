@@ -762,41 +762,10 @@ function initHeroCarousel() {
   const track = document.getElementById('hero-slides-track');
   const dotsContainer = document.getElementById('carousel-dots');
   
-  if (!track || typeof CHL_DB === 'undefined') return;
+  if (!track) return;
 
-  const slidesData = CHL_DB.getHeroCarousel();
-  if (!slidesData || slidesData.length === 0) return;
-
-  track.innerHTML = slidesData.map((slide, idx) => `
-    <div class="hero-slide hero-slide-grad-${(idx % 3) + 1}" data-slide="${idx}">
-      <div class="hero-slide-text-col">
-        <span class="hero-slide-eyebrow">${slide.eyebrow}</span>
-        <h1 class="hero-slide-title">${slide.title}</h1>
-        <p class="hero-slide-desc">${slide.desc}</p>
-        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-          <a href="#products-section" class="btn btn-accent btn-lg">
-            <span>Explore 100+ Products</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </a>
-          <button class="btn btn-outline-white btn-lg" onclick="Cart.openDrawer()">
-            <span>Order Testing Samples</span>
-          </button>
-        </div>
-      </div>
-      <div class="hero-slide-image-col">
-        <img class="hero-slide-product-img" src="${slide.image}" alt="Slide ${idx+1}" loading="${idx === 0 ? 'eager' : 'lazy'}">
-      </div>
-    </div>
-  `).join('');
-
-  if (dotsContainer) {
-    dotsContainer.innerHTML = slidesData.map((_, idx) => `
-      <button class="carousel-dot ${idx === 0 ? 'active' : ''}" data-dot="${idx}" aria-label="Slide ${idx+1}"></button>
-    `).join('');
-  }
-
-  const slides = document.querySelectorAll('.hero-slide');
-  const dots = document.querySelectorAll('.carousel-dot');
+  const slides = track.querySelectorAll('.hero-slide');
+  const dots = dotsContainer ? dotsContainer.querySelectorAll('.carousel-dot') : [];
   const prevBtn = document.getElementById('carousel-prev');
   const nextBtn = document.getElementById('carousel-next');
 

@@ -96,7 +96,6 @@ function loadAllAdminData() {
   renderOverviewStats();
   renderProductsTable();
   renderCoconutHarvestAdmin();
-  renderHeroCarouselAdmin();
   renderSampleKitsAdmin();
   renderCategoriesTable();
   renderBlogTable();
@@ -1091,108 +1090,7 @@ function saveCloudSettings() {
   alert('Cloud settings updated! The connectors are pre-configured to sync seamlessly.');
 }
 window.saveCloudSettings = saveCloudSettings;
-/* --------------------------------------------------------------------------
-   8. Hero Carousel Manager
-   -------------------------------------------------------------------------- */
-function renderHeroCarouselAdmin() {
-  const container = document.getElementById('admin-hero-carousel-container');
-  if (!container) return;
 
-  const items = CHL_DB.getHeroCarousel();
-  container.innerHTML = items.map((item, idx) => `
-    <div class="harvest-edit-card" style="position: relative;">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border-light); padding-bottom: 0.5rem; margin-bottom: 1rem;">
-        <strong style="color: var(--color-primary-dark); font-size: 1.05rem;">Slide #\</strong>
-        <button class="btn btn-primary btn-sm" onclick="openHeroEditModal('\')">?? Edit Slide</button>
-      </div>
-      <img src="\" alt="\" style="width: 100%; height: 160px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 1rem;">
-      <div style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>Topic:</strong> \</div>
-      <div style="font-size: 0.95rem; font-weight: 700; color: var(--color-primary-dark); margin-bottom: 0.5rem;" innerHTML="\">\</div>
-      <div style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">\</div>
-    </div>
-  `).join('');
-
-  if (items.length < 3) {
-    container.innerHTML += `
-      <div class="harvest-edit-card" style="display: flex; align-items: center; justify-content: center; min-height: 250px; background: rgba(0,0,0,0.02); border: 2px dashed var(--color-border-light); cursor: pointer;" onclick="openHeroEditModal('')">
-        <div style="text-align: center;">
-          <div style="font-size: 2rem; color: var(--color-border); margin-bottom: 0.5rem;">+</div>
-          <span style="font-weight: 600; color: var(--color-text-subtle);">Add New Banner</span>
-        </div>
-      </div>
-    `;
-  }
-}
-window.renderHeroCarouselAdmin = renderHeroCarouselAdmin;
-
-function openHeroEditModal(id) {
-  const modal = document.getElementById('hero-edit-modal');
-  if (!modal) return;
-  const form = document.getElementById('hero-form');
-  form.reset();
-
-  if (id) {
-    const items = CHL_DB.getHeroCarousel();
-    const item = items.find(i => i.id === id);
-    if (item) {
-      document.getElementById('edit-hero-id').value = item.id;
-      document.getElementById('edit-hero-eyebrow').value = item.eyebrow || '';
-      document.getElementById('edit-hero-title').value = item.title || '';
-      document.getElementById('edit-hero-desc').value = item.desc || '';
-      document.getElementById('edit-hero-image').value = item.image || '';
-    }
-  } else {
-    document.getElementById('edit-hero-id').value = '';
-  }
-
-  modal.classList.add('active');
-}
-window.openHeroEditModal = openHeroEditModal;
-
-function closeHeroEditModal() {
-  const modal = document.getElementById('hero-edit-modal');
-  if (modal) modal.classList.remove('active');
-}
-window.closeHeroEditModal = closeHeroEditModal;
-
-document.getElementById('hero-form')?.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const id = document.getElementById('edit-hero-id').value;
-  const eyebrow = document.getElementById('edit-hero-eyebrow').value;
-  const title = document.getElementById('edit-hero-title').value;
-  const desc = document.getElementById('edit-hero-desc').value;
-  const image = document.getElementById('edit-hero-image').value;
-
-  try {
-    CHL_DB.saveHeroCarouselItem({ id, eyebrow, title, desc, image });
-    closeHeroEditModal();
-    renderHeroCarouselAdmin();
-    showToast('Banner slide saved successfully!', 'success');
-  } catch(err) {
-    console.error(err);
-    if (err.name === 'QuotaExceededError' || err.message.includes('quota')) {
-      alert('Error: Storage limit exceeded! The uploaded photo is too large. Please use the URL option or upload a smaller image.');
-    } else {
-      alert('An error occurred while saving the banner.');
-    }
-  }
-});
-
-document.getElementById('hero-img-upload')?.addEventListener('change', (e) => {
-  if (e.target.files && e.target.files[0]) {
-    if (typeof resizeImageToDataUrl === 'function') {
-      resizeImageToDataUrl(e.target.files[0], 1200, (compressedData) => {
-        document.getElementById('edit-hero-image').value = compressedData;
-      });
-    } else {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        document.getElementById('edit-hero-image').value = ev.target.result;
-      };
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  }
-});
 
 
 function optimizeDatabaseImages() {
