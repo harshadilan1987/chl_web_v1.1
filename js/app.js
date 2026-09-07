@@ -153,11 +153,13 @@ function initProductCatalog() {
     renderProductCatalog();
     renderSampleBundles();
     renderHomeBlogPreview();
+    renderCoconutHarvest();
   });
 
   renderProductCatalog();
   renderSampleBundles();
   renderHomeBlogPreview();
+  renderCoconutHarvest();
 }
 
 function renderCategoryTabs() {
@@ -537,6 +539,28 @@ function renderSampleBundles() {
     `;
   }).join('');
 }
+
+function renderCoconutHarvest() {
+  const container = document.getElementById('coconut-photo-line-grid');
+  if (!container || typeof CHL_DB === 'undefined' || typeof CHL_DB.getCoconutHarvestItems !== 'function') return;
+
+  const items = CHL_DB.getCoconutHarvestItems();
+  if (!items || items.length === 0) return;
+
+  container.innerHTML = items.map(item => `
+    <div class="coconut-photo-card" onclick="filterCategoryFromFooter('coconut')">
+      <div class="coconut-photo-img-wrap">
+        ${item.badge ? `<span class="coconut-photo-badge">${item.badge}</span>` : ''}
+        <img src="${item.image || 'assets/images/logo/chl-logo.jpg'}" alt="${item.title || 'Ceylon Organic Coconut Product'}" loading="lazy" onerror="this.src='assets/images/logo/chl-logo.jpg'">
+      </div>
+      <div class="coconut-photo-info">
+        <h3 class="coconut-photo-title">${item.title || ''}</h3>
+        <span class="coconut-photo-sub">${item.sub || ''}</span>
+      </div>
+    </div>
+  `).join('');
+}
+window.renderCoconutHarvest = renderCoconutHarvest;
 
 function addToSampleCart(prod) {
   if (window.Cart) {

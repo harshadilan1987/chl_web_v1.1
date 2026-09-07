@@ -866,28 +866,49 @@ window.previewHarvestImg = previewHarvestImg;
 function handleHarvestFileChange(idx, input) {
   if (!input.files || !input.files[0]) return;
   const file = input.files[0];
-  const reader = new FileReader();
-  reader.onload = (e) => {
+  resizeImageToDataUrl(file, 800, (compressedData) => {
     const card = document.querySelector(`.harvest-edit-card[data-index="${idx}"]`);
     if (card) {
       const imgInput = card.querySelector('.harvest-image');
-      if (imgInput) imgInput.value = e.target.result;
+      if (imgInput) imgInput.value = compressedData;
     }
     const preview = document.getElementById(`harvest-img-prev-${idx}`);
-    if (preview) preview.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+    if (preview) preview.src = compressedData;
+  });
 }
 window.handleHarvestFileChange = handleHarvestFileChange;
 
 function saveCoconutHarvestForm() {
   const cards = document.querySelectorAll('.harvest-edit-card');
+  if (!cards.length) {
+    alert('No harvest items found on page to save.');
+    return;
+  }
+
   const items = [];
-  cards.forEach((card, idx) => {
-    const title = card.querySelector('.harvest-title')?.value.trim() || `Product ${idx + 1}`;
-    const sub = card.querySelector('.harvest-sub')?.value.trim() || '';
+  for (let idx = 0; idx < cards.length; idx++) {
+    const card = cards[idx];
+    const title = card.querySelector('.harvest-title')?.value.trim();
+    const sub = card.querySelector('.harvest-sub')?.value.trim();
     const badge = card.querySelector('.harvest-badge')?.value.trim() || '';
-    const image = card.querySelector('.harvest-image')?.value.trim() || 'assets/images/logo/chl-logo.jpg';
+    const image = card.querySelector('.harvest-image')?.value.trim();
+
+    if (!title) {
+      alert(`Please enter a Product Title for Slot #${idx + 1}`);
+      card.querySelector('.harvest-title')?.focus();
+      return;
+    }
+    if (!sub) {
+      alert(`Please enter Subtitle / Extraction Tech for Slot #${idx + 1}`);
+      card.querySelector('.harvest-sub')?.focus();
+      return;
+    }
+    if (!image) {
+      alert(`Please enter Card Image Path / URL for Slot #${idx + 1}`);
+      card.querySelector('.harvest-image')?.focus();
+      return;
+    }
+
     items.push({
       id: `harvest-0${idx + 1}`,
       title,
@@ -896,10 +917,22 @@ function saveCoconutHarvestForm() {
       image,
       category: 'coconut'
     });
-  });
+  }
 
-  CHL_DB.saveCoconutHarvestItems(items);
-  alert('All 5 Coconut Harvest Line items have been successfully saved and updated on the home page!');
+  try {
+    CHL_DB.saveCoconutHarvestItems(items);
+    if (typeof showToast === 'function') {
+      showToast('All 5 Coconut Harvest Line items saved successfully!', 'success');
+    }
+    alert('All 5 Coconut Harvest Line items have been successfully saved and updated on the home page!');
+  } catch (err) {
+    console.error(err);
+    if (err.name === 'QuotaExceededError' || (err.message && err.message.includes('quota'))) {
+      alert('Error: Storage limit exceeded! One or more uploaded photos are too large. Please use image URLs or click "Optimize Storage" in the Overview tab.');
+    } else {
+      alert('An error occurred while saving harvest items: ' + err.message);
+    }
+  }
 }
 window.saveCoconutHarvestForm = saveCoconutHarvestForm;
 
