@@ -243,7 +243,7 @@ const CHL_DEFAULT_HERO_CAROUSEL = [
     eyebrow: "Millennia of Heritage • Heartfelt Warmth",
     title: "Ceylon Hospitality<br><em>&amp; Ancient Food</em><br>Processing Wisdom",
     desc: "Rooted in over two millennia of culinary culture, from our ancestral granite Sekkuwa cold stone-squeezing to natural sun curation. We unite Sri Lanka's world-famous heartfelt hospitality and traditional craftsmanship with modern cleanroom HACCP export standards.",
-    image: "assets/images/banner/carousel-ceylon-hospitality.jpg"
+    image: "assets/images/banner/carousel-ceylon-hospitality.jpeg"
   }
 ];
 

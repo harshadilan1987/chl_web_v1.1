@@ -933,3 +933,33 @@ function initLanguageSelector() {
   });
 }
 
+// --- ONE TIME CAROUSEL SEED ---
+if (!localStorage.getItem('chl_carousel_seeded_v3')) {
+  const seedCarousel = [
+    {
+      id: "hero-01",
+      eyebrow: "100% CERTIFIED ORGANIC • CEYLON AGRICULTURE",
+      title: "Pure Bounty of<br><em>Sri Lankan Organic</em><br>Harvest",
+      desc: "Sourced directly from certified organic smallholder networks and bio-diverse estates. From pristine cold-pressed Virgin Coconut Oil and hand-peeled True Ceylon Cinnamon to organic turmeric, black pepper, and tropical fruits—cultivated without synthetic inputs, chemicals, or GMOs.",
+      image: "assets/images/banner/carousel-organic-harvest.jpg"
+    },
+    {
+      id: "hero-02",
+      eyebrow: "EQUATORIAL PARADISE • LUSH ISLAND ECOSYSTEMS",
+      title: "Enriched by Ceylon's<br><em>Tropical Climate</em><br>& Island Nature",
+      desc: "Surrounded by the warm Indian Ocean and bathed in equatorial sunshine with dual monsoonal rains, Sri Lanka's fertile microclimates nurture botanicals with peerless aroma, high active nutritional density, and therapeutic essential oil potency.",
+      image: "assets/images/banner/carousel-tropical-climate.jpg"
+    },
+    {
+      id: "hero-03",
+      eyebrow: "MILLENNIA OF HERITAGE • HEARTFELT WARMTH",
+      title: "Ceylon Hospitality<br><em>& Ancient Food</em><br>Processing Wisdom",
+      desc: "Rooted in over two millennia of culinary culture, from our ancestral granite Sekkuwa cold stone-squeezing to natural sun curation. We unite Sri Lanka's world-famous heartfelt hospitality and traditional craftsmanship with modern cleanroom HACCP export standards.",
+      image: "assets/images/banner/carousel-ceylon-hospitality.jpeg"
+    }
+  ];
+  localStorage.setItem('chl_hero_carousel', JSON.stringify(seedCarousel));
+  localStorage.setItem('chl_carousel_seeded_v3', 'true');
+}
+// -----------------------------
+
