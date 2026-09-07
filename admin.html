@@ -139,6 +139,98 @@
     .stock-limited { background: #fef3c7; color: #92400e; }
     .stock-out { background: #fee2e2; color: #991b1b; }
 
+    /* Interactive Availability Toggle Switch */
+    .availability-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 10px 4px 6px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+      outline: none;
+      white-space: nowrap;
+    }
+    .availability-toggle:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      filter: brightness(0.96);
+    }
+    .availability-toggle:active {
+      transform: scale(0.96);
+    }
+    .availability-toggle .toggle-track {
+      position: relative;
+      width: 28px;
+      height: 16px;
+      border-radius: 16px;
+      display: inline-block;
+      flex-shrink: 0;
+      transition: background 0.25s ease;
+    }
+    .availability-toggle .toggle-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .availability-toggle.stock-in {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+    .availability-toggle.stock-in .toggle-track {
+      background: #16a34a;
+    }
+    .availability-toggle.stock-in .toggle-thumb {
+      transform: translateX(12px);
+    }
+
+    .availability-toggle.stock-seasonal {
+      background: #e0f2fe;
+      color: #0369a1;
+      border-color: #bae6fd;
+    }
+    .availability-toggle.stock-seasonal .toggle-track {
+      background: #0284c7;
+    }
+    .availability-toggle.stock-seasonal .toggle-thumb {
+      transform: translateX(8px);
+    }
+
+    .availability-toggle.stock-limited {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
+    .availability-toggle.stock-limited .toggle-track {
+      background: #d97706;
+    }
+    .availability-toggle.stock-limited .toggle-thumb {
+      transform: translateX(4px);
+    }
+
+    .availability-toggle.stock-out {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+    .availability-toggle.stock-out .toggle-track {
+      background: #9ca3af;
+    }
+    .availability-toggle.stock-out .toggle-thumb {
+      transform: translateX(0px);
+    }
+
     .btn-order {
       padding: 4px 8px;
       background: #f1f5f9;
