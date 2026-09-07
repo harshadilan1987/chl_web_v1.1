@@ -1,3 +1,26 @@
+function resizeImageToDataUrl(file, maxWidth, callback) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      callback(canvas.toDataURL('image/jpeg', 0.65));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
 /**
  * Celebration Holdings (Pvt) Ltd - Admin Portal Engine
  * Full CRUD for Products, Categories, Blog Posts & Data Sync
@@ -506,15 +529,13 @@ function handlePostPhotosUpload(input) {
   let loaded = 0;
 
   filesToAdd.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      currentPostPhotos.push(e.target.result);
+    resizeImageToDataUrl(file, 1024, (resizedDataUrl) => {
+      currentPostPhotos.push(resizedDataUrl);
       loaded++;
       if (loaded === filesToAdd.length) {
         renderPostPhotosManager();
       }
-    };
-    reader.readAsDataURL(file);
+    });
   });
 
   input.value = '';
@@ -616,10 +637,19 @@ document.getElementById('blog-form')?.addEventListener('submit', (e) => {
     content: document.getElementById('edit-post-content').value.trim()
   };
 
-  CHL_DB.savePost(postData);
-  closeBlogEditModal();
-  renderBlogTable();
-  alert('Blog article saved successfully!');
+  try {
+    CHL_DB.savePost(postData);
+    closeBlogEditModal();
+    renderBlogTable();
+    alert('Blog article saved successfully!');
+  } catch (err) {
+    console.error(err);
+    if (err.name === 'QuotaExceededError' || err.message.includes('quota')) {
+      alert('Error: Storage limit exceeded! The uploaded photos are too large. Please remove some photos or use smaller images (under 500KB).');
+    } else {
+      alert('An error occurred while saving the article: ' + err.message);
+    }
+  }
 });
 
 function deletePostConfirm(id) {
@@ -1149,3 +1179,5 @@ document.getElementById('hero-img-upload')?.addEventListener('change', (e) => {
     reader.readAsDataURL(e.target.files[0]);
   }
 });
+
+
