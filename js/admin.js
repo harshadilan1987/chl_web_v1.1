@@ -188,7 +188,12 @@ function renderProductsTable() {
           <span style="font-weight: 700; color: #c68b2c;">$${parseFloat(p.samplePriceUSD || 0).toFixed(2)}</span>
         </td>
         <td>
-          <span class="stock-badge ${stockClass}">${p.availability || 'In Stock'}</span>
+          <button type="button" class="availability-toggle ${stockClass}" onclick="toggleProductAvailability('${p.id}')" title="Click to cycle availability: In Stock → Seasonal Harvest → Limited Batch → Out of Stock">
+            <span class="toggle-track">
+              <span class="toggle-thumb"></span>
+            </span>
+            <span>${p.availability || 'In Stock'}</span>
+          </button>
         </td>
         <td>
           <div style="display: flex; flex-direction: column; gap: 2px; font-size: 0.75rem;">
@@ -210,6 +215,25 @@ function renderProductsTable() {
   document.getElementById('admin-cat-filter')?.addEventListener('change', renderProductsTable);
   document.getElementById('admin-stock-filter')?.addEventListener('change', renderProductsTable);
 }
+
+const AVAILABILITY_CYCLE = ['In Stock', 'Seasonal Harvest', 'Limited Batch', 'Out of Stock'];
+
+function toggleProductAvailability(id) {
+  const product = CHL_DB.getProductById(id);
+  if (!product) return;
+
+  const currentIdx = AVAILABILITY_CYCLE.indexOf(product.availability);
+  const nextIdx = (currentIdx === -1 ? 0 : (currentIdx + 1) % AVAILABILITY_CYCLE.length);
+  const nextStatus = AVAILABILITY_CYCLE[nextIdx];
+  product.availability = nextStatus;
+
+  CHL_DB.saveProduct(product);
+  renderProductsTable();
+  if (typeof showToast === 'function') {
+    showToast(`${product.name}: ${nextStatus}`, 'success');
+  }
+}
+window.toggleProductAvailability = toggleProductAvailability;
 
 function populateCategoryDropdowns() {
   const categories = CHL_DB.getCategories();
