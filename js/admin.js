@@ -1163,20 +1163,34 @@ document.getElementById('hero-form')?.addEventListener('submit', (e) => {
   const desc = document.getElementById('edit-hero-desc').value;
   const image = document.getElementById('edit-hero-image').value;
 
-  CHL_DB.saveHeroCarouselItem({ id, eyebrow, title, desc, image });
-  
-  closeHeroEditModal();
-  renderHeroCarouselAdmin();
-  showToast('Banner slide saved successfully!', 'success');
+  try {
+    CHL_DB.saveHeroCarouselItem({ id, eyebrow, title, desc, image });
+    closeHeroEditModal();
+    renderHeroCarouselAdmin();
+    showToast('Banner slide saved successfully!', 'success');
+  } catch(err) {
+    console.error(err);
+    if (err.name === 'QuotaExceededError' || err.message.includes('quota')) {
+      alert('Error: Storage limit exceeded! The uploaded photo is too large. Please use the URL option or upload a smaller image.');
+    } else {
+      alert('An error occurred while saving the banner.');
+    }
+  }
 });
 
 document.getElementById('hero-img-upload')?.addEventListener('change', (e) => {
   if (e.target.files && e.target.files[0]) {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      document.getElementById('edit-hero-image').value = ev.target.result;
-    };
-    reader.readAsDataURL(e.target.files[0]);
+    if (typeof resizeImageToDataUrl === 'function') {
+      resizeImageToDataUrl(e.target.files[0], 1200, (compressedData) => {
+        document.getElementById('edit-hero-image').value = compressedData;
+      });
+    } else {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById('edit-hero-image').value = ev.target.result;
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
   }
 });
 
@@ -1290,3 +1304,4 @@ function optimizeDatabaseImages() {
   }
 }
 window.optimizeDatabaseImages = optimizeDatabaseImages;
+
