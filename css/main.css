@@ -141,10 +141,32 @@ ul, ol {
 
 .section-dark {
   background-color: var(--color-surface-dark);
-  background-image: url('../assets/images/decorations/ceylon-mandala-gold-pattern.png');
-  background-repeat: repeat;
-  background-size: 580px 580px;
   color: var(--color-text-inverse);
+  position: relative;
+  overflow: hidden;
+}
+
+#payment-section {
+  background-color: var(--color-surface-dark);
+  position: relative;
+  overflow: hidden;
+}
+
+#payment-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('../assets/images/decorations/botanical-lines-white.png');
+  background-repeat: repeat;
+  background-size: 640px auto;
+  opacity: 0.13; /* Very light transparent (~87% transparent) white botanical line art as per requested design */
+  pointer-events: none;
+  z-index: 0;
+}
+
+#payment-section > .container {
+  position: relative;
+  z-index: 1;
 }
 
 .section-dark h1,
