@@ -137,6 +137,10 @@
           <span>📰 Company Blog</span>
         </a>
 
+        <a href="sales.html" class="top-contact-item" style="color: #f6d89b; font-weight: 600;">
+          <span>📋 Sales Portal</span>
+        </a>
+
         <a href="admin.html" class="top-contact-item" style="opacity: 0.8;">
           <span>⚙️ Staff Portal</span>
         </a>
@@ -209,6 +213,7 @@
       <a href="#team-section" class="mobile-nav-link">Board of Management</a>
       <a href="#payment-section" class="mobile-nav-link">Online Payment &amp; Samples</a>
       <a href="blog.html" class="mobile-nav-link" style="color: var(--color-accent); font-weight: 700;">📰 Company Blog &amp; Exhibitions</a>
+      <a href="sales.html" class="mobile-nav-link" style="color: #c68b2c; font-weight: 700;">📋 Sales &amp; Orders Portal</a>
       <a href="admin.html" class="mobile-nav-link">⚙️ Staff Admin Portal</a>
       <a href="#contact-section" class="mobile-nav-link">Contact &amp; Global Inquiries</a>
     </nav>
@@ -1401,7 +1406,8 @@
         <div style="font-size:0.82rem; opacity:0.75; margin-top:0.35rem;">
           <a href="privacy-policy.html" style="color:inherit;">Privacy Policy</a> &nbsp;•&nbsp;
           <a href="terms-and-conditions.html" style="color:inherit;">Terms &amp; Conditions</a> &nbsp;•&nbsp;
-          <a href="refund-policy.html" style="color:inherit;">Refund Policy</a>
+          <a href="refund-policy.html" style="color:inherit;">Refund Policy</a> &nbsp;•&nbsp;
+          <a href="sales.html" style="color: #c68b2c; font-weight: 600;">Sales Portal</a>
         </div>
         <div class="social-links">
           <a href="https://www.facebook.com/celebrationholdings1" target="_blank" rel="noopener" class="social-link-btn" title="Facebook">
@@ -1566,49 +1572,74 @@
 
       <form id="checkout-form">
         <!-- Shipping & Customer Details -->
-        <h4 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--color-primary);">1. Destination &amp; Consignee Details</h4>
+        <h4 style="font-size: 1.05rem; margin-bottom: 0.5rem; color: var(--color-primary);">1. Destination &amp; Consignee Details</h4>
+        <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">
+          Direct online checkout is available for deliveries within Sri Lanka. For overseas destinations, submit for direct air freight calculation.
+        </p>
+
         <div class="grid-2" style="gap: 1rem; margin-bottom: 0;">
           <div class="form-group">
             <label for="cust-name" class="form-label">Contact Person Name *</label>
-            <input type="text" id="cust-name" class="form-control" placeholder="e.g. Satoshi Tanaka" required>
+            <input type="text" id="cust-name" class="form-control" placeholder="e.g. Asela Perera" required>
           </div>
           <div class="form-group">
-            <label for="cust-company" class="form-label">Company / Importer Name</label>
-            <input type="text" id="cust-company" class="form-control" placeholder="e.g. Tokyo Organic Trading Co.">
+            <label for="cust-company" class="form-label">Company / Organization</label>
+            <input type="text" id="cust-company" class="form-control" placeholder="e.g. Bio Export Labs">
           </div>
         </div>
 
         <div class="grid-2" style="gap: 1rem; margin-bottom: 0;">
           <div class="form-group">
-            <label for="cust-email" class="form-label">Email Address (For Receipt & Tracking) *</label>
-            <input type="email" id="cust-email" class="form-control" placeholder="tanaka@company.jp" required>
+            <label for="cust-email" class="form-label">Email Address (For Invoices &amp; Tracking) *</label>
+            <input type="email" id="cust-email" class="form-control" placeholder="asela@example.com" required>
           </div>
           <div class="form-group">
-            <label for="cust-phone" class="form-label">Phone / WhatsApp *</label>
-            <input type="tel" id="cust-phone" class="form-control" placeholder="+81 3 1234 5678" required>
+            <label for="cust-phone" class="form-label">Contact Number (Phone / WhatsApp) *</label>
+            <input type="tel" id="cust-phone" class="form-control" placeholder="e.g. 077 123 4567 or +94 77 123 4567" required>
+          </div>
+        </div>
+
+        <div class="grid-2" style="gap: 1rem; margin-bottom: 0;">
+          <div class="form-group">
+            <label for="cust-country" class="form-label">Country / Destination *</label>
+            <select id="cust-country" class="form-control" required onchange="PaymentGateway.handleCountryChange(this.value)">
+              <option value="Sri Lanka" selected>🇱🇰 Sri Lanka (Domestic Delivery)</option>
+              <option value="United States">🇺🇸 United States (USA)</option>
+              <option value="United Kingdom">🇬🇧 United Kingdom (UK)</option>
+              <option value="Germany">🇩🇪 Germany (Deutschland)</option>
+              <option value="Japan">🇯🇵 Japan (日本)</option>
+              <option value="Australia">🇦🇺 Australia</option>
+              <option value="France">🇫🇷 France</option>
+              <option value="Netherlands">🇳🇱 Netherlands</option>
+              <option value="United Arab Emirates">🇦🇪 United Arab Emirates (UAE)</option>
+              <option value="Singapore">🇸🇬 Singapore</option>
+              <option value="Canada">🇨🇦 Canada</option>
+              <option value="India">🇮🇳 India</option>
+              <option value="Other">🌍 Other Global Destination</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="cust-postal" class="form-label" id="label-cust-postal">Postal Code (within Sri Lanka) *</label>
+            <input type="text" id="cust-postal" class="form-control" placeholder="e.g. 00100 (Colombo) / 10107" required>
           </div>
         </div>
 
         <div class="grid-2" style="gap: 1rem; margin-bottom: 0;">
           <div class="form-group">
             <label for="cust-address" class="form-label">Delivery Street Address *</label>
-            <input type="text" id="cust-address" class="form-control" placeholder="Street name, building, suite" required>
+            <input type="text" id="cust-address" class="form-control" placeholder="House/Building No., Street name" required>
           </div>
           <div class="form-group">
-            <label for="cust-country" class="form-label">Country / Destination *</label>
-            <select id="cust-country" class="form-control" required>
-              <option value="Japan">Japan (日本)</option>
-              <option value="Germany">Germany (Deutschland)</option>
-              <option value="United Kingdom">United Kingdom (UK)</option>
-              <option value="Australia">Australia</option>
-              <option value="United States">United States (USA)</option>
-              <option value="France">France</option>
-              <option value="Netherlands">Netherlands</option>
-              <option value="Sri Lanka">Sri Lanka</option>
-              <option value="Other">Other Global Destination</option>
-            </select>
+            <label for="cust-city" class="form-label">City / Town / District *</label>
+            <input type="text" id="cust-city" class="form-control" placeholder="e.g. Colombo, Kandy, Gampaha" required>
           </div>
         </div>
+
+        <!-- Dynamic Destination Notice -->
+        <div id="checkout-destination-notice" style="margin-block: 0.75rem;"></div>
+
+        <!-- Payment Methods Wrapper (Hidden for overseas freight request) -->
+        <div id="checkout-payment-section">
 
         <!-- Payment Method 1: Credit/Debit Card -->
         <div id="panel-card" class="payment-method-panel" style="margin-top: 1.5rem;">
@@ -1652,28 +1683,34 @@
             A formal commercial proforma invoice will be dispatched immediately with SWIFT BIC routing details for <strong>Commercial Bank of Ceylon PLC</strong> or <strong>Hatton National Bank PLC</strong>, Sri Lanka.
           </p>
         </div>
+        </div><!-- /#checkout-payment-section -->
 
         <!-- Order Breakdown in Modal -->
         <div style="margin-top: 1.5rem; background: var(--color-surface-muted); padding: 1.25rem; border-radius: var(--radius-md);">
-          <h5 style="margin-bottom: 0.75rem; color: var(--color-primary-dark);">Order Items:</h5>
+          <h5 style="margin-bottom: 0.75rem; color: var(--color-primary-dark);">Sample Order Items:</h5>
           <div id="modal-order-items-list" style="margin-bottom: 1rem;"></div>
           <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.35rem;">
-            <span>Subtotal:</span>
+            <span>Sample Subtotal:</span>
             <strong id="modal-subtotal-val">$0.00</strong>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.35rem;">
-            <span>Express Courier Shipping:</span>
-            <strong id="modal-shipping-val">$18.00</strong>
+            <span id="modal-shipping-label">Islandwide Express Shipping:</span>
+            <strong id="modal-shipping-val">$3.00</strong>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 1.15rem; font-weight: 800; color: var(--color-primary); padding-top: 0.5rem; border-top: 1px solid var(--color-border);">
-            <span>Total Payable:</span>
-            <span id="modal-total-val">$18.00</span>
+            <span id="modal-total-label">Total Payable:</span>
+            <span id="modal-total-val">$3.00</span>
           </div>
         </div>
 
         <div style="margin-top: 1.5rem;">
+          <!-- Domestic Order Button -->
           <button type="submit" id="pay-submit-btn" class="btn btn-primary btn-lg" style="width: 100%;">
-            <span>🔒 Pay Securely</span> <strong id="btn-pay-amount">($18.00)</strong>
+            <span>🔒 Place Sample Order (Sri Lanka)</span> <strong id="btn-pay-amount">($3.00)</strong>
+          </button>
+          <!-- Overseas Freight Calculation Button -->
+          <button type="button" id="freight-calc-btn" class="btn btn-accent btn-lg" style="width: 100%; display: none;" onclick="PaymentGateway.submitOverseasFreight()">
+            <span>✈️ Submit for Freight Calculation</span>
           </button>
         </div>
 

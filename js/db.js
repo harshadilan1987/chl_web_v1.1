@@ -222,7 +222,66 @@ const CHL_DEFAULT_SAMPLE_KITS = [
   }
 ];
 
+// Default Sales Configuration & Shipping Rates
+const CHL_DEFAULT_SALES_CONFIG = {
+  salesEmail: "info@celebrationholdings.lk",
+  domesticShippingUSD: 3.00,
+  domesticShippingLKR: 650,
+  policyNote: "For the time being, sample orders are directly accepted within Sri Lanka only. International requests are submitted for direct Air Express freight calculation."
+};
 
+// Initial Orders / Inquiries Seed Data
+const CHL_DEFAULT_ORDERS = [
+  {
+    id: "CHL-ORD-2026-1048",
+    type: "domestic_order",
+    date: "2026-09-06T14:30:00.000Z",
+    customerName: "Dr. Asela Perera",
+    company: "Lanka Herbal Formulations (Pvt) Ltd",
+    email: "asela.perera@lankaherbals.lk",
+    phone: "077 345 6789",
+    address: "No. 45/2, Nawala Road",
+    city: "Rajagiriya",
+    postalCode: "10107",
+    country: "Sri Lanka",
+    items: [
+      { id: "kit-01", name: "Executive Organic Coconut Range Evaluation Kit", priceUSD: 45.00, qty: 1 },
+      { id: "kit-02", name: "Ceylon Cinnamon & Black Pepper Master Exporter Kit", priceUSD: 55.00, qty: 1 }
+    ],
+    subtotalUSD: 100.00,
+    shippingCostUSD: 3.00,
+    totalUSD: 103.00,
+    currency: "USD",
+    paymentMethod: "PayHere Sri Lanka (Online Gateway)",
+    paymentStatus: "Paid",
+    status: "Processing",
+    notes: "Deliver before 5:00 PM on weekdays."
+  },
+  {
+    id: "CHL-ORD-2026-1049",
+    type: "overseas_freight_inquiry",
+    date: "2026-09-07T09:15:00.000Z",
+    customerName: "Marcus Weber",
+    company: "BioVital GmbH",
+    email: "m.weber@biovital-hamburg.de",
+    phone: "+49 40 1234 5678",
+    address: "Speicherstadt Block D, Am Sandtorkai 23",
+    city: "Hamburg",
+    postalCode: "20457",
+    country: "Germany",
+    items: [
+      { id: "kit-02", name: "Ceylon Cinnamon & Black Pepper Master Exporter Kit", priceUSD: 55.00, qty: 2 }
+    ],
+    subtotalUSD: 110.00,
+    shippingCostUSD: 0,
+    totalUSD: 110.00,
+    currency: "USD",
+    paymentMethod: "Overseas Air Freight Quote Requested",
+    paymentStatus: "Pending Quote",
+    status: "Freight Quote Requested",
+    notes: "Requires EU Organic transaction certificate (TC) with samples."
+  }
+];
 
 /**
  * Intelligent mapper for authentic Celebration Holdings Technical Specs & MSDS documents
@@ -294,7 +353,9 @@ const CHL_DB = {
     BLOG: "chl_db_blog_posts_v2",
     COCONUT_HARVEST: "chl_db_coconut_harvest_v2",
     SAMPLE_KITS: "chl_db_sample_kits_v2",
-    CONFIG: "chl_db_config_v2"
+    CONFIG: "chl_db_config_v2",
+    ORDERS: "chl_db_orders_v1",
+    SALES_CONFIG: "chl_db_sales_config_v1"
   },
 
   init() {
@@ -371,7 +432,17 @@ const CHL_DB = {
 
 
 
-    // 7. Config
+    // 6. Orders
+    if (!localStorage.getItem(this.STORAGE_KEYS.ORDERS)) {
+      localStorage.setItem(this.STORAGE_KEYS.ORDERS, JSON.stringify(CHL_DEFAULT_ORDERS));
+    }
+
+    // 7. Sales Config
+    if (!localStorage.getItem(this.STORAGE_KEYS.SALES_CONFIG)) {
+      localStorage.setItem(this.STORAGE_KEYS.SALES_CONFIG, JSON.stringify(CHL_DEFAULT_SALES_CONFIG));
+    }
+
+    // 8. General Config
     if (!localStorage.getItem(this.STORAGE_KEYS.CONFIG)) {
       localStorage.setItem(this.STORAGE_KEYS.CONFIG, JSON.stringify({
         storeName: "Celebration Holdings (Pvt) Ltd",
@@ -772,7 +843,82 @@ const CHL_DB = {
     }));
   },
 
+  // ==========================================
+  // ORDERS & SUMMARY ORDER SHEETS CRUD
+  // ==========================================
+  getOrders() {
+    try {
+      const data = localStorage.getItem(this.STORAGE_KEYS.ORDERS);
+      return data ? JSON.parse(data) : CHL_DEFAULT_ORDERS;
+    } catch (e) {
+      return CHL_DEFAULT_ORDERS;
+    }
+  },
 
+  getOrderById(id) {
+    const list = this.getOrders();
+    return list.find(o => o.id === id) || null;
+  },
+
+  saveOrder(order) {
+    let list = this.getOrders();
+    if (!order.id) {
+      const prefix = order.type === 'overseas_freight_inquiry' ? 'CHL-INQ-' : 'CHL-ORD-';
+      order.id = prefix + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
+    }
+    if (!order.date) {
+      order.date = new Date().toISOString();
+    }
+    const idx = list.findIndex(o => o.id === order.id);
+    if (idx > -1) {
+      list[idx] = { ...list[idx], ...order };
+    } else {
+      list.unshift(order);
+    }
+    localStorage.setItem(this.STORAGE_KEYS.ORDERS, JSON.stringify(list));
+    this.broadcastChange();
+    return order;
+  },
+
+  updateOrderStatus(id, newStatus) {
+    let list = this.getOrders();
+    const order = list.find(o => o.id === id);
+    if (order) {
+      order.status = newStatus;
+      localStorage.setItem(this.STORAGE_KEYS.ORDERS, JSON.stringify(list));
+      this.broadcastChange();
+      return order;
+    }
+    return null;
+  },
+
+  deleteOrder(id) {
+    let list = this.getOrders();
+    list = list.filter(o => o.id !== id);
+    localStorage.setItem(this.STORAGE_KEYS.ORDERS, JSON.stringify(list));
+    this.broadcastChange();
+    return true;
+  },
+
+  // ==========================================
+  // SALES CONFIG (EMAIL & SHIPPING RATES)
+  // ==========================================
+  getSalesConfig() {
+    try {
+      const data = localStorage.getItem(this.STORAGE_KEYS.SALES_CONFIG);
+      return data ? { ...CHL_DEFAULT_SALES_CONFIG, ...JSON.parse(data) } : CHL_DEFAULT_SALES_CONFIG;
+    } catch (e) {
+      return CHL_DEFAULT_SALES_CONFIG;
+    }
+  },
+
+  saveSalesConfig(config) {
+    const current = this.getSalesConfig();
+    const updated = { ...current, ...config };
+    localStorage.setItem(this.STORAGE_KEYS.SALES_CONFIG, JSON.stringify(updated));
+    this.broadcastChange();
+    return updated;
+  }
 };
 
 // Initialize immediately

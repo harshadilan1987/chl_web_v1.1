@@ -152,12 +152,20 @@ const Cart = {
     return this.items.reduce((sum, item) => sum + (item.priceUSD * item.qty), 0);
   },
 
-  getShippingUSD() {
-    return this.items.length > 0 ? this.flatShippingUSD : 0;
+  getShippingUSD(country = 'Sri Lanka') {
+    if (this.items.length === 0) return 0;
+    if (country !== 'Sri Lanka') {
+      return 0; // Overseas freight calculated on request
+    }
+    if (typeof CHL_DB !== 'undefined' && typeof CHL_DB.getSalesConfig === 'function') {
+      const cfg = CHL_DB.getSalesConfig();
+      return parseFloat(cfg.domesticShippingUSD || 3.00);
+    }
+    return 3.00;
   },
 
-  getTotalUSD() {
-    return this.getSubtotalUSD() + this.getShippingUSD();
+  getTotalUSD(country = 'Sri Lanka') {
+    return this.getSubtotalUSD() + this.getShippingUSD(country);
   },
 
   openDrawer() {
