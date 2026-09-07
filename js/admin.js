@@ -1181,3 +1181,112 @@ document.getElementById('hero-img-upload')?.addEventListener('change', (e) => {
 });
 
 
+function optimizeDatabaseImages() {
+  if (!confirm('This will scan the database and compress any oversized images to free up space. Proceed?')) return;
+  
+  showToast('Starting storage optimization... Please wait.', 'info');
+  
+  let processed = 0;
+  let compressed = 0;
+
+  function processImage(base64Str, callback) {
+    if (!base64Str || !base64Str.startsWith('data:image/')) {
+      callback(base64Str);
+      return;
+    }
+    
+    // Check rough size (if it's small, ignore)
+    // base64 length roughly corresponds to 4/3 of byte size. 500KB is ~ 666,000 chars
+    if (base64Str.length < 500000) {
+      callback(base64Str);
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+      const maxWidth = 1024;
+      
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      const newBase64 = canvas.toDataURL('image/jpeg', 0.65);
+      if (newBase64.length < base64Str.length) {
+        compressed++;
+        callback(newBase64);
+      } else {
+        callback(base64Str);
+      }
+    };
+    img.onerror = () => callback(base64Str);
+    img.src = base64Str;
+  }
+
+  const posts = CHL_DB.getPosts();
+  let pendingTasks = 0;
+
+  function finalize() {
+    if (pendingTasks === 0) {
+      CHL_DB.saveAllPosts(posts); // Need to add this helper or just setItem
+      localStorage.setItem(CHL_DB.STORAGE_KEYS.BLOG, JSON.stringify(posts));
+      
+      const products = CHL_DB.getProducts();
+      let prodPending = 0;
+      products.forEach(p => {
+        if (p.image && p.image.startsWith('data:image/') && p.image.length > 500000) {
+          prodPending++;
+          processImage(p.image, (res) => {
+            p.image = res;
+            prodPending--;
+            if (prodPending === 0) saveProds();
+          });
+        }
+      });
+      if (prodPending === 0) saveProds();
+
+      function saveProds() {
+        localStorage.setItem(CHL_DB.STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+        CHL_DB.broadcastChange();
+        showToast('Optimization complete! Compressed ' + compressed + ' large images.', 'success');
+        loadAllAdminData();
+      }
+    }
+  }
+
+  posts.forEach(post => {
+    if (post.photos && Array.isArray(post.photos)) {
+      post.photos.forEach((photo, i) => {
+        if (photo.startsWith('data:image/') && photo.length > 500000) {
+          pendingTasks++;
+          processImage(photo, (res) => {
+            post.photos[i] = res;
+            if (i === 0) post.coverImage = res;
+            pendingTasks--;
+            finalize();
+          });
+        }
+      });
+    } else if (post.coverImage && post.coverImage.startsWith('data:image/') && post.coverImage.length > 500000) {
+      pendingTasks++;
+      processImage(post.coverImage, (res) => {
+        post.coverImage = res;
+        pendingTasks--;
+        finalize();
+      });
+    }
+  });
+
+  if (pendingTasks === 0) {
+    finalize();
+  }
+}
+window.optimizeDatabaseImages = optimizeDatabaseImages;
