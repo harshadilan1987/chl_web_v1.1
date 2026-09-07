@@ -379,8 +379,17 @@ function _blogCarouselApply() {
 
   const track = document.getElementById('home-blog-preview-grid');
   if (track) {
-    const pct = (_blogCarouselIdx / _blogCarouselTotal) * 100;
-    track.style.transform = `translateX(-${pct}%)`;
+    const card = track.querySelector('.blog-carousel-card');
+    if (card) {
+      const cardWidth = card.offsetWidth;
+      const gapStr = window.getComputedStyle(track).gap;
+      const gap = gapStr && gapStr.includes('px') ? parseFloat(gapStr) : 0;
+      const move = _blogCarouselIdx * (cardWidth + gap);
+      track.style.transform = `translateX(-${move}px)`;
+    } else {
+      const pct = (_blogCarouselIdx / _blogCarouselTotal) * 100;
+      track.style.transform = `translateX(-${pct}%)`;
+    }
   }
 
   // Update dots
