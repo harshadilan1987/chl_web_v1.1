@@ -13,7 +13,7 @@
 
   // --- AUTHENTICATION ---
   const SALES_AUTH_KEY = 'chl_sales_logged_in';
-  const VALID_PASSWORDS = ['chl@sales123#', 'chl@pw123#'];
+  const VALID_PASSWORDS = ['chl@sales123#'];
 
   function checkAuth() {
     const isAuth = sessionStorage.getItem(SALES_AUTH_KEY) === 'true';
