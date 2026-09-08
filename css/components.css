@@ -2560,16 +2560,25 @@ body {
 
 .quote-banner-card {
   position: relative;
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, #173d22 100%);
-  background-image: url('../assets/images/decorations/ceylon-mandala-gold-pattern.png');
-  background-repeat: repeat;
-  background-size: 520px 520px;
+  background-color: #061a10;
   border-radius: var(--radius-xl);
   padding: clamp(2.5rem, 5vw, 3.75rem);
   color: #ffffff;
   overflow: hidden;
   box-shadow: var(--shadow-xl);
-  border: 1px solid rgba(200, 155, 60, 0.3);
+  border: 1px solid rgba(198, 139, 44, 0.35);
+}
+
+.quote-banner-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('../assets/images/decorations/botanical-lines-seamless-tile.png');
+  background-repeat: repeat;
+  background-size: 800px auto;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .quote-banner-watermark {
@@ -2578,6 +2587,7 @@ body {
   right: 20px;
   color: rgba(255, 255, 255, 0.05);
   pointer-events: none;
+  z-index: 1;
 }
 
 .quote-banner-watermark svg {
