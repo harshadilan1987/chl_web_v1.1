@@ -837,23 +837,22 @@ function deleteCategoryConfirm(catId, name) {
 window.deleteCategoryConfirm = deleteCategoryConfirm;
 
 /* --------------------------------------------------------------------------
-   6b. Photo Carousel (8 Photos) Manager
+   6b. Moving Photo Line Manager (Direct Image Upload & Re-Ordering)
    -------------------------------------------------------------------------- */
 function renderPhotoCarouselAdmin() {
   const container = document.getElementById('admin-photo-carousel-container');
-  const countBadge = document.getElementById('admin-photo-count-badge');
   if (!container || typeof CHL_DB === 'undefined' || typeof CHL_DB.getPhotoCarousel !== 'function') return;
 
   const items = CHL_DB.getPhotoCarousel();
-  if (countBadge) {
-    countBadge.textContent = `${items.length} Photos Active`;
-  }
 
   if (items.length === 0) {
     container.innerHTML = `
       <div style="grid-column: 1 / -1; background: #ffffff; padding: 3rem; text-align: center; border-radius: 8px; border: 1px solid var(--color-border);">
-        <p style="color: #79877e; margin-bottom: 1rem;">No photos currently in the carousel.</p>
-        <button type="button" class="btn btn-primary btn-sm" onclick="openAddPhotoCarouselModal()">+ Add Photo</button>
+        <p style="color: #79877e; margin-bottom: 1rem;">No photos currently in the photo line.</p>
+        <label class="btn btn-primary btn-sm" style="cursor: pointer; margin: 0; display: inline-flex; align-items: center; gap: 6px;">
+          <span>+ Upload Photo</span>
+          <input type="file" accept="image/*" style="display: none;" onchange="addNewCarouselPhotoFile(this)">
+        </label>
         <button type="button" class="btn btn-outline btn-sm" onclick="resetPhotoCarouselDefaultsConfirm()" style="margin-left: 8px;">Reset Defaults</button>
       </div>
     `;
@@ -863,31 +862,27 @@ function renderPhotoCarouselAdmin() {
   container.innerHTML = items.map((item, idx) => `
     <div class="photo-carousel-admin-card" data-id="${item.id}">
       <div class="photo-carousel-admin-card-head">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <strong style="color: var(--color-primary-dark); font-size: 0.95rem;">Slot #${idx + 1}</strong>
-          ${item.badge ? `<span class="badge" style="background: #e6f4ea; color: #137333; font-size: 0.72rem;">${item.badge}</span>` : ''}
-        </div>
-        <div style="display: flex; gap: 4px;">
-          <button type="button" class="btn-order" onclick="movePhotoCarousel('${item.id}', 'up')" title="Move Earlier / Up" ${idx === 0 ? 'disabled style="opacity:0.35;cursor:not-allowed;"' : ''}>⬆️</button>
-          <button type="button" class="btn-order" onclick="movePhotoCarousel('${item.id}', 'down')" title="Move Later / Down" ${idx === items.length - 1 ? 'disabled style="opacity:0.35;cursor:not-allowed;"' : ''}>⬇️</button>
+        <strong style="color: var(--color-primary-dark); font-size: 1rem;">Photo #${idx + 1}</strong>
+        <div style="display: flex; gap: 5px;">
+          <button type="button" class="btn-order" onclick="movePhotoCarousel('${item.id}', 'up')" title="Move Earlier" ${idx === 0 ? 'disabled style="opacity:0.35;cursor:not-allowed;"' : ''}>⬆️</button>
+          <button type="button" class="btn-order" onclick="movePhotoCarousel('${item.id}', 'down')" title="Move Later" ${idx === items.length - 1 ? 'disabled style="opacity:0.35;cursor:not-allowed;"' : ''}>⬇️</button>
         </div>
       </div>
 
-      <div class="photo-carousel-admin-card-body">
-        <div class="photo-carousel-admin-thumb-wrap">
-          <img src="${item.image || 'assets/images/logo/chl-logo.jpg'}" alt="${item.title || ''}" onerror="this.src='assets/images/logo/chl-logo.jpg'">
-        </div>
-        <div>
-          <h4 style="margin: 0 0 4px; font-size: 0.95rem; color: #1a2e22;">${item.title || 'Untitled Photo'}</h4>
-          <p style="margin: 0; font-size: 0.8rem; color: #5f7065; line-height: 1.4;">${item.caption || ''}</p>
+      <div class="photo-carousel-admin-card-body" style="padding: 0.9rem;">
+        <div class="photo-carousel-admin-thumb-wrap" style="height: 190px;">
+          <img src="${item.image || 'assets/images/logo/chl-logo.jpg'}" alt="" onerror="this.src='assets/images/logo/chl-logo.jpg'">
         </div>
       </div>
 
-      <div class="photo-carousel-admin-actions">
-        <span style="font-size: 0.72rem; color: #8a9990; font-family: monospace;">ID: ${item.id}</span>
+      <div class="photo-carousel-admin-actions" style="padding: 0.75rem 0.9rem;">
+        <label class="btn btn-primary btn-sm" style="cursor: pointer; margin: 0; display: inline-flex; align-items: center; gap: 5px;">
+          <span>📷 Upload Image</span>
+          <input type="file" accept="image/*" style="display: none;" onchange="uploadCarouselCardImage('${item.id}', this)">
+        </label>
         <div style="display: flex; gap: 6px;">
-          <button type="button" class="btn btn-sm" style="padding: 4px 10px; background: #e0f2fe; color: #0369a1;" onclick="openEditPhotoCarouselModal('${item.id}')">✏️ Edit</button>
-          <button type="button" class="btn btn-sm" style="padding: 4px 10px; background: #fee2e2; color: #991b1b;" onclick="deletePhotoCarouselConfirm('${item.id}', '${(item.title || '').replace(/'/g, "\\'")}')">🗑️ Delete</button>
+          <button type="button" class="btn btn-sm" style="padding: 4px 8px; background: #e0f2fe; color: #0369a1;" onclick="promptCarouselImageUrl('${item.id}')" title="Enter Image URL">URL</button>
+          <button type="button" class="btn btn-sm" style="padding: 4px 8px; background: #fee2e2; color: #991b1b;" onclick="deletePhotoCarouselConfirm('${item.id}')" title="Delete Photo">🗑️</button>
         </div>
       </div>
     </div>
@@ -898,113 +893,63 @@ window.renderPhotoCarouselAdmin = renderPhotoCarouselAdmin;
 function movePhotoCarousel(id, direction) {
   if (CHL_DB.movePhotoCarouselItem(id, direction)) {
     renderPhotoCarouselAdmin();
-    showToast('Carousel order updated successfully!', 'success');
+    showToast('Order updated!', 'success');
   }
 }
 window.movePhotoCarousel = movePhotoCarousel;
 
-function openAddPhotoCarouselModal() {
-  document.getElementById('photo-modal-title').textContent = "Add New Carousel Photo";
-  document.getElementById('photo-carousel-form').reset();
-  document.getElementById('edit-photo-id').value = "";
-  document.getElementById('photo-modal-preview').src = "assets/images/logo/chl-logo.jpg";
-  document.getElementById('photo-carousel-edit-modal').style.display = 'flex';
-}
-window.openAddPhotoCarouselModal = openAddPhotoCarouselModal;
-
-function openEditPhotoCarouselModal(id) {
-  const item = CHL_DB.getPhotoCarouselItemById(id);
-  if (!item) return;
-
-  document.getElementById('photo-modal-title').textContent = `Edit Carousel Photo (Slot ID: ${item.id})`;
-  document.getElementById('edit-photo-id').value = item.id;
-  document.getElementById('edit-photo-title').value = item.title || '';
-  document.getElementById('edit-photo-badge').value = item.badge || '';
-  document.getElementById('edit-photo-caption').value = item.caption || '';
-  document.getElementById('edit-photo-image').value = item.image || '';
-  
-  const preview = document.getElementById('photo-modal-preview');
-  if (preview) preview.src = item.image || "assets/images/logo/chl-logo.jpg";
-
-  document.getElementById('photo-carousel-edit-modal').style.display = 'flex';
-}
-window.openEditPhotoCarouselModal = openEditPhotoCarouselModal;
-
-function closePhotoCarouselEditModal() {
-  const modal = document.getElementById('photo-carousel-edit-modal');
-  if (modal) modal.style.display = 'none';
-}
-window.closePhotoCarouselEditModal = closePhotoCarouselEditModal;
-
-function previewPhotoModalImg(url) {
-  const preview = document.getElementById('photo-modal-preview');
-  if (preview && url) {
-    preview.src = url;
-  }
-}
-window.previewPhotoModalImg = previewPhotoModalImg;
-
-function handleCarouselPhotoFile(input) {
+function uploadCarouselCardImage(id, input) {
   if (!input.files || !input.files[0]) return;
   const file = input.files[0];
   resizeImageToDataUrl(file, 900, (compressedData) => {
-    const imgInput = document.getElementById('edit-photo-image');
-    if (imgInput) imgInput.value = compressedData;
-    const preview = document.getElementById('photo-modal-preview');
-    if (preview) preview.src = compressedData;
+    CHL_DB.updatePhotoCarouselItem(id, { image: compressedData });
+    renderPhotoCarouselAdmin();
+    showToast('Photo uploaded successfully!', 'success');
   });
 }
-window.handleCarouselPhotoFile = handleCarouselPhotoFile;
+window.uploadCarouselCardImage = uploadCarouselCardImage;
 
-function savePhotoCarouselModal() {
-  const id = document.getElementById('edit-photo-id').value.trim();
-  const title = document.getElementById('edit-photo-title').value.trim() || 'Photo';
-  const badge = document.getElementById('edit-photo-badge').value.trim();
-  const caption = document.getElementById('edit-photo-caption').value.trim();
-  const image = document.getElementById('edit-photo-image').value.trim();
-
-  if (!image) {
-    alert('Please select or upload an image.');
-    return;
-  }
-
-  const data = { title, badge, caption, image };
-
-  try {
-    if (id) {
-      CHL_DB.updatePhotoCarouselItem(id, data);
-      showToast('Carousel photo updated successfully!', 'success');
-    } else {
-      CHL_DB.addPhotoCarouselItem(data);
-      showToast('New photo added to carousel!', 'success');
-    }
-    closePhotoCarouselEditModal();
+function addNewCarouselPhotoFile(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  resizeImageToDataUrl(file, 900, (compressedData) => {
+    CHL_DB.addPhotoCarouselItem({ image: compressedData });
     renderPhotoCarouselAdmin();
-  } catch (err) {
-    console.error(err);
-    if (err.name === 'QuotaExceededError' || (err.message && err.message.includes('quota'))) {
-      alert('Storage limit exceeded! The uploaded photo file is too large. Please use a compressed image or image URL.');
+    showToast('New photo uploaded!', 'success');
+  });
+}
+window.addNewCarouselPhotoFile = addNewCarouselPhotoFile;
+
+function promptCarouselImageUrl(id) {
+  const current = id ? (CHL_DB.getPhotoCarouselItemById(id)?.image || '') : '';
+  const url = prompt('Enter image URL or asset path (e.g. assets/images/...):', current);
+  if (url !== null && url.trim() !== '') {
+    if (id) {
+      CHL_DB.updatePhotoCarouselItem(id, { image: url.trim() });
+      showToast('Photo updated!', 'success');
     } else {
-      alert('Error saving photo: ' + err.message);
+      CHL_DB.addPhotoCarouselItem({ image: url.trim() });
+      showToast('New photo added!', 'success');
     }
+    renderPhotoCarouselAdmin();
   }
 }
-window.savePhotoCarouselModal = savePhotoCarouselModal;
+window.promptCarouselImageUrl = promptCarouselImageUrl;
 
-function deletePhotoCarouselConfirm(id, title) {
-  if (confirm(`Are you sure you want to delete "${title || 'this photo'}" from the carousel?`)) {
+function deletePhotoCarouselConfirm(id) {
+  if (confirm('Are you sure you want to delete this photo?')) {
     CHL_DB.deletePhotoCarouselItem(id);
     renderPhotoCarouselAdmin();
-    showToast('Photo removed from carousel', 'info');
+    showToast('Photo removed', 'info');
   }
 }
 window.deletePhotoCarouselConfirm = deletePhotoCarouselConfirm;
 
 function resetPhotoCarouselDefaultsConfirm() {
-  if (confirm('Reset the photo carousel back to the default 8 authentic Ceylon photos? Any custom modifications will be replaced.')) {
+  if (confirm('Reset back to default photos? Any custom uploads will be replaced.')) {
     CHL_DB.resetPhotoCarouselDefaults();
     renderPhotoCarouselAdmin();
-    showToast('Photo carousel reset to default 8 photos', 'success');
+    showToast('Reset to default photos', 'success');
   }
 }
 window.resetPhotoCarouselDefaultsConfirm = resetPhotoCarouselDefaultsConfirm;
