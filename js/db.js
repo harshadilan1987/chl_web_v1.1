@@ -222,63 +222,49 @@ const CHL_DEFAULT_SAMPLE_KITS = [
   }
 ];
 
-// Default 8 Photos for Home Photo Carousel Post
+// Default 6 Photos for Home Photo Carousel
 const CHL_DEFAULT_PHOTO_CAROUSEL = [
   {
     id: "carousel-photo-01",
-    title: "Organic Coconut Triangle Groves",
-    badge: "Organic Plantation",
-    caption: "Naturally nurtured bio-diverse plantations in Kurunegala and Puttalam.",
-    image: "assets/images/banner/carousel-organic-ceylon-coconut.jpg"
+    title: "Organic Coconut Processing",
+    badge: "Processing Facility",
+    caption: "Hygienic production and packaging under strict quality protocols.",
+    image: "assets/images/middle caresoul/4.jpeg"
   },
   {
     id: "carousel-photo-02",
-    title: "Handcrafted Pure Ceylon Cinnamon",
-    badge: "Alba & C5 Grade",
-    caption: "Pure Ceylon Cinnamon quills hand-peeled by master artisans in Southern Sri Lanka.",
-    image: "assets/images/about/about-ceylon-cinnamon.jpg"
+    title: "Honestlife Premium Range",
+    badge: "Honestlife Brand",
+    caption: "Pure Organic Virgin Coconut Oil, Coconut Butter, and RBD Coconut Oil.",
+    image: "assets/images/middle caresoul/8.jpeg"
   },
   {
     id: "carousel-photo-03",
-    title: "Ancestral Granite Sekkuwa Pressing",
-    badge: "Cold Stone Extraction",
-    caption: "Authentic zero-heat stone extraction preserving natural active antioxidants and nutrients.",
-    image: "assets/images/Blog/3. Sekkuwa/traditional-sekku-a.jpg"
+    title: "Precision Bottle Packaging",
+    badge: "Export Grade",
+    caption: "Sealed amber glass bottles prepared for international export markets.",
+    image: "assets/images/middle caresoul/6.jpeg"
   },
   {
     id: "carousel-photo-04",
-    title: "Modern Cleanroom Processing Facility",
-    badge: "ISO 22000 & HACCP",
-    caption: "State-of-the-art hygienic food processing, stainless steel flumes, and sterile packaging.",
-    image: "assets/images/banner/carousel-ceylon-hospitality.jpeg"
+    title: "Container Freight Logistics",
+    badge: "Global Logistics",
+    caption: "Professional palletized cargo loading for ocean freight distribution.",
+    image: "assets/images/middle caresoul/7.jpeg"
   },
   {
     id: "carousel-photo-05",
-    title: "Equatorial Sun Spice Curation",
-    badge: "Natural Sun Curation",
-    caption: "Sun-drying black pepper, organic turmeric, and clove under natural tropical sunlight.",
-    image: "assets/images/banner/carousel-tropical-climate.jpg"
+    title: "Bulk IBC Liquid Export",
+    badge: "Bulk Supply",
+    caption: "Industrial food-grade intermediate bulk containers for global ingredient supply.",
+    image: "assets/images/middle caresoul/5.jpeg"
   },
   {
     id: "carousel-photo-06",
-    title: "Bountiful Organic Harvest Collection",
-    badge: "Sustainable Sourcing",
-    caption: "Direct partnership with over 150 smallholder organic farming families islandwide.",
-    image: "assets/images/about/about-harvest-spread.jpg"
-  },
-  {
-    id: "carousel-photo-07",
-    title: "Global Food Exhibition Presence",
-    badge: "Global Reach",
-    caption: "Presenting premium Ceylon organic produce to international buyers across 40+ countries.",
-    image: "assets/images/Blog/1. IFE 2024/1.jpeg"
-  },
-  {
-    id: "carousel-photo-08",
-    title: "Precision QA & Export Traceability",
-    badge: "Certified Integrity",
-    caption: "Every export batch verified under EU Organic, USDA-NOP, and JAS laboratory testing.",
-    image: "assets/images/banner/organic-powerhouse-integrity.jpg"
+    title: "Sustainable Cultivation Fields",
+    badge: "Organic Agriculture",
+    caption: "Rich equatorial crop cultivation and direct sustainable farmer partnerships.",
+    image: "assets/images/middle caresoul/12.jpeg"
   }
 ];
 
@@ -413,7 +399,7 @@ const CHL_DB = {
     BLOG: "chl_db_blog_posts_v2",
     COCONUT_HARVEST: "chl_db_coconut_harvest_v2",
     SAMPLE_KITS: "chl_db_sample_kits_v2",
-    PHOTO_CAROUSEL: "chl_db_photo_carousel_v1",
+    PHOTO_CAROUSEL: "chl_db_photo_carousel_v2",
     CONFIG: "chl_db_config_v2",
     ORDERS: "chl_db_orders_v1",
     SALES_CONFIG: "chl_db_sales_config_v1"
@@ -491,8 +477,11 @@ const CHL_DB = {
       localStorage.setItem(this.STORAGE_KEYS.SAMPLE_KITS, JSON.stringify(CHL_DEFAULT_SAMPLE_KITS));
     }
 
-    // 5b. Photo Carousel (8 photos)
-    if (!localStorage.getItem(this.STORAGE_KEYS.PHOTO_CAROUSEL)) {
+    // 5b. Photo Carousel (6 photos)
+    const storedCarousel = localStorage.getItem(this.STORAGE_KEYS.PHOTO_CAROUSEL);
+    if (!storedCarousel) {
+      // If legacy v1 existed but contained old demo images, remove it and initialize with default 6 custom photos
+      localStorage.removeItem("chl_db_photo_carousel_v1");
       localStorage.setItem(this.STORAGE_KEYS.PHOTO_CAROUSEL, JSON.stringify(CHL_DEFAULT_PHOTO_CAROUSEL));
     }
 
