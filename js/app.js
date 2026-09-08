@@ -575,8 +575,12 @@ function renderPhotoCarousel() {
   const items = CHL_DB.getPhotoCarousel();
   if (!items || items.length === 0) return;
 
-  // Duplicate list to achieve a seamless, endless continuous loop
-  const loopItems = [...items, ...items];
+  // Ensure sufficient items to seamlessly fill any screen width while maintaining two identical halves
+  let baseSet = [...items];
+  while (baseSet.length < 8) {
+    baseSet = baseSet.concat(items);
+  }
+  const loopItems = baseSet.concat(baseSet);
 
   track.innerHTML = loopItems.map(item => `
     <div class="photo-marquee-card">

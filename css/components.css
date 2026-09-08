@@ -903,8 +903,9 @@ body {
 }
 
 .photo-marquee-card {
-  flex: 0 0 280px;
-  height: 190px;
+  flex: 0 0 auto;
+  height: 220px;
+  width: auto;
   border-radius: 12px;
   overflow: hidden;
   background: #eef3f0;
@@ -913,6 +914,7 @@ body {
   position: relative;
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
   user-select: none;
+  display: flex;
 }
 
 .photo-marquee-card:hover {
@@ -922,9 +924,10 @@ body {
 }
 
 .photo-marquee-card img {
-  width: 100%;
+  width: auto;
   height: 100%;
-  object-fit: cover;
+  max-width: none;
+  object-fit: contain;
   display: block;
   pointer-events: none;
   user-select: none;
@@ -935,8 +938,7 @@ body {
     padding: 1rem 0;
   }
   .photo-marquee-card {
-    flex: 0 0 210px;
-    height: 145px;
+    height: 160px;
     border-radius: 10px;
   }
   .photo-marquee-track {
