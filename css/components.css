@@ -2957,6 +2957,61 @@ body {
   border-color: var(--color-accent);
 }
 
+/* Specific Sister Company Brand Hover Colors */
+.sister-card-honestlife:hover {
+  border-color: #EF7C00;
+  box-shadow: 0 10px 24px rgba(239, 124, 0, 0.22);
+}
+.sister-card-honestlife:hover .sister-logo-wrap {
+  border-color: #EF7C00;
+  box-shadow: 0 0 0 1.5px #EF7C00;
+}
+
+.sister-card-alphabionics:hover {
+  border-color: #FDBA31;
+  box-shadow: 0 10px 24px rgba(253, 186, 49, 0.24);
+}
+.sister-card-alphabionics:hover .sister-logo-wrap {
+  border-color: #FDBA31;
+  box-shadow: 0 0 0 1.5px #FDBA31;
+}
+
+.sister-card-ergo:hover {
+  border-color: #9C328E;
+  box-shadow: 0 10px 24px rgba(156, 50, 142, 0.22);
+}
+.sister-card-ergo:hover .sister-logo-wrap {
+  border-color: #9C328E;
+  box-shadow: 0 0 0 1.5px #9C328E;
+}
+
+.sister-card-adikari:hover {
+  border-color: #738A43;
+  box-shadow: 0 10px 24px rgba(115, 138, 67, 0.22);
+}
+.sister-card-adikari:hover .sister-logo-wrap {
+  border-color: #738A43;
+  box-shadow: 0 0 0 1.5px #738A43;
+}
+
+.sister-card-palmpoet:hover {
+  border-color: #2B2B2A;
+  box-shadow: 0 10px 24px rgba(43, 43, 42, 0.2);
+}
+.sister-card-palmpoet:hover .sister-logo-wrap {
+  border-color: #2B2B2A;
+  box-shadow: 0 0 0 1.5px #2B2B2A;
+}
+
+.sister-card-nexgrid:hover {
+  border-color: #009FE3;
+  box-shadow: 0 10px 24px rgba(0, 159, 227, 0.24);
+}
+.sister-card-nexgrid:hover .sister-logo-wrap {
+  border-color: #009FE3;
+  box-shadow: 0 0 0 1.5px #009FE3;
+}
+
 .sister-logo-wrap {
   width: 100%;
   height: 120px;
@@ -2968,8 +3023,10 @@ body {
   border-radius: var(--radius-md);
   margin-bottom: 1.1rem;
   overflow: hidden;
+  border: 1px solid transparent;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
   flex-shrink: 0;
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .sister-logo-wrap img {
