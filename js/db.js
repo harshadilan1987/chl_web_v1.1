@@ -222,6 +222,66 @@ const CHL_DEFAULT_SAMPLE_KITS = [
   }
 ];
 
+// Default 8 Photos for Home Photo Carousel Post
+const CHL_DEFAULT_PHOTO_CAROUSEL = [
+  {
+    id: "carousel-photo-01",
+    title: "Organic Coconut Triangle Groves",
+    badge: "Organic Plantation",
+    caption: "Naturally nurtured bio-diverse plantations in Kurunegala and Puttalam.",
+    image: "assets/images/banner/carousel-organic-ceylon-coconut.jpg"
+  },
+  {
+    id: "carousel-photo-02",
+    title: "Handcrafted Pure Ceylon Cinnamon",
+    badge: "Alba & C5 Grade",
+    caption: "Pure Ceylon Cinnamon quills hand-peeled by master artisans in Southern Sri Lanka.",
+    image: "assets/images/about/about-ceylon-cinnamon.jpg"
+  },
+  {
+    id: "carousel-photo-03",
+    title: "Ancestral Granite Sekkuwa Pressing",
+    badge: "Cold Stone Extraction",
+    caption: "Authentic zero-heat stone extraction preserving natural active antioxidants and nutrients.",
+    image: "assets/images/Blog/3. Sekkuwa/traditional-sekku-a.jpg"
+  },
+  {
+    id: "carousel-photo-04",
+    title: "Modern Cleanroom Processing Facility",
+    badge: "ISO 22000 & HACCP",
+    caption: "State-of-the-art hygienic food processing, stainless steel flumes, and sterile packaging.",
+    image: "assets/images/banner/carousel-ceylon-hospitality.jpeg"
+  },
+  {
+    id: "carousel-photo-05",
+    title: "Equatorial Sun Spice Curation",
+    badge: "Natural Sun Curation",
+    caption: "Sun-drying black pepper, organic turmeric, and clove under natural tropical sunlight.",
+    image: "assets/images/banner/carousel-tropical-climate.jpg"
+  },
+  {
+    id: "carousel-photo-06",
+    title: "Bountiful Organic Harvest Collection",
+    badge: "Sustainable Sourcing",
+    caption: "Direct partnership with over 150 smallholder organic farming families islandwide.",
+    image: "assets/images/about/about-harvest-spread.jpg"
+  },
+  {
+    id: "carousel-photo-07",
+    title: "Global Food Exhibition Presence",
+    badge: "Global Reach",
+    caption: "Presenting premium Ceylon organic produce to international buyers across 40+ countries.",
+    image: "assets/images/Blog/1. IFE 2024/1.jpeg"
+  },
+  {
+    id: "carousel-photo-08",
+    title: "Precision QA & Export Traceability",
+    badge: "Certified Integrity",
+    caption: "Every export batch verified under EU Organic, USDA-NOP, and JAS laboratory testing.",
+    image: "assets/images/banner/organic-powerhouse-integrity.jpg"
+  }
+];
+
 // Default Sales Configuration & Shipping Rates
 const CHL_DEFAULT_SALES_CONFIG = {
   salesEmail: "info@celebrationholdings.lk",
@@ -353,6 +413,7 @@ const CHL_DB = {
     BLOG: "chl_db_blog_posts_v2",
     COCONUT_HARVEST: "chl_db_coconut_harvest_v2",
     SAMPLE_KITS: "chl_db_sample_kits_v2",
+    PHOTO_CAROUSEL: "chl_db_photo_carousel_v1",
     CONFIG: "chl_db_config_v2",
     ORDERS: "chl_db_orders_v1",
     SALES_CONFIG: "chl_db_sales_config_v1"
@@ -428,6 +489,11 @@ const CHL_DB = {
     // 5. Sample Kits
     if (!localStorage.getItem(this.STORAGE_KEYS.SAMPLE_KITS)) {
       localStorage.setItem(this.STORAGE_KEYS.SAMPLE_KITS, JSON.stringify(CHL_DEFAULT_SAMPLE_KITS));
+    }
+
+    // 5b. Photo Carousel (8 photos)
+    if (!localStorage.getItem(this.STORAGE_KEYS.PHOTO_CAROUSEL)) {
+      localStorage.setItem(this.STORAGE_KEYS.PHOTO_CAROUSEL, JSON.stringify(CHL_DEFAULT_PHOTO_CAROUSEL));
     }
 
 
@@ -785,6 +851,84 @@ const CHL_DB = {
   },
 
   // ==========================================
+  // PHOTO CAROUSEL (8 PHOTOS) CRUD & REORDERING
+  // ==========================================
+  getPhotoCarousel() {
+    try {
+      const data = localStorage.getItem(this.STORAGE_KEYS.PHOTO_CAROUSEL);
+      return data ? JSON.parse(data) : CHL_DEFAULT_PHOTO_CAROUSEL;
+    } catch (e) {
+      return CHL_DEFAULT_PHOTO_CAROUSEL;
+    }
+  },
+
+  getPhotoCarouselItemById(id) {
+    const list = this.getPhotoCarousel();
+    return list.find(p => p.id === id) || null;
+  },
+
+  savePhotoCarousel(items) {
+    if (!Array.isArray(items)) return false;
+    localStorage.setItem(this.STORAGE_KEYS.PHOTO_CAROUSEL, JSON.stringify(items));
+    this.broadcastChange();
+    return items;
+  },
+
+  addPhotoCarouselItem(item) {
+    let list = this.getPhotoCarousel();
+    if (!item.id) {
+      item.id = 'carousel-photo-' + Date.now().toString(36);
+    }
+    list.push(item);
+    this.savePhotoCarousel(list);
+    return item;
+  },
+
+  updatePhotoCarouselItem(id, itemData) {
+    let list = this.getPhotoCarousel();
+    const idx = list.findIndex(p => p.id === id);
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], ...itemData };
+      this.savePhotoCarousel(list);
+      return list[idx];
+    }
+    return null;
+  },
+
+  deletePhotoCarouselItem(id) {
+    let list = this.getPhotoCarousel();
+    list = list.filter(p => p.id !== id);
+    this.savePhotoCarousel(list);
+    return true;
+  },
+
+  movePhotoCarouselItem(id, direction) {
+    let list = this.getPhotoCarousel();
+    const idx = list.findIndex(p => p.id === id);
+    if (idx === -1) return false;
+
+    if (direction === 'up' && idx > 0) {
+      const temp = list[idx];
+      list[idx] = list[idx - 1];
+      list[idx - 1] = temp;
+    } else if (direction === 'down' && idx < list.length - 1) {
+      const temp = list[idx];
+      list[idx] = list[idx + 1];
+      list[idx + 1] = temp;
+    } else {
+      return false;
+    }
+
+    this.savePhotoCarousel(list);
+    return true;
+  },
+
+  resetPhotoCarouselDefaults() {
+    this.savePhotoCarousel(CHL_DEFAULT_PHOTO_CAROUSEL);
+    return true;
+  },
+
+  // ==========================================
   // DATA BACKUP & RESTORE
   // ==========================================
   exportBackup() {
@@ -795,7 +939,8 @@ const CHL_DB = {
       products: this.getProducts(),
       blog: this.getPosts(),
       coconutHarvest: this.getCoconutHarvestItems(),
-      sampleKits: this.getSampleKits()
+      sampleKits: this.getSampleKits(),
+      photoCarousel: this.getPhotoCarousel()
     };
     return JSON.stringify(backup, null, 2);
   },
@@ -818,6 +963,9 @@ const CHL_DB = {
       if (data.sampleKits && Array.isArray(data.sampleKits)) {
         localStorage.setItem(this.STORAGE_KEYS.SAMPLE_KITS, JSON.stringify(data.sampleKits));
       }
+      if (data.photoCarousel && Array.isArray(data.photoCarousel)) {
+        localStorage.setItem(this.STORAGE_KEYS.PHOTO_CAROUSEL, JSON.stringify(data.photoCarousel));
+      }
       this.broadcastChange();
       return { success: true, message: "Database restored successfully!" };
     } catch (e) {
@@ -831,6 +979,7 @@ const CHL_DB = {
     localStorage.removeItem(this.STORAGE_KEYS.BLOG);
     localStorage.removeItem(this.STORAGE_KEYS.COCONUT_HARVEST);
     localStorage.removeItem(this.STORAGE_KEYS.SAMPLE_KITS);
+    localStorage.removeItem(this.STORAGE_KEYS.PHOTO_CAROUSEL);
     this.ensureSeedData();
     this.broadcastChange();
     return true;

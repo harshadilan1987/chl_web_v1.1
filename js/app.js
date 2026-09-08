@@ -6,6 +6,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   initHeader();
   initHeroCarousel();
+  initPhotoCarousel();
   initStatsCounter();
   initLanguageSelector();
   initProductCatalog();
@@ -154,12 +155,14 @@ function initProductCatalog() {
     renderSampleBundles();
     renderHomeBlogPreview();
     renderCoconutHarvest();
+    renderPhotoCarousel();
   });
 
   renderProductCatalog();
   renderSampleBundles();
   renderHomeBlogPreview();
   renderCoconutHarvest();
+  renderPhotoCarousel();
 }
 
 function renderCategoryTabs() {
@@ -561,6 +564,183 @@ function renderCoconutHarvest() {
   `).join('');
 }
 window.renderCoconutHarvest = renderCoconutHarvest;
+
+/* --------------------------------------------------------------------------
+   4b-2. Featured 8-Photo Carousel Post Engine
+   -------------------------------------------------------------------------- */
+let currentPhotoSlideIndex = 0;
+let photoCarouselAutoplayTimer = null;
+
+function getPhotoCarouselVisibleCount() {
+  const w = window.innerWidth;
+  if (w > 1100) return 4;
+  if (w > 768) return 3;
+  if (w > 520) return 2;
+  return 1;
+}
+
+function renderPhotoCarousel() {
+  const track = document.getElementById('photo-carousel-track');
+  if (!track || typeof CHL_DB === 'undefined' || typeof CHL_DB.getPhotoCarousel !== 'function') return;
+
+  const items = CHL_DB.getPhotoCarousel();
+  if (!items || items.length === 0) return;
+
+  track.innerHTML = items.map((item, idx) => `
+    <div class="photo-carousel-card" data-index="${idx}">
+      <div class="photo-carousel-img-wrap">
+        ${item.badge ? `<span class="photo-carousel-badge">${item.badge}</span>` : ''}
+        <span class="photo-carousel-slot-tag">#${idx + 1}</span>
+        <img src="${item.image || 'assets/images/logo/chl-logo.jpg'}" alt="${item.title || 'Celebration Holdings Highlight'}" loading="lazy" onerror="this.src='assets/images/logo/chl-logo.jpg'">
+      </div>
+      <div class="photo-carousel-body">
+        <h3 class="photo-carousel-title">${item.title || ''}</h3>
+        <p class="photo-carousel-caption">${item.caption || ''}</p>
+      </div>
+    </div>
+  `).join('');
+
+  updatePhotoCarouselPagination(items.length);
+  updatePhotoCarouselPosition();
+}
+window.renderPhotoCarousel = renderPhotoCarousel;
+
+function updatePhotoCarouselPagination(totalItems) {
+  const dotsContainer = document.getElementById('photo-carousel-dots');
+  if (!dotsContainer) return;
+  const visible = getPhotoCarouselVisibleCount();
+  const maxIdx = Math.max(0, totalItems - visible);
+  const dotCount = maxIdx + 1;
+
+  if (dotCount <= 1) {
+    dotsContainer.innerHTML = '';
+    return;
+  }
+
+  let html = '';
+  for (let i = 0; i < dotCount; i++) {
+    html += `<button class="photo-carousel-dot ${i === currentPhotoSlideIndex ? 'active' : ''}" data-index="${i}" aria-label="Go to slide ${i + 1}"></button>`;
+  }
+  dotsContainer.innerHTML = html;
+
+  dotsContainer.querySelectorAll('.photo-carousel-dot').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-index'), 10);
+      currentPhotoSlideIndex = idx;
+      updatePhotoCarouselPosition();
+    });
+  });
+}
+
+function updatePhotoCarouselPosition() {
+  const track = document.getElementById('photo-carousel-track');
+  if (!track) return;
+  const cards = track.querySelectorAll('.photo-carousel-card');
+  if (!cards.length) return;
+
+  const visible = getPhotoCarouselVisibleCount();
+  const maxIdx = Math.max(0, cards.length - visible);
+  if (currentPhotoSlideIndex > maxIdx) currentPhotoSlideIndex = maxIdx;
+  if (currentPhotoSlideIndex < 0) currentPhotoSlideIndex = 0;
+
+  const firstCard = cards[0];
+  const cardRect = firstCard.getBoundingClientRect();
+  const style = window.getComputedStyle(track);
+  const gap = parseFloat(style.gap) || 20;
+  const step = cardRect.width + gap;
+
+  track.style.transform = `translateX(-${currentPhotoSlideIndex * step}px)`;
+
+  const dots = document.querySelectorAll('#photo-carousel-dots .photo-carousel-dot');
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle('active', idx === currentPhotoSlideIndex);
+  });
+}
+
+function initPhotoCarousel() {
+  const prevBtn = document.getElementById('photo-carousel-prev');
+  const nextBtn = document.getElementById('photo-carousel-next');
+  const section = document.getElementById('photo-carousel-section');
+
+  renderPhotoCarousel();
+
+  prevBtn?.addEventListener('click', () => {
+    const items = (typeof CHL_DB !== 'undefined' && CHL_DB.getPhotoCarousel) ? CHL_DB.getPhotoCarousel() : [];
+    const visible = getPhotoCarouselVisibleCount();
+    const maxIdx = Math.max(0, items.length - visible);
+    if (currentPhotoSlideIndex > 0) {
+      currentPhotoSlideIndex--;
+    } else {
+      currentPhotoSlideIndex = maxIdx;
+    }
+    updatePhotoCarouselPosition();
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    const items = (typeof CHL_DB !== 'undefined' && CHL_DB.getPhotoCarousel) ? CHL_DB.getPhotoCarousel() : [];
+    const visible = getPhotoCarouselVisibleCount();
+    const maxIdx = Math.max(0, items.length - visible);
+    if (currentPhotoSlideIndex < maxIdx) {
+      currentPhotoSlideIndex++;
+    } else {
+      currentPhotoSlideIndex = 0;
+    }
+    updatePhotoCarouselPosition();
+  });
+
+  window.addEventListener('resize', () => {
+    const items = (typeof CHL_DB !== 'undefined' && CHL_DB.getPhotoCarousel) ? CHL_DB.getPhotoCarousel() : [];
+    updatePhotoCarouselPagination(items.length);
+    updatePhotoCarouselPosition();
+  });
+
+  // Touch swipe
+  let startX = 0;
+  const wrapper = document.querySelector('.photo-carousel-wrapper');
+  wrapper?.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+  }, { passive: true });
+
+  wrapper?.addEventListener('touchend', (e) => {
+    const endX = e.changedTouches[0].clientX;
+    const diff = startX - endX;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        nextBtn?.click();
+      } else {
+        prevBtn?.click();
+      }
+    }
+  }, { passive: true });
+
+  // Autoplay with pause on hover
+  function startAutoplay() {
+    stopAutoplay();
+    photoCarouselAutoplayTimer = setInterval(() => {
+      const items = (typeof CHL_DB !== 'undefined' && CHL_DB.getPhotoCarousel) ? CHL_DB.getPhotoCarousel() : [];
+      const visible = getPhotoCarouselVisibleCount();
+      const maxIdx = Math.max(0, items.length - visible);
+      if (currentPhotoSlideIndex < maxIdx) {
+        currentPhotoSlideIndex++;
+      } else {
+        currentPhotoSlideIndex = 0;
+      }
+      updatePhotoCarouselPosition();
+    }, 5000);
+  }
+
+  function stopAutoplay() {
+    if (photoCarouselAutoplayTimer) {
+      clearInterval(photoCarouselAutoplayTimer);
+      photoCarouselAutoplayTimer = null;
+    }
+  }
+
+  section?.addEventListener('mouseenter', stopAutoplay);
+  section?.addEventListener('mouseleave', startAutoplay);
+  startAutoplay();
+}
+window.initPhotoCarousel = initPhotoCarousel;
 
 function addToSampleCart(prod) {
   if (window.Cart) {

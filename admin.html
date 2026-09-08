@@ -269,6 +269,64 @@
       gap: 1rem;
     }
 
+    .photo-carousel-admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .photo-carousel-admin-card {
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s ease;
+    }
+    .photo-carousel-admin-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: #a3c4b0;
+    }
+    .photo-carousel-admin-card-head {
+      padding: 0.9rem 1.2rem;
+      background: #f8faf9;
+      border-bottom: 1px solid var(--color-border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .photo-carousel-admin-card-body {
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex-grow: 1;
+    }
+    .photo-carousel-admin-thumb-wrap {
+      width: 100%;
+      height: 160px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #eef3f0;
+      position: relative;
+    }
+    .photo-carousel-admin-thumb-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .photo-carousel-admin-actions {
+      padding: 0.9rem 1.2rem;
+      background: #fafcfb;
+      border-top: 1px solid var(--color-border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
     /* Login Overlay */
     .auth-overlay {
       position: fixed;
@@ -344,6 +402,9 @@
         </div>
         <div class="admin-nav-item" data-tab="tab-products">
           <span>📦</span> Products Manager
+        </div>
+        <div class="admin-nav-item" data-tab="tab-photo-carousel">
+          <span>📸</span> Photo Carousel (8 Photos)
         </div>
         <div class="admin-nav-item" data-tab="tab-coconut-harvest">
           <span>🥥</span> Coconut Harvest (5 Items)
@@ -465,6 +526,31 @@
             </thead>
             <tbody id="admin-products-tbody"></tbody>
           </table>
+        </div>
+      </section>
+
+      <!-- 2b. PHOTO CAROUSEL (8 PHOTOS) TAB -->
+      <section id="tab-photo-carousel" class="admin-tab-content" style="display: none;">
+        <div class="admin-header-bar">
+          <div>
+            <h1 style="font-size: 1.8rem; color: var(--color-primary-dark);">Home Photo Carousel Post (8 Photos)</h1>
+            <p style="font-size: 0.9rem; margin: 0;">Add, edit, and re-arrange photos featured in the carousel post between the stats counter strip and coconut harvest.</p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="resetPhotoCarouselDefaultsConfirm()">🔄 Reset Defaults</button>
+            <button type="button" class="btn btn-accent btn-sm" onclick="openAddPhotoCarouselModal()">+ Add New Photo</button>
+          </div>
+        </div>
+
+        <div style="background: #f0f7f2; border: 1px solid #cbe3d3; padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+          <div style="font-size: 0.88rem; color: #1e452f;">
+            💡 <strong>Re-Arranging Tip:</strong> Use the <strong>⬆️ Move Up</strong> and <strong>⬇️ Move Down</strong> buttons on each card to immediately shift its position in the carousel sequence. Changes automatically sync to the live website.
+          </div>
+          <span class="badge" style="background: var(--color-primary); color: #fff; font-size: 0.85rem; padding: 6px 12px;" id="admin-photo-count-badge">8 Photos Active</span>
+        </div>
+
+        <div class="photo-carousel-admin-grid" id="admin-photo-carousel-container">
+          <!-- Injected dynamically via js/admin.js -->
         </div>
       </section>
 
@@ -1005,6 +1091,61 @@
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
           <button type="button" class="btn btn-outline btn-sm" onclick="closeCategoryEditModal()">Cancel</button>
           <button type="submit" class="btn btn-primary btn-sm">Save Category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 5: Add / Edit Photo Carousel Post Item
+       ========================================================================= -->
+  <div id="photo-carousel-edit-modal" class="modal-overlay" role="dialog">
+    <div class="modal-card" style="max-width: 620px; padding: 2rem; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-close-btn" onclick="closePhotoCarouselEditModal()">✕</button>
+      <h2 id="photo-modal-title" style="font-size: 1.5rem; color: var(--color-primary-dark); margin-bottom: 1.25rem;">Edit Carousel Photo</h2>
+
+      <form id="photo-carousel-form" onsubmit="event.preventDefault(); savePhotoCarouselModal();">
+        <input type="hidden" id="edit-photo-id">
+
+        <div class="grid-2" style="gap: 1rem; margin-bottom: 0;">
+          <div class="form-group">
+            <label class="form-label">Photo Title *</label>
+            <input type="text" id="edit-photo-title" class="form-control" required placeholder="e.g. Organic Coconut Triangle Groves">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Badge Tag (Optional)</label>
+            <input type="text" id="edit-photo-badge" class="form-control" placeholder="e.g. Organic Origin">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Caption / Description *</label>
+          <textarea id="edit-photo-caption" class="form-control" rows="2" required placeholder="Brief description of the photo..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Image File or URL *</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="edit-photo-image" class="form-control" required placeholder="assets/images/... or paste image URL" oninput="previewPhotoModalImg(this.value)">
+            <label class="btn btn-outline btn-sm" style="cursor: pointer; margin: 0; white-space: nowrap;">
+              📁 Browse
+              <input type="file" accept="image/*" style="display: none;" onchange="handleCarouselPhotoFile(this)">
+            </label>
+          </div>
+          <small style="color: var(--color-text-subtle); font-size: 0.75rem;">Upload a JPG/PNG from your computer (automatically compressed) or enter an existing asset path.</small>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 14px; background: #f8faf9; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border-light); margin-bottom: 1.25rem;">
+          <img id="photo-modal-preview" src="assets/images/logo/chl-logo.jpg" alt="Preview" style="width: 100px; height: 75px; object-fit: cover; border-radius: 6px; border: 1px solid var(--color-border);" onerror="this.src='assets/images/logo/chl-logo.jpg'">
+          <div>
+            <strong style="font-size: 0.85rem; color: var(--color-primary-dark); display: block;">Live Image Preview</strong>
+            <span style="font-size: 0.75rem; color: var(--color-text-subtle);">This image will be displayed on the home page photo carousel card.</span>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="closePhotoCarouselEditModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Save Photo</button>
         </div>
       </form>
     </div>
