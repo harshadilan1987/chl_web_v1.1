@@ -2995,12 +2995,12 @@ body {
 }
 
 .sister-card-palmpoet:hover {
-  border-color: #2B2B2A;
-  box-shadow: 0 10px 24px rgba(43, 43, 42, 0.2);
+  border-color: #B88B4A;
+  box-shadow: 0 10px 24px rgba(184, 139, 74, 0.22);
 }
 .sister-card-palmpoet:hover .sister-logo-wrap {
-  border-color: #2B2B2A;
-  box-shadow: 0 0 0 1.5px #2B2B2A;
+  border-color: #B88B4A;
+  box-shadow: 0 0 0 1.5px #B88B4A;
 }
 
 .sister-card-nexgrid:hover {
