@@ -958,19 +958,11 @@ window.handleCarouselPhotoFile = handleCarouselPhotoFile;
 
 function savePhotoCarouselModal() {
   const id = document.getElementById('edit-photo-id').value.trim();
-  const title = document.getElementById('edit-photo-title').value.trim();
+  const title = document.getElementById('edit-photo-title').value.trim() || 'Photo';
   const badge = document.getElementById('edit-photo-badge').value.trim();
   const caption = document.getElementById('edit-photo-caption').value.trim();
   const image = document.getElementById('edit-photo-image').value.trim();
 
-  if (!title) {
-    alert('Please enter a photo title.');
-    return;
-  }
-  if (!caption) {
-    alert('Please enter a photo caption / description.');
-    return;
-  }
   if (!image) {
     alert('Please select or upload an image.');
     return;
