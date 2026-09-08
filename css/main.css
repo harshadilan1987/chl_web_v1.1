@@ -156,10 +156,10 @@ ul, ol {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url('../assets/images/decorations/botanical-lines-white.png');
+  background-image: url('../assets/images/decorations/botanical-lines-seamless-tile.png');
   background-repeat: repeat;
-  background-size: 640px auto;
-  opacity: 0.13; /* Very light transparent (~87% transparent) white botanical line art as per requested design */
+  background-size: 800px auto;
+  opacity: 0.12; /* Light transparent white botanical line art with zero seam mismatch */
   pointer-events: none;
   z-index: 0;
 }

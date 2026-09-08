@@ -201,13 +201,14 @@ body {
   height: var(--header-height);
 }
 
-/* Logo styling - Per client request: balanced width */
+/* Logo styling - Per client request: balanced width & distinct separation from nav */
 .site-logo {
   display: flex;
   align-items: center;
   gap: 0.85rem;
   text-decoration: none;
   flex-shrink: 0;
+  margin-right: clamp(1.5rem, 3.5vw, 3.5rem); /* Generous gap between company name/logo and Home button */
 }
 
 .site-logo img {
@@ -287,7 +288,7 @@ body {
 .nav-menu {
   display: none;
   align-items: center;
-  gap: 1.8rem;
+  gap: clamp(1rem, 1.6vw, 1.8rem);
 }
 
 @media (min-width: 1024px) {
@@ -1536,6 +1537,25 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-info-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('../assets/images/decorations/botanical-lines-seamless-tile.png');
+  background-repeat: repeat;
+  background-size: 640px auto;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.contact-info-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .contact-info-card h3 {
@@ -1585,12 +1605,28 @@ body {
    -------------------------------------------------------------------------- */
 .site-footer {
   background-color: #061a10;
-  background-image: url('../assets/images/decorations/ceylon-mandala-gold-pattern.png');
-  background-repeat: repeat;
-  background-size: 580px 580px;
+  position: relative;
+  overflow: hidden;
   color: rgba(255, 255, 255, 0.8);
   padding-top: 5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('../assets/images/decorations/botanical-lines-seamless-tile.png');
+  background-repeat: repeat;
+  background-size: 800px auto;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.site-footer > .container {
+  position: relative;
+  z-index: 1;
 }
 
 .footer-grid {
