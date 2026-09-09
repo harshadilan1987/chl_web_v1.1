@@ -600,7 +600,7 @@ function openAddPostModal() {
   document.getElementById('edit-post-id').value = "";
   document.getElementById('edit-post-status').value = "Published";
   document.getElementById('edit-post-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('edit-post-author').value = "Suresh Jayasinghe, Director Operations";
+  document.getElementById('edit-post-author').value = "Suresh Jayasinghe, Director - Technical & International Marketing";
   document.getElementById('edit-post-readingtime').value = "4 min read";
 
   currentPostPhotos = ["assets/images/banner/hero-bg.jpg"];

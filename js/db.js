@@ -18,7 +18,7 @@ const CHL_DEFAULT_BLOG_POSTS = [
     title: "Celebration Holdings Showcases True Ceylon Cinnamon & Organic Coconut at BIOFACH Germany",
     category: "Foreign Exhibitions",
     publishedDate: "2026-02-18",
-    author: "Suresh Jayasinghe, Director Operations",
+    author: "Suresh Jayasinghe, Director - Technical & International Marketing",
     readingTime: "4 min read",
     coverImage: "assets/images/banner/hero-bg.jpg",
     photos: [
@@ -465,6 +465,27 @@ const CHL_DB = {
     // 3. Blog Posts
     if (!localStorage.getItem(this.STORAGE_KEYS.BLOG)) {
       localStorage.setItem(this.STORAGE_KEYS.BLOG, JSON.stringify(CHL_DEFAULT_BLOG_POSTS));
+    } else {
+      // Migrate Suresh's designation in existing stored blog posts
+      try {
+        const storedPosts = JSON.parse(localStorage.getItem(this.STORAGE_KEYS.BLOG) || '[]');
+        if (Array.isArray(storedPosts) && storedPosts.length > 0) {
+          let updated = false;
+          const mappedPosts = storedPosts.map(p => {
+            if (p.author && p.author.includes('Suresh') && p.author.includes('Director Operations')) {
+              updated = true;
+              return {
+                ...p,
+                author: p.author.replace('Director Operations', 'Director - Technical & International Marketing')
+              };
+            }
+            return p;
+          });
+          if (updated) {
+            localStorage.setItem(this.STORAGE_KEYS.BLOG, JSON.stringify(mappedPosts));
+          }
+        }
+      } catch (e) {}
     }
 
     // 4. Coconut Harvest (5 items)
