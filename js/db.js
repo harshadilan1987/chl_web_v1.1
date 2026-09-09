@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Celebration Holdings (Pvt) Ltd - Unified Database Engine
  * Manages Products, Categories, Blog Posts, Coconut Harvest Line, Sample Kits & Persistence
  */
@@ -12,137 +12,125 @@ const CHL_DEFAULT_CATEGORIES = [
 ];
 
 const CHL_DEFAULT_BLOG_POSTS = [
-  {
-    id: "post-01",
-    slug: "celebration-holdings-showcases-true-ceylon-cinnamon-at-biofach-germany",
-    title: "Celebration Holdings Showcases True Ceylon Cinnamon & Organic Coconut at BIOFACH Germany",
-    category: "Foreign Exhibitions",
-    publishedDate: "2026-02-18",
-    author: "Suresh Jayasinghe, Director - Technical & International Marketing",
-    readingTime: "4 min read",
-    coverImage: "assets/images/banner/hero-bg.jpg",
-    photos: [
-      "assets/images/banner/hero-bg.jpg",
-      "assets/images/about/about-harvest-spread.jpg",
-      "assets/images/about/about-ceylon-cinnamon.jpg"
-    ],
-    excerpt: "Representing Sri Lanka at Nuremberg's prestigious BIOFACH Organic Trade Fair, CHL connected with leading European organic distributors seeking ultra-low coumarin True Ceylon Cinnamon and single-origin Virgin Coconut Oil.",
-    content: `
-      <h3>Connecting with European Organic Leaders at Nuremberg</h3>
-      <p>In February 2026, Celebration Holdings (Private) Ltd proudly showcased its portfolio of certified organic products at <strong>BIOFACH</strong> in Nuremberg, Germany — the world's leading trade fair for organic food and sustainable agriculture.</p>
-      
-      <p>The European market has placed stringent regulatory scrutiny on coumarin levels found in Chinese and Indonesian Cassia cinnamon. Our presentation of <strong>True Ceylon Cinnamon (Cinnamomum verum)</strong> in exquisite Alba and 5C Special grades received extraordinary acclaim from German, French, and Swiss buyers due to its certified ultra-low coumarin profile (&lt;0.004%) and delicate sweet notes.</p>
-      
-      <div style="background: #f4f2eb; padding: 1.5rem; border-left: 4px solid #0c4d2f; margin-block: 1.5rem; border-radius: 6px;">
-        <h4 style="margin-bottom: 0.5rem; color: #0c4d2f;">Key European Trade Takeaways:</h4>
-        <ul style="margin-left: 1.25rem;">
-          <li>Over 45 formal commercial inquiries generated for 20ft/40ft container shipments of Organic Virgin Coconut Oil and Desiccated Coconut.</li>
-          <li>Strong demand for our <em>Young Green Jackfruit in Brine</em> as a clean-label, soy-free plant-based meat alternative in European supermarket chains.</li>
-          <li>Partnerships initiated for private-label organic coconut milk powder and MCT oil distribution across the DACH region.</li>
-        </ul>
-      </div>
-
-      <h3>Advancing Sri Lanka's Agricultural Heritage</h3>
-      <p>Our presence at BIOFACH reaffirms CHL's strategic mission: connecting the timeless agricultural traditions of Sri Lankan smallholder farmers with discerning global buyers who value unadulterated quality and complete organic traceability.</p>
-    `,
-    status: "Published",
-    featured: true
-  },
-  {
-    id: "post-02",
-    slug: "revitalizing-the-1910-traditional-sekkuwa-stone-squeezed-sesame-oil",
-    title: "Revitalizing the 1910 Sekkuwa: How Cold Stone-Squeezed Sesame Extraction Preserves Pure Sesamol",
-    category: "Organic Innovations",
-    publishedDate: "2026-04-12",
-    author: "Dilan Fernando, Director Marketing & Finance",
-    readingTime: "5 min read",
-    coverImage: "assets/images/services/traditional-sekku.jpg",
-    photos: [
-      "assets/images/services/traditional-sekku.jpg",
-      "assets/images/banner/service-bg.jpg",
-      "assets/images/about/about-growers.jpg"
-    ],
-    excerpt: "Ancient Ceylon stone-squeezing mortar extraction transforms the modern wellness industry. Discover how our engineered Sekkuwa protects fragile antioxidant compounds below 38°C.",
-    content: `
-      <h3>The Science Behind Stone-Squeezing (Sekkuwa)</h3>
-      <p>Modern industrial oil expellers generate friction temperatures exceeding 80°C to 120°C. While this maximizes commercial yields, it oxidizes delicate unsaturated fatty acids and destroys vital antioxidants.</p>
-      
-      <p>At Celebration Holdings, our engineering team looked back to a photograph captured in 1910 documenting the Sri Lankan <em>"Sekkuwa"</em> — a massive granite mortar and wooden pestle driven slowly by gentle rotation. By applying modern stainless steel sanitary housings around natural granite stone crushers, we created our proprietary <strong>Modern Sekku Squeezer</strong>.</p>
-      
-      <h3>Retaining Sesamol and Natural Anti-Inflammatory Power</h3>
-      <p>Laboratory comparative assays performed on our stone-squeezed white and black sesame oils demonstrated:</p>
-      <ul style="margin-left: 1.25rem; margin-bottom: 1.25rem;">
-        <li><strong>Sub-38°C Processing:</strong> Preserves 100% of the active Sesamin, Sesamol, and Sesamolin compounds.</li>
-        <li><strong>Exceptional Oxidative Shelf Life:</strong> Natural phenolic antioxidants act as an innate preservative without artificial tocopherols.</li>
-        <li><strong>Silky Viscosity:</strong> Perfect for traditional Ayurvedic oil-pulling, dermatological massage, and gourmet Asian culinary finishing.</li>
-      </ul>
-      <p>We are proud to bring this authentic artisanal heritage to kitchens and wellness clinics across Japan, Europe, and Australia.</p>
-    `,
-    status: "Published",
-    featured: true
-  },
-  {
-    id: "post-03",
-    slug: "targeting-10-million-revenue-by-2030-expanding-to-japan-and-australia",
-    title: "Targeting $10M by 2030: Expanding Sri Lanka's Certified Organic Footprint to Japan and Australia",
-    category: "Company Milestones",
-    publishedDate: "2026-06-25",
-    author: "Sharmen Perera, Director HR & Administration",
-    readingTime: "3 min read",
-    coverImage: "assets/images/banner/service.jpg",
-    photos: [
-      "assets/images/banner/service.jpg",
-      "assets/images/banner/carousel-tropical-climate.jpg",
-      "assets/images/banner/carousel-ceylon-hospitality.jpg"
-    ],
-    excerpt: "Celebration Holdings outlines its 2030 strategic export roadmap, announcing new cold-chain logistics agreements and expanded grower cooperative networks in Kurunegala and Matale.",
-    content: `
-      <h3>Our Strategic Horizon 2030</h3>
-      <p>From our humble beginnings in 2016 founded by three young visionaries, Celebration Holdings has grown into a respected player in Sri Lanka's agricultural export landscape. Today, we reaffirm our corporate mission: <em>to surpass $10 Million in annual certified organic exports by the year 2030.</em></p>
-      
-      <h3>Expanding Our Pacific & Asian Trade Corridors</h3>
-      <p>Following high-level bilateral trade meetings in Tokyo and Melbourne, CHL has finalized direct logistics channels into major Japanese ports (Yokohama, Kobe) and Australian entry points (Sydney, Melbourne). Key growth drivers include:</p>
-      <ul style="margin-left: 1.25rem;">
-        <li>High-grade <strong>Organic Virgin Coconut Oil & MCT Powder</strong> tailored for Japan's booming health and functional beverage sector.</li>
-        <li>Bulk retail-ready pouches of <strong>Ceylon Alba Cinnamon</strong> and whole spices for gourmet Australian organic supermarket cooperatives.</li>
-        <li>Fair trade off-take contracts with 250+ additional certified farming families in the North Western Coconut Triangle.</li>
-      </ul>
-    `,
-    status: "Published",
-    featured: false
-  },
-  {
-    id: "post-04",
-    slug: "achieving-eu-and-usda-organic-certification-cu-853200-a-testament-to-food-integrity",
-    title: "Achieving EU & USDA Organic Certification CU 853200: A Testament to Pure Food Integrity",
-    category: "Certifications",
-    publishedDate: "2026-08-10",
-    author: "Bhagya Neththikumara, Director Quality Assurance",
-    readingTime: "4 min read",
-    coverImage: "assets/images/certifications/cert-1.jpg",
-    photos: [
-      "assets/images/certifications/cert-1.jpg",
-      "assets/images/certifications/cert-2.jpg",
-      "assets/images/certifications/cert-3.jpg",
-      "assets/images/certifications/jas-organic.png"
-    ],
-    excerpt: "A deep dive into our rigorous farm-to-shipment audit processes under Control Union CU 853200, guaranteeing non-GMO, pesticide-free pure Ceylon produce.",
-    content: `
-      <h3>Organic You Can Trust Across the Globe</h3>
-      <p>While many commercial brands make generalized claims about organic purity, Celebration Holdings backs every harvest with internationally accredited audits. Our primary certification under <strong>Control Union Certifications (CU 853200)</strong> guarantees compliance with both European Union (EU) Organic regulations and the United States Department of Agriculture (USDA) National Organic Program (NOP).</p>
-      
-      <h3>What CU 853200 Guarantees:</h3>
-      <ul style="margin-left: 1.25rem;">
-        <li><strong>Complete Soil Traceability:</strong> Zero synthetic chemical fertilizers, pesticides, or glyphosate applied for a minimum of 3 consecutive harvest cycles.</li>
-        <li><strong>Cleanroom Processing:</strong> Strict separation of organic product streams with zero risk of cross-contamination.</li>
-        <li><strong>Non-GMO Verification:</strong> Rigorous genetic testing verifying 100% natural, heritage Ceylon cultivars.</li>
-        <li><strong>Batch-Level COA:</strong> Certificates of Analysis provided for every commercial container dispatched from Colombo Port.</li>
-      </ul>
-    `,
-    status: "Published",
-    featured: false
-  }
-];
+    {
+        "id":  "post-mttxd9zz",
+        "title":  "Always Go for the Kill: Uncompromising Pursuit of Technical Excellence",
+        "category":  "Foreign Exhibitions",
+        "publishedDate":  "2026-08-15",
+        "author":  "Suresh Jayasinghe, Director - Technical \u0026 International Marketing",
+        "status":  "Published",
+        "photos":  [
+                       "assets/images/Blog/post-mttxd9zz/photo_1.jpg",
+                       "assets/images/Blog/post-mttxd9zz/photo_2.jpg",
+                       "assets/images/Blog/post-mttxd9zz/photo_3.jpg",
+                       "assets/images/Blog/post-mttxd9zz/photo_4.jpg",
+                       "assets/images/Blog/post-mttxd9zz/photo_5.jpg",
+                       "assets/images/Blog/post-mttxd9zz/photo_6.jpg"
+                   ],
+        "coverImage":  "assets/images/Blog/post-mttxd9zz/cover.jpg",
+        "readingTime":  "5 min read",
+        "excerpt":  "Refusing to cut corners or compromise on equipment, Celebration Holdings (CHL) ventures directly to world-class manufacturing hubs in China, investing aggressively in cutting-edge industrial technology to deliver unmatched purity and export-grade quality.",
+        "content":  "\u003ch3\u003eEngineering Superiority: No Half-Measures, No Compromises\u003c/h3\u003e\n\u003cp\u003eWhen it comes to processing purity and product integrity, Celebration Holdings (Private) Ltd operates on an absolute conviction: \u003cstrong\u003ealways go for the kill\u003c/strong\u003e. Delivering world-class organic coconut products, botanical oils, and dried tropical superfoods demands more than good intentions—it requires industry-dominating technical capability. Our leadership team recently concluded an intensive technical procurement tour across top-tier manufacturing hubs and precision engineering facilities in China.\u003c/p\u003e\n\n\u003cp\u003eMediocrity has no place in our production lines. Where conventional processors settle for second-rate machinery to minimize overheads, CHL aggressively inspects, tests, and commissions the absolute gold standard in industrial processing technology. Regardless of capital expenditure, our mandate is unequivocal: if an engineering innovation enhances nutrient retention, refines particle size, or eliminates contamination risks, we acquire it.\u003c/p\u003e\n\n\u003cdiv style=\"background: #f4f2eb; padding: 1.5rem; border-left: 4px solid #0c4d2f; margin-block: 1.5rem; border-radius: 6px;\"\u003e\n  \u003ch4 style=\"margin-bottom: 0.5rem; color: #0c4d2f;\"\u003eStrategic Technical Procurement Milestones:\u003c/h4\u003e\n  \u003cul style=\"margin-left: 1.25rem;\"\u003e\n    \u003cli\u003eDirect factory inspections and trials of automated low-temperature dehydrators to preserve raw enzymatic activity and cellular structure in tropical fruits.\u003c/li\u003e\n    \u003cli\u003eAcquisition of high-precision stainless steel filtration and expeller extraction machinery for ultra-pure botanical and seed oils.\u003c/li\u003e\n    \u003cli\u003eIntegration of state-of-the-art optical color sorters and hermetic nitrogen-flush packaging systems to guarantee extended shelf-life without chemical stabilizers.\u003c/li\u003e\n  \u003c/ul\u003e\n\u003c/div\u003e\n\n\u003ch3\u003eUncompromising Quality as an Industrial Moat\u003c/h3\u003e\n\u003cp\u003eTrue market leadership is earned on the factory floor. By pairing Sri Lanka\u0027s finest organic harvests with the world\u0027s most advanced processing machinery, CHL builds a technical moat that guarantees unmatched batch-to-batch consistency, complete food safety compliance, and peak export performance across global markets.\u003c/p\u003e",
+        "slug":  "always-go-for-the-kill-uncompromising-pursuit-of-technical-excellence"
+    },
+    {
+        "id":  "post-mttwmtvr",
+        "title":  "Brings Certified Organic Purity to Asia-Pacific at FOODEX Japan",
+        "category":  "Foreign Exhibitions",
+        "publishedDate":  "2023-03-15",
+        "author":  "Dilan Fernando, Director Marketing \u0026 Finance",
+        "status":  "Published",
+        "photos":  [
+                       "assets/images/Blog/2. FoodEx 2023/1.jpeg",
+                       "assets/images/Blog/2. FoodEx 2023/2.jpeg",
+                       "assets/images/Blog/2. FoodEx 2023/3.jpeg",
+                       "assets/images/Blog/2. FoodEx 2023/4.jpeg",
+                       "assets/images/Blog/2. FoodEx 2023/5.jpeg",
+                       "assets/images/Blog/2. FoodEx 2023/6.jpeg",
+                       "assets/images/Blog/2. FoodEx 2023/7.jpeg",
+                       "assets/images/Blog/2. FoodEx 2023/8.jpeg"
+                   ],
+        "coverImage":  "assets/images/Blog/2. FoodEx 2023/1.jpeg",
+        "readingTime":  "4 min read",
+        "excerpt":  "Marking a major trade expansion into East Asia, Celebration Holdings (Pvt) Ltd (CHL) unveiled its premium line of certified organic coconut derivatives, single-origin Ceylon spices, and dehydrated tropical fruits at FOODEX Japan at Tokyo Big Sight.",
+        "content":  "\u003ch3\u003eCaptivating the Japanese Market at FOODEX Japan\u003c/h3\u003e\n\u003cp\u003eCelebration Holdings (Private) Ltd proudly showcased its certified organic export portfolio at \u003cstrong\u003eFOODEX Japan\u003c/strong\u003e at Tokyo Big Sight — Asia\u0027s largest and most prestigious trade event for the food and beverage industry.\u003c/p\u003e\n\n\u003cp\u003eThe Japanese market is globally renowned for its exacting standards regarding food safety, traceability, and sensory quality. Our showcase of \u003cstrong\u003eTrue Ceylon Cinnamon (Cinnamomum verum)\u003c/strong\u003e quills and powder, low-glycemic coconut blossom syrup, and zero-sulfur dehydrated tropical fruits generated remarkable interest from Japanese importers, specialty tea blenders, and clean-label confectionery brands.\u003c/p\u003e\n\n\u003cdiv style=\"background: #f4f2eb; padding: 1.5rem; border-left: 4px solid #0c4d2f; margin-block: 1.5rem; border-radius: 6px;\"\u003e\n  \u003ch4 style=\"margin-bottom: 0.5rem; color: #0c4d2f;\"\u003eKey FOODEX Japan Trade Highlights:\u003c/h4\u003e\n  \u003cul style=\"margin-left: 1.25rem;\"\u003e\n    \u003cli\u003eAdvanced retail and bulk distribution inquiries secured for JAS-compliant Organic Extra Virgin Coconut Oil and fine Coconut Flour.\u003c/li\u003e\n    \u003cli\u003eStrong commercial interest from premium beverage manufacturers in single-origin spice distillations, including Cardamom, Clove Bud, and Ginger essential oils.\u003c/li\u003e\n    \u003cli\u003eHigh demand from health-conscious snack distributors for our clean-label Dried Organic Mango, Pineapple, and Papaya with zero added sugars or preservatives.\u003c/li\u003e\n  \u003c/ul\u003e\n\u003c/div\u003e\n\n\u003ch3\u003eFostering East Asian Partnerships Rooted in Quality\u003c/h3\u003e\n\u003cp\u003eCHL’s presence at FOODEX Japan marks a pivotal step in bridging Sri Lanka’s organic smallholder farming networks with Asia\u0027s most discerning retail sectors, delivering certified purity, rigorous international compliance, and farm-to-shelf integrity.\u003c/p\u003e",
+        "slug":  "brings-certified-organic-purity-to-asia-pacific-at-foodex-japan"
+    },
+    {
+        "id":  "post-01",
+        "slug":  "showcases-premium-organic-sri-lankan-innovations-at-ife-london",
+        "title":  "Showcases Premium Organic Sri Lankan Innovations at IFE London",
+        "category":  "Foreign Exhibitions",
+        "publishedDate":  "2025-03-31",
+        "author":  "Suresh Jayasinghe, Director - Technical \u0026 International Marketing",
+        "readingTime":  "4 min read",
+        "coverImage":  "assets/images/Blog/post-01/cover.jpg",
+        "photos":  [
+                       "assets/images/Blog/post-01/photo_1.jpg",
+                       "assets/images/Blog/post-01/photo_2.jpg",
+                       "assets/images/Blog/post-01/photo_3.jpg",
+                       "assets/images/Blog/post-01/photo_4.jpg",
+                       "assets/images/Blog/post-01/photo_5.jpg"
+                   ],
+        "excerpt":  "Sri Lankan agro-export innovator Celebration Holdings (Pvt) Ltd (CHL) took center stage at the International Food \u0026 Drink Event (IFE) at ExCeL London, presenting its certified organic portfolio—from virgin coconut derivatives and dried tropical fruits to single-origin spices and pure botanical oils.",
+        "content":  "\u003ch3\u003eChampioning Pure Organic Innovation at IFE London\u003c/h3\u003e\n\u003cp\u003eCelebration Holdings (Private) Ltd proudly showcased its comprehensive export portfolio of certified organic agricultural innovations at \u003cstrong\u003eIFE (International Food \u0026 Drink Event)\u003c/strong\u003e at ExCeL London — the United Kingdom’s premier trade platform for sustainable food sourcing and product discovery.\u003c/p\u003e\n\n\u003cp\u003eWith British and European retail buyers seeking transparent, clean-label ingredients, our presentation of \u003cstrong\u003eTrue Ceylon Cinnamon (Cinnamomum verum)\u003c/strong\u003e, pure coconut blossom derivatives, and unadulterated spice distillations captured significant interest. Buyers commended our zero-additive processing methods, reliable supply chain traceability, and full compliance with stringent EU and UK organic import standards.\u003c/p\u003e\n\n\u003cdiv style=\"background: #f4f2eb; padding: 1.5rem; border-left: 4px solid #0c4d2f; margin-block: 1.5rem; border-radius: 6px;\"\u003e\n  \u003ch4 style=\"margin-bottom: 0.5rem; color: #0c4d2f;\"\u003eKey IFE London Commercial Takeaways:\u003c/h4\u003e\n  \u003cul style=\"margin-left: 1.25rem;\"\u003e\n    \u003cli\u003eOver 50 targeted trade inquiries secured for container-load exports of Organic Virgin Coconut Oil, Coconut Milk Powder, and Coconut Flour.\u003c/li\u003e\n    \u003cli\u003eHigh interest from UK health-snack distributors for our dehydrated, unsweetened tropical fruits, including Organic Dried Mango, Pineapple, Papaya, and Banana.\u003c/li\u003e\n    \u003cli\u003eSupply agreements initiated with specialty food brands for cold-pressed sesame oil, alongside steam-distilled Cardamom, Clove Bud, and Ginger essential oils.\u003c/li\u003e\n  \u003c/ul\u003e\n\u003c/div\u003e\n\n\u003ch3\u003eBridging Sri Lankan Smallholders with Global Retail\u003c/h3\u003e\n\u003cp\u003eOur successful showcase at IFE London reinforces CHL’s long-term export vision: empowering Sri Lankan agro-forestry communities through fair-trade practices while delivering pristine, single-origin organic staples to the global culinary and wellness sectors.\u003c/p\u003e",
+        "status":  "Published",
+        "featured":  true
+    },
+    {
+        "id":  "post-02",
+        "slug":  "revitalizing-the-1910-sekkuwa-how-cold-stone-squeezed-sesame-extraction-preserves-pure-sesamol",
+        "title":  "Revitalizing the 1910 Sekkuwa: How Cold Stone-Squeezed Sesame Extraction Preserves Pure Sesamol",
+        "category":  "Organic Innovations",
+        "publishedDate":  "2024-01-20",
+        "author":  "Dilan Fernando, Director Marketing \u0026 Finance",
+        "readingTime":  "5 min read",
+        "coverImage":  "assets/images/services/traditional-sekku.jpg",
+        "photos":  [
+                       "assets/images/services/traditional-sekku.jpg",
+                       "assets/images/Blog/post-02/photo_2.jpg"
+                   ],
+        "excerpt":  "Ancient Ceylon stone-squeezing mortar extraction transforms the modern wellness industry. Discover how our engineered Sekkuwa protects fragile antioxidant compounds below 38°C.",
+        "content":  "\u003ch3\u003eThe Science Behind Stone-Squeezing (Sekkuwa)\u003c/h3\u003e\n      \u003cp\u003eModern industrial oil expellers generate friction temperatures exceeding 80°C to 120°C. While this maximizes commercial yields, it oxidizes delicate unsaturated fatty acids and destroys vital antioxidants.\u003c/p\u003e\n      \n      \u003cp\u003eAt Celebration Holdings, our engineering team looked back to a photograph captured in 1910 documenting the Sri Lankan \u003cem\u003e\"Sekkuwa\"\u003c/em\u003e — a massive granite mortar and wooden pestle driven slowly by gentle rotation. By applying modern stainless steel sanitary housings around natural granite stone crushers, we created our proprietary \u003cstrong\u003eModern Sekku Squeezer\u003c/strong\u003e.\u003c/p\u003e\n      \n      \u003ch3\u003eRetaining Sesamol and Natural Anti-Inflammatory Power\u003c/h3\u003e\n      \u003cp\u003eLaboratory comparative assays performed on our stone-squeezed white and black sesame oils demonstrated:\u003c/p\u003e\n      \u003cul style=\"margin-left: 1.25rem; margin-bottom: 1.25rem;\"\u003e\n        \u003cli\u003e\u003cstrong\u003eSub-38°C Processing:\u003c/strong\u003e Preserves 100% of the active Sesamin, Sesamol, and Sesamolin compounds.\u003c/li\u003e\n        \u003cli\u003e\u003cstrong\u003eExceptional Oxidative Shelf Life:\u003c/strong\u003e Natural phenolic antioxidants act as an innate preservative without artificial tocopherols.\u003c/li\u003e\n        \u003cli\u003e\u003cstrong\u003eSilky Viscosity:\u003c/strong\u003e Perfect for traditional Ayurvedic oil-pulling, dermatological massage, and gourmet Asian culinary finishing.\u003c/li\u003e\n      \u003c/ul\u003e\n      \u003cp\u003eWe are proud to bring this authentic artisanal heritage to kitchens and wellness clinics across Japan, Europe, and Australia.\u003c/p\u003e",
+        "status":  "Published",
+        "featured":  true
+    },
+    {
+        "id":  "post-03",
+        "slug":  "targeting-10m-by-2030-expanding-sri-lanka-s-certified-organic-footprint-to-japan-and-australia",
+        "title":  "Targeting $10M by 2030: Expanding Sri Lanka\u0027s Certified Organic Footprint to Japan and Australia",
+        "category":  "Company Milestones",
+        "publishedDate":  "2022-01-01",
+        "author":  "Sharmen Perera, Director HR \u0026 Administration",
+        "readingTime":  "3 min read",
+        "coverImage":  "assets/images/Blog/post-03/cover.jpg",
+        "photos":  [
+                       "assets/images/Blog/post-03/photo_1.jpg"
+                   ],
+        "excerpt":  "Celebration Holdings outlines its 2030 strategic export roadmap, announcing new cold-chain logistics agreements and expanded grower cooperative networks in Kurunegala and Matale.",
+        "content":  "\u003ch3\u003eOur Strategic Horizon 2030\u003c/h3\u003e\n      \u003cp\u003eFrom our humble beginnings in 2016 founded by three young visionaries, Celebration Holdings has grown into a respected player in Sri Lanka\u0027s agricultural export landscape. Today, we reaffirm our corporate mission: \u003cem\u003eto surpass $10 Million in annual certified organic exports by the year 2030.\u003c/em\u003e\u003c/p\u003e\n      \n      \u003ch3\u003eExpanding Our Pacific \u0026 Asian Trade Corridors\u003c/h3\u003e\n      \u003cp\u003eFollowing high-level bilateral trade meetings in Tokyo and Melbourne, CHL has finalized direct logistics channels into major Japanese ports (Yokohama, Kobe) and Australian entry points (Sydney, Melbourne). Key growth drivers include:\u003c/p\u003e\n      \u003cul style=\"margin-left: 1.25rem;\"\u003e\n        \u003cli\u003eHigh-grade \u003cstrong\u003eOrganic Virgin Coconut Oil \u0026 MCT Powder\u003c/strong\u003e tailored for Japan\u0027s booming health and functional beverage sector.\u003c/li\u003e\n        \u003cli\u003eBulk retail-ready pouches of \u003cstrong\u003eCeylon Alba Cinnamon\u003c/strong\u003e and whole spices for gourmet Australian organic supermarket cooperatives.\u003c/li\u003e\n        \u003cli\u003eFair trade off-take contracts with 250+ additional certified farming families in the North Western Coconut Triangle.\u003c/li\u003e\n      \u003c/ul\u003e",
+        "status":  "Published",
+        "featured":  false
+    },
+    {
+        "id":  "post-04",
+        "slug":  "achieving-eu-usda-organic-certification-cu-853200-a-testament-to-pure-food-integrity",
+        "title":  "Achieving EU \u0026 USDA Organic Certification CU 853200: A Testament to Pure Food Integrity",
+        "category":  "Certifications",
+        "publishedDate":  "2023-02-21",
+        "author":  "Bhagya Neththikumara, Director Quality Assurance",
+        "readingTime":  "4 min read",
+        "coverImage":  "assets/images/Blog/blog_3.jpg",
+        "photos":  [
+                       "assets/images/Blog/blog_3.jpg"
+                   ],
+        "excerpt":  "A deep dive into our rigorous farm-to-shipment audit processes under Control Union CU 853200, guaranteeing non-GMO, pesticide-free pure Ceylon produce.",
+        "content":  "\u003ch3\u003eOrganic You Can Trust Across the Globe\u003c/h3\u003e\n      \u003cp\u003eWhile many commercial brands make generalized claims about organic purity, Celebration Holdings backs every harvest with internationally accredited audits. Our primary certification under \u003cstrong\u003eControl Union Certifications (CU 853200)\u003c/strong\u003e guarantees compliance with both European Union (EU) Organic regulations and the United States Department of Agriculture (USDA) National Organic Program (NOP).\u003c/p\u003e\n      \n      \u003ch3\u003eWhat CU 853200 Guarantees:\u003c/h3\u003e\n      \u003cul style=\"margin-left: 1.25rem;\"\u003e\n        \u003cli\u003e\u003cstrong\u003eComplete Soil Traceability:\u003c/strong\u003e Zero synthetic chemical fertilizers, pesticides, or glyphosate applied for a minimum of 3 consecutive harvest cycles.\u003c/li\u003e\n        \u003cli\u003e\u003cstrong\u003eCleanroom Processing:\u003c/strong\u003e Strict separation of organic product streams with zero risk of cross-contamination.\u003c/li\u003e\n        \u003cli\u003e\u003cstrong\u003eNon-GMO Verification:\u003c/strong\u003e Rigorous genetic testing verifying 100% natural, heritage Ceylon cultivars.\u003c/li\u003e\n        \u003cli\u003e\u003cstrong\u003eBatch-Level COA:\u003c/strong\u003e Certificates of Analysis provided for every commercial container dispatched from Colombo Port.\u003c/li\u003e\n      \u003c/ul\u003e",
+        "status":  "Published",
+        "featured":  false
+    }
+]
+;
 
 // Default 5 Sri Lanka Organic Coconut Harvest Line Products
 const CHL_DEFAULT_COCONUT_HARVEST = [
@@ -190,37 +178,38 @@ const CHL_DEFAULT_COCONUT_HARVEST = [
 
 // Curated Sample Evaluation Kits
 const CHL_DEFAULT_SAMPLE_KITS = [
-  {
-    id: "kit-01",
-    name: "Organic Coconut Importer Sample Kit",
-    category: "kit",
-    priceUSD: 45.00,
-    badge: "Export Testing Kit",
-    image: "assets/images/products/coconut/Virgin Coconut Oil.jpeg",
-    items: "Virgin Coconut Oil (100ml), MCT Oil (100ml), Coconut Milk Powder (150g), Flour (100g), Desiccated High Fat (100g)",
-    desc: "Complete testing pack with technical specifications, COA, and EU/USDA certificates for food buyers."
-  },
-  {
-    id: "kit-02",
-    name: "Ceylon Spices & True Cinnamon Connoisseur Kit",
-    category: "kit",
-    priceUSD: 55.00,
-    badge: "Export Testing Kit",
-    image: "assets/images/products/spices/Ceylon Alba Cinnamon.jpg",
-    items: "Alba Cinnamon Quills (50g), 550 GL Black Pepper (100g), Curcumin Turmeric (100g), Cardamom (50g), Gourmet Vanilla Pods (2 pcs)",
-    desc: "Premier grade Ceylon spices with laboratory coumarin & piperine assay reports."
-  },
-  {
-    id: "kit-03",
-    name: "Pure Ceylon Essential Oils Master Tasting Pack",
-    category: "kit",
-    priceUSD: 65.00,
-    badge: "Export Testing Kit",
-    image: "assets/images/products/oils/Cinnamon Bark Oil.jpg",
-    items: "Cinnamon Bark Oil (5ml), Lemongrass Oil (10ml), Black Pepper Oil (5ml), Clove Bud Oil (10ml), Vetiver Oil (5ml)",
-    desc: "GC-MS tested pharmaceutical & perfumery pure distillates with dropper vials."
-  }
-];
+    {
+        "id":  "kit-01",
+        "name":  "Organic Coconut Importer Sample Kit",
+        "category":  "kit",
+        "priceUSD":  45,
+        "badge":  "Export Testing Kit",
+        "image":  "assets/images/sample-kits/sample_kit_1.png",
+        "items":  "Virgin Coconut Oil (500ml), MCT Oil (500ml), Coconut Milk Powder (1kg), Coconut Flour (1kg), Desiccated Coconut (1kg), Coconut Milk (400ml), Coconut Butter (220ml)",
+        "desc":  "Complete testing pack with technical specifications, COA, and EU/USDA certificates for food buyers."
+    },
+    {
+        "id":  "kit-02",
+        "name":  "Ceylon Spices Sample Kit",
+        "category":  "kit",
+        "priceUSD":  145,
+        "badge":  "Export Testing Kit",
+        "image":  "assets/images/sample-kits/sample_kit_2.png",
+        "items":  "Alba Cinnamon Sticks(500g), Black Pepper (500g), Cinnamon Powder (500g), Turmeric Powder (500g), Cardamom (500g), Moringa Powder (500g)",
+        "desc":  "Premier grade Ceylon spices with laboratory coumarin \u0026 piperine assay reports."
+    },
+    {
+        "id":  "kit-03",
+        "name":  "Sesame Products Kit",
+        "category":  "kit",
+        "priceUSD":  35,
+        "badge":  "Export Testing Kit",
+        "image":  "assets/images/sample-kits/sample_kit_3.png",
+        "items":  "Black seeds Sesame Oil (Expeller Pressed) (500ml), White seeds Sesame Oil Stone Squeezed (500ml), Tahini (250g)",
+        "desc":  "High-margin artisanal sesame trio featuring expeller-pressed and stone-squeezed varieties, fully certified for food safety with ready-to-sell retail packaging."
+    }
+]
+;
 
 // Default 6 Photos for Home Photo Carousel
 const CHL_DEFAULT_PHOTO_CAROUSEL = [
@@ -409,8 +398,17 @@ const CHL_DB = {
     this.ensureSeedData();
     this.broadcastChange();
   },
-
   ensureSeedData() {
+    // Check synchronization version to push latest 40 products and 6 blog stories
+    const SYNC_VERSION_KEY = 'chl_db_sync_v3_2026_09_09';
+    if (!localStorage.getItem(SYNC_VERSION_KEY)) {
+      localStorage.setItem(this.STORAGE_KEYS.BLOG, JSON.stringify(CHL_DEFAULT_BLOG_POSTS));
+      if (typeof PRODUCTS_DATA !== 'undefined' && Array.isArray(PRODUCTS_DATA) && PRODUCTS_DATA.length > 0) {
+        localStorage.setItem(this.STORAGE_KEYS.PRODUCTS, JSON.stringify(PRODUCTS_DATA));
+      }
+      localStorage.setItem(this.STORAGE_KEYS.SAMPLE_KITS, JSON.stringify(CHL_DEFAULT_SAMPLE_KITS));
+      localStorage.setItem(SYNC_VERSION_KEY, '3.0');
+    }
     // 1. Categories
     if (!localStorage.getItem(this.STORAGE_KEYS.CATEGORIES)) {
       localStorage.setItem(this.STORAGE_KEYS.CATEGORIES, JSON.stringify(CHL_DEFAULT_CATEGORIES));

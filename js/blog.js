@@ -100,13 +100,40 @@ function renderBlogPosts() {
 
       return `
       <article class="blog-card">
-        <div style="position: relative; overflow: hidden;">
-          <img src="${photos[0]}" alt="${post.title}" class="blog-card-img" loading="lazy">
-          ${hasMulti ? `<span class="badge" style="position: absolute; top: 12px; right: 12px; background: rgba(12,77,47,0.85); color: #fff; font-size: 0.72rem; backdrop-filter: blur(4px);">📷 ${photos.length} Photos</span>` : ''}
+        <div class="blog-carousel-img-wrap">
+          ${hasMulti ? `
+            <div class="inner-photo-slider">
+              <div class="inner-photo-track" data-curr-photo="0" style="width: ${photos.length * 100}%;">
+                ${photos.map((img, idx) => `
+                  <div class="inner-photo-slide" style="width: ${100 / photos.length}%;">
+                    <img src="${img}" alt="${post.title} - Photo ${idx + 1}" loading="lazy" onerror="this.src='assets/images/banner/hero-bg.jpg'">
+                  </div>
+                `).join('')}
+              </div>
+
+              <!-- Inner Carousel Mini Navigation Arrows -->
+              <button type="button" class="inner-photo-btn inner-prev" onclick="event.stopPropagation(); innerPhotoCardMove(this, -1)" aria-label="Previous photo">‹</button>
+              <button type="button" class="inner-photo-btn inner-next" onclick="event.stopPropagation(); innerPhotoCardMove(this, 1)" aria-label="Next photo">›</button>
+
+              <!-- Inner Photo Counter Badge -->
+              <span class="inner-photo-counter">📷 ${photos.length} Photos</span>
+
+              <!-- Inner Photo Dots -->
+              <div class="inner-photo-dots">
+                ${photos.map((_, dotIdx) => `
+                  <span class="inner-dot ${dotIdx === 0 ? 'active' : ''}" onclick="event.stopPropagation(); innerPhotoCardGoTo(this, ${dotIdx})"></span>
+                `).join('')}
+              </div>
+            </div>
+          ` : `
+            <div class="inner-photo-slider">
+              <img src="${photos[0]}" alt="${post.title}" loading="lazy" onerror="this.src='assets/images/banner/hero-bg.jpg'">
+            </div>
+          `}
         </div>
         <div class="blog-card-body">
           <div class="blog-meta-row">
-            <span class="badge" style="background: #e0f2fe; color: #0369a1;">${post.category}</span>
+            <span class="badge" style="background: #e0f2fe; color: #0369a1; border-radius: 9999px; padding: 4px 12px; font-weight: 600;">${post.category}</span>
             <span>${post.publishedDate}</span>
           </div>
           <h3 style="font-size: 1.1rem; color: var(--color-primary-dark); margin-bottom: 0.5rem; line-height: 1.35;">
@@ -125,7 +152,68 @@ function renderBlogPosts() {
       </article>
     `;
     }).join('');
+
+    _initInnerPhotosAutoPlay();
   }
+}
+
+/* Universal Inner Photo Carousel Card Controller for Blog Page */
+function _applyCardPhoto(card, idx, total) {
+  const track = card.querySelector('.inner-photo-track');
+  const counter = card.querySelector('.inner-photo-counter');
+  const dots = card.querySelectorAll('.inner-dot');
+  if (track) {
+    track.setAttribute('data-curr-photo', idx);
+    const shift = idx * (100 / total);
+    track.style.transform = `translateX(-${shift}%)`;
+  }
+  if (counter) {
+    counter.textContent = `📷 ${idx + 1}/${total}`;
+  }
+  if (dots && dots.length) {
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  }
+}
+
+function innerPhotoCardMove(btn, dir) {
+  const card = btn.closest('.blog-card, .blog-carousel-card');
+  if (!card) return;
+  const track = card.querySelector('.inner-photo-track');
+  if (!track) return;
+  const slides = track.querySelectorAll('.inner-photo-slide');
+  const total = slides.length;
+  if (total <= 1) return;
+  let curr = parseInt(track.getAttribute('data-curr-photo') || '0', 10);
+  curr = (curr + dir + total) % total;
+  _applyCardPhoto(card, curr, total);
+}
+window.innerPhotoCardMove = innerPhotoCardMove;
+
+function innerPhotoCardGoTo(dot, idx) {
+  const card = dot.closest('.blog-card, .blog-carousel-card');
+  if (!card) return;
+  const track = card.querySelector('.inner-photo-track');
+  if (!track) return;
+  const slides = track.querySelectorAll('.inner-photo-slide');
+  _applyCardPhoto(card, idx, slides.length);
+}
+window.innerPhotoCardGoTo = innerPhotoCardGoTo;
+
+let _innerBlogPhotoTimer = null;
+function _initInnerPhotosAutoPlay() {
+  clearInterval(_innerBlogPhotoTimer);
+  _innerBlogPhotoTimer = setInterval(() => {
+    document.querySelectorAll('.blog-card, .blog-carousel-card').forEach(card => {
+      if (card.matches(':hover')) return;
+      const track = card.querySelector('.inner-photo-track');
+      if (!track) return;
+      const slides = track.querySelectorAll('.inner-photo-slide');
+      if (slides.length <= 1) return;
+      let curr = parseInt(track.getAttribute('data-curr-photo') || '0', 10);
+      curr = (curr + 1) % slides.length;
+      _applyCardPhoto(card, curr, slides.length);
+    });
+  }, 4000);
 }
 
 function openArticleReader(slugOrId) {

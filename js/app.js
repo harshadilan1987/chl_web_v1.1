@@ -294,7 +294,7 @@ let _blogCarouselIdx = 0;
 let _blogCarouselTotal = 0;
 let _blogCarouselTimer = null;
 let _innerPhotoTimer = null;
-const _innerPhotoStates = {}; // postId -> { current: 0, total: N }
+let _isTransitioning = false;
 const _BLOG_VISIBLE = () => window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : 3;
 
 function renderHomeBlogPreview() {
@@ -303,23 +303,25 @@ function renderHomeBlogPreview() {
   if (!track || typeof CHL_DB === 'undefined') return;
 
   const posts = CHL_DB.getPosts(true); // all posts in stored order
-  if (!posts.length) { track.innerHTML = '<p style="color:var(--color-text-subtle);padding:2rem 0;">No posts yet.</p>'; return; }
+  if (!posts.length) { 
+    track.innerHTML = '<p style="color:var(--color-text-subtle);padding:2rem 0;">No posts yet.</p>'; 
+    return; 
+  }
 
   _blogCarouselTotal = posts.length;
-  _blogCarouselIdx = 0;
+  // Start at real set B (offset by N)
+  _blogCarouselIdx = _blogCarouselTotal;
 
-  track.innerHTML = posts.map(p => {
+  const renderCard = (p) => {
     const photos = (p.photos && Array.isArray(p.photos) && p.photos.length > 0) ? p.photos.slice(0, 10) : [p.coverImage || 'assets/images/banner/hero-bg.jpg'];
-    _innerPhotoStates[p.id] = { current: 0, total: photos.length };
-
     const hasMultiPhotos = photos.length > 1;
 
     return `
       <article class="blog-carousel-card">
         <div class="blog-carousel-img-wrap">
           ${hasMultiPhotos ? `
-            <div class="inner-photo-slider" id="inner-slider-${p.id}">
-              <div class="inner-photo-track" id="inner-track-${p.id}" style="width: ${photos.length * 100}%;">
+            <div class="inner-photo-slider">
+              <div class="inner-photo-track" data-curr-photo="0" style="width: ${photos.length * 100}%;">
                 ${photos.map((img, idx) => `
                   <div class="inner-photo-slide" style="width: ${100 / photos.length}%;">
                     <img src="${img}" alt="${p.title} - Photo ${idx + 1}" loading="lazy" onerror="this.src='assets/images/banner/hero-bg.jpg'">
@@ -328,16 +330,16 @@ function renderHomeBlogPreview() {
               </div>
 
               <!-- Inner Carousel Mini Navigation Arrows -->
-              <button type="button" class="inner-photo-btn inner-prev" onclick="event.stopPropagation(); innerPhotoMove('${p.id}', -1)" aria-label="Previous photo">‹</button>
-              <button type="button" class="inner-photo-btn inner-next" onclick="event.stopPropagation(); innerPhotoMove('${p.id}', 1)" aria-label="Next photo">›</button>
+              <button type="button" class="inner-photo-btn inner-prev" onclick="event.stopPropagation(); innerPhotoCardMove(this, -1)" aria-label="Previous photo">‹</button>
+              <button type="button" class="inner-photo-btn inner-next" onclick="event.stopPropagation(); innerPhotoCardMove(this, 1)" aria-label="Next photo">›</button>
 
               <!-- Inner Photo Counter Badge -->
-              <span class="inner-photo-counter" id="inner-counter-${p.id}">📷 1/${photos.length}</span>
+              <span class="inner-photo-counter">📷 ${photos.length} Photos</span>
 
               <!-- Inner Photo Dots -->
-              <div class="inner-photo-dots" id="inner-dots-${p.id}">
+              <div class="inner-photo-dots">
                 ${photos.map((_, dotIdx) => `
-                  <span class="inner-dot ${dotIdx === 0 ? 'active' : ''}" onclick="event.stopPropagation(); innerPhotoGoTo('${p.id}', ${dotIdx})"></span>
+                  <span class="inner-dot ${dotIdx === 0 ? 'active' : ''}" onclick="event.stopPropagation(); innerPhotoCardGoTo(this, ${dotIdx})"></span>
                 `).join('')}
               </div>
             </div>
@@ -346,145 +348,189 @@ function renderHomeBlogPreview() {
               <img src="${photos[0]}" alt="${p.title}" loading="lazy" onerror="this.src='assets/images/banner/hero-bg.jpg'">
             </div>
           `}
-          <span class="blog-carousel-badge">${p.category}</span>
         </div>
         <div class="blog-carousel-body">
-          <div class="blog-carousel-meta">📅 ${p.publishedDate || '—'} &nbsp;•&nbsp; ⏱️ ${p.readingTime || '4 min'}</div>
-          <h4 class="blog-carousel-title">${p.title}</h4>
+          <div class="blog-meta-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.65rem;">
+            <span class="badge" style="background: #e0f2fe; color: #0369a1; border-radius: 9999px; padding: 4px 12px; font-size: 0.75rem; font-weight: 600;">${p.category}</span>
+            <span style="color: var(--color-text-subtle); font-size: 0.8rem; font-weight: 500;">${p.publishedDate || ''}</span>
+          </div>
+          <h3 class="blog-carousel-title">${p.title}</h3>
           <p class="blog-carousel-excerpt">${p.excerpt}</p>
-          <a href="blog.html#${p.slug}" class="btn btn-outline btn-sm" style="align-self:flex-start;margin-top:auto;">Read Story →</a>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border-light); padding-top: 0.85rem; margin-top: auto;">
+            <span style="font-size: 0.76rem; color: var(--color-text-subtle);">⏱️ ${p.readingTime || '4 min read'}</span>
+            <a href="blog.html#${p.slug}" class="btn btn-outline btn-sm" style="padding: 0.35rem 0.85rem; font-size: 0.78rem;">Read Story →</a>
+          </div>
         </div>
       </article>
     `;
-  }).join('');
+  };
 
-  // Build dots (one per slide-group)
+  // Render 3 sets: Clone Set A, Real Set B, Clone Set C for infinite circular scrolling
+  track.innerHTML = [
+    ...posts.map(renderCard),
+    ...posts.map(renderCard),
+    ...posts.map(renderCard)
+  ].join('');
+
+  // Build dots (one per post in real set)
   if (dotsEl) {
-    const groups = Math.ceil(_blogCarouselTotal / _BLOG_VISIBLE());
-    dotsEl.innerHTML = Array.from({length: groups}, (_, i) =>
+    dotsEl.innerHTML = Array.from({length: _blogCarouselTotal}, (_, i) =>
       `<button class="blog-dot${i===0?' active':''}" aria-label="Slide ${i+1}" onclick="blogCarouselGoTo(${i})"></button>`
     ).join('');
   }
 
-  _blogCarouselApply();
+  // Handle transitionend for infinite looping reset
+  if (track._onTransitionEnd) {
+    track.removeEventListener('transitionend', track._onTransitionEnd);
+  }
+
+  track._onTransitionEnd = () => {
+    _isTransitioning = false;
+    const N = _blogCarouselTotal;
+    if (_blogCarouselIdx >= 2 * N) {
+      _blogCarouselIdx -= N;
+      _blogCarouselApply(false);
+    } else if (_blogCarouselIdx < N) {
+      _blogCarouselIdx += N;
+      _blogCarouselApply(false);
+    }
+  };
+  track.addEventListener('transitionend', track._onTransitionEnd);
+
+  _blogCarouselApply(false);
   _blogAutoPlay();
   _initInnerPhotosAutoPlay();
 
   // Pause outer auto-play on hover
   const carousel = document.getElementById('blog-carousel');
   if (carousel) {
-    carousel.addEventListener('mouseenter', () => clearInterval(_blogCarouselTimer));
-    carousel.addEventListener('mouseleave', _blogAutoPlay);
+    carousel.onmouseenter = () => clearInterval(_blogCarouselTimer);
+    carousel.onmouseleave = _blogAutoPlay;
   }
 }
 
-function _blogCarouselApply() {
-  const visible = _BLOG_VISIBLE();
-  const maxIdx = Math.max(0, _blogCarouselTotal - visible);
-  _blogCarouselIdx = Math.min(Math.max(_blogCarouselIdx, 0), maxIdx);
-
+function _blogCarouselApply(withTransition = true) {
   const track = document.getElementById('home-blog-preview-grid');
-  if (track) {
-    const card = track.querySelector('.blog-carousel-card');
-    if (card) {
-      const cardWidth = card.offsetWidth;
-      const gapStr = window.getComputedStyle(track).gap;
-      const gap = gapStr && gapStr.includes('px') ? parseFloat(gapStr) : 0;
-      const move = _blogCarouselIdx * (cardWidth + gap);
-      track.style.transform = `translateX(-${move}px)`;
-    } else {
-      const pct = (_blogCarouselIdx / _blogCarouselTotal) * 100;
-      track.style.transform = `translateX(-${pct}%)`;
-    }
+  if (!track) return;
+  const card = track.querySelector('.blog-carousel-card');
+  if (!card) return;
+
+  const cardWidth = card.offsetWidth;
+  const gapStr = window.getComputedStyle(track).gap;
+  const gap = gapStr && gapStr.includes('px') ? parseFloat(gapStr) : 24;
+  const move = _blogCarouselIdx * (cardWidth + gap);
+
+  if (withTransition) {
+    track.style.transition = 'transform 0.45s cubic-bezier(0.25, 1, 0.5, 1)';
+  } else {
+    track.style.transition = 'none';
   }
+  track.style.transform = `translateX(-${move}px)`;
 
   // Update dots
-  const dots = document.querySelectorAll('.blog-dot');
-  const groupIdx = Math.round(_blogCarouselIdx / visible);
-  dots.forEach((d, i) => d.classList.toggle('active', i === groupIdx));
+  const N = _blogCarouselTotal;
+  if (N > 0) {
+    const activeDot = ((_blogCarouselIdx % N) + N) % N;
+    const dots = document.querySelectorAll('.blog-dot');
+    dots.forEach((d, i) => d.classList.toggle('active', i === activeDot));
+  }
 
-  // Arrow visibility
+  // Always keep arrows enabled in infinite loop
   const prev = document.getElementById('blog-prev');
   const next = document.getElementById('blog-next');
-  if (prev) prev.style.opacity = _blogCarouselIdx <= 0 ? '0.35' : '1';
-  if (next) next.style.opacity = _blogCarouselIdx >= Math.max(0, _blogCarouselTotal - visible) ? '0.35' : '1';
+  if (prev) { prev.style.opacity = '1'; prev.style.pointerEvents = 'auto'; }
+  if (next) { next.style.opacity = '1'; next.style.pointerEvents = 'auto'; }
 }
 
 function blogCarouselMove(dir) {
-  const visible = _BLOG_VISIBLE();
-  _blogCarouselIdx = Math.min(Math.max(_blogCarouselIdx + dir, 0), Math.max(0, _blogCarouselTotal - visible));
-  _blogCarouselApply();
+  if (_isTransitioning) return;
+  _isTransitioning = true;
+  _blogCarouselIdx += dir;
+  _blogCarouselApply(true);
+  setTimeout(() => { _isTransitioning = false; }, 500);
 }
 window.blogCarouselMove = blogCarouselMove;
 
-function blogCarouselGoTo(groupIdx) {
-  _blogCarouselIdx = groupIdx * _BLOG_VISIBLE();
-  _blogCarouselApply();
+function blogCarouselGoTo(realIdx) {
+  if (_isTransitioning) return;
+  _isTransitioning = true;
+  _blogCarouselIdx = _blogCarouselTotal + realIdx;
+  _blogCarouselApply(true);
+  setTimeout(() => { _isTransitioning = false; }, 500);
 }
 window.blogCarouselGoTo = blogCarouselGoTo;
 
 function _blogAutoPlay() {
   clearInterval(_blogCarouselTimer);
   _blogCarouselTimer = setInterval(() => {
-    const visible = _BLOG_VISIBLE();
-    const max = Math.max(0, _blogCarouselTotal - visible);
-    _blogCarouselIdx = _blogCarouselIdx >= max ? 0 : _blogCarouselIdx + 1;
-    _blogCarouselApply();
-  }, 5000);
+    blogCarouselMove(1);
+  }, 4500);
 }
 
-/* Inner Photo Carousel Controller */
-function innerPhotoMove(postId, dir) {
-  const state = _innerPhotoStates[postId];
-  if (!state || state.total <= 1) return;
-  state.current = (state.current + dir + state.total) % state.total;
-  _applyInnerPhoto(postId);
-}
-window.innerPhotoMove = innerPhotoMove;
-
-function innerPhotoGoTo(postId, idx) {
-  const state = _innerPhotoStates[postId];
-  if (!state) return;
-  state.current = idx;
-  _applyInnerPhoto(postId);
-}
-window.innerPhotoGoTo = innerPhotoGoTo;
-
-function _applyInnerPhoto(postId) {
-  const state = _innerPhotoStates[postId];
-  if (!state) return;
-  const track = document.getElementById(`inner-track-${postId}`);
-  const counter = document.getElementById(`inner-counter-${postId}`);
-  const dots = document.querySelectorAll(`#inner-dots-${postId} .inner-dot`);
-
+/* Universal Inner Photo Carousel Card Controller (Carousel inside Carousel) */
+function _applyCardPhoto(card, idx, total) {
+  const track = card.querySelector('.inner-photo-track');
+  const counter = card.querySelector('.inner-photo-counter');
+  const dots = card.querySelectorAll('.inner-dot');
   if (track) {
-    const shift = state.current * (100 / state.total);
+    track.setAttribute('data-curr-photo', idx);
+    const shift = idx * (100 / total);
     track.style.transform = `translateX(-${shift}%)`;
   }
   if (counter) {
-    counter.textContent = `📷 ${state.current + 1}/${state.total}`;
+    counter.textContent = `📷 ${idx + 1}/${total}`;
   }
-  if (dots) {
-    dots.forEach((d, i) => d.classList.toggle('active', i === state.current));
+  if (dots && dots.length) {
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
   }
 }
+
+function innerPhotoCardMove(btn, dir) {
+  const card = btn.closest('.blog-carousel-card, .blog-card');
+  if (!card) return;
+  const track = card.querySelector('.inner-photo-track');
+  if (!track) return;
+  const slides = track.querySelectorAll('.inner-photo-slide');
+  const total = slides.length;
+  if (total <= 1) return;
+  let curr = parseInt(track.getAttribute('data-curr-photo') || '0', 10);
+  curr = (curr + dir + total) % total;
+  _applyCardPhoto(card, curr, total);
+}
+window.innerPhotoCardMove = innerPhotoCardMove;
+
+function innerPhotoCardGoTo(dot, idx) {
+  const card = dot.closest('.blog-carousel-card, .blog-card');
+  if (!card) return;
+  const track = card.querySelector('.inner-photo-track');
+  if (!track) return;
+  const slides = track.querySelectorAll('.inner-photo-slide');
+  _applyCardPhoto(card, idx, slides.length);
+}
+window.innerPhotoCardGoTo = innerPhotoCardGoTo;
 
 function _initInnerPhotosAutoPlay() {
   clearInterval(_innerPhotoTimer);
   _innerPhotoTimer = setInterval(() => {
-    Object.keys(_innerPhotoStates).forEach(postId => {
-      const state = _innerPhotoStates[postId];
-      if (state && state.total > 1) {
-        state.current = (state.current + 1) % state.total;
-        _applyInnerPhoto(postId);
-      }
+    document.querySelectorAll('.blog-carousel-card, .blog-card').forEach(card => {
+      // Pause if mouse is hovering over this card
+      if (card.matches(':hover')) return;
+      const track = card.querySelector('.inner-photo-track');
+      if (!track) return;
+      const slides = track.querySelectorAll('.inner-photo-slide');
+      if (slides.length <= 1) return;
+      let curr = parseInt(track.getAttribute('data-curr-photo') || '0', 10);
+      curr = (curr + 1) % slides.length;
+      _applyCardPhoto(card, curr, slides.length);
     });
   }, 4000);
 }
 
 // Re-calc on resize
 window.addEventListener('resize', () => {
-  if (_blogCarouselTotal > 0) { _blogCarouselIdx = 0; _blogCarouselApply(); }
+  if (_blogCarouselTotal > 0) { 
+    _blogCarouselApply(false); 
+  }
 });
 
 
