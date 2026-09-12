@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /sales.html
+Disallow: /login*
+Disallow: /*.apk
+Disallow: /scratch/
+
+Sitemap: https://www.chpl.lk/sitemap.xml
