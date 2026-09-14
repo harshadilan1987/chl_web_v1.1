@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Celebration Holdings (Pvt) Ltd - Unified Database Engine
  * Manages Products, Categories, Blog Posts, Coconut Harvest Line, Sample Kits & Persistence
  */
@@ -88,7 +88,12 @@ const CHL_DEFAULT_BLOG_POSTS = [
         "coverImage":  "assets/images/services/traditional-sekku.jpg",
         "photos":  [
                        "assets/images/services/traditional-sekku.jpg",
-                       "assets/images/Blog/post-02/photo_2.jpg"
+                       "assets/images/Blog/post-02/photo_2.jpg",
+                       "assets/images/Blog/post-02/3.jpg",
+                       "assets/images/Blog/post-02/4.jpg",
+                       "assets/images/Blog/post-02/5.jpg",
+                       "assets/images/Blog/post-02/6.jpg",
+                       "assets/images/Blog/post-02/7.jpg"
                    ],
         "excerpt":  "Ancient Ceylon stone-squeezing mortar extraction transforms the modern wellness industry. Discover how our engineered Sekkuwa protects fragile antioxidant compounds below 38°C.",
         "content":  "\u003ch3\u003eThe Science Behind Stone-Squeezing (Sekkuwa)\u003c/h3\u003e\n      \u003cp\u003eModern industrial oil expellers generate friction temperatures exceeding 80°C to 120°C. While this maximizes commercial yields, it oxidizes delicate unsaturated fatty acids and destroys vital antioxidants.\u003c/p\u003e\n      \n      \u003cp\u003eAt Celebration Holdings, our engineering team looked back to a photograph captured in 1910 documenting the Sri Lankan \u003cem\u003e\"Sekkuwa\"\u003c/em\u003e — a massive granite mortar and wooden pestle driven slowly by gentle rotation. By applying modern stainless steel sanitary housings around natural granite stone crushers, we created our proprietary \u003cstrong\u003eModern Sekku Squeezer\u003c/strong\u003e.\u003c/p\u003e\n      \n      \u003ch3\u003eRetaining Sesamol and Natural Anti-Inflammatory Power\u003c/h3\u003e\n      \u003cp\u003eLaboratory comparative assays performed on our stone-squeezed white and black sesame oils demonstrated:\u003c/p\u003e\n      \u003cul style=\"margin-left: 1.25rem; margin-bottom: 1.25rem;\"\u003e\n        \u003cli\u003e\u003cstrong\u003eSub-38°C Processing:\u003c/strong\u003e Preserves 100% of the active Sesamin, Sesamol, and Sesamolin compounds.\u003c/li\u003e\n        \u003cli\u003e\u003cstrong\u003eExceptional Oxidative Shelf Life:\u003c/strong\u003e Natural phenolic antioxidants act as an innate preservative without artificial tocopherols.\u003c/li\u003e\n        \u003cli\u003e\u003cstrong\u003eSilky Viscosity:\u003c/strong\u003e Perfect for traditional Ayurvedic oil-pulling, dermatological massage, and gourmet Asian culinary finishing.\u003c/li\u003e\n      \u003c/ul\u003e\n      \u003cp\u003eWe are proud to bring this authentic artisanal heritage to kitchens and wellness clinics across Japan, Europe, and Australia.\u003c/p\u003e",
