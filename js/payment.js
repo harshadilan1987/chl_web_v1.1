@@ -566,6 +566,7 @@ const PaymentGateway = {
         method: newOrder.paymentMethod,
         date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
       });
+    }, 1000);
   },
 
   submitPayHereForm(payment) {
