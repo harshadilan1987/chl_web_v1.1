@@ -383,6 +383,40 @@ function getDefaultProductDocs(productName = '', category = '') {
   };
 }
 
+function getDefaultSamplePackSize(p) {
+  if (p && p.samplePackSize) return p.samplePackSize;
+  const name = (p && p.name ? p.name : '').toLowerCase();
+  const cat = (p && p.category ? p.category : '').toLowerCase();
+
+  // Powders, Flour, Desiccated, Butter & Chips (takes precedence over oil keyword, e.g. MCT Oil Powder)
+  if (name.includes('powder') || name.includes('turmeric') || name.includes('moringa') || name.includes('chips') || name.includes('flour') || name.includes('desiccated') || name.includes('tahini') || name.includes('butter')) {
+    return '250g';
+  }
+  // Essential Oils
+  if (cat === 'oils' || name.includes('essential oil') || name.includes('bark oil') || name.includes('bud oil') || name.includes('lemongrass') || name.includes('cardamom oil') || name.includes('ginger oil')) {
+    return '50ml';
+  }
+  // Liquid Coconut Oils, Sesame Oils, Aminos, Syrup, Vinegar
+  if (name.includes('virgin coconut oil') || name.includes('mct coconut oil') || name.includes('sesame oil') || name.includes('aminos') || name.includes('syrup') || name.includes('vinegar') || name.includes('sekku')) {
+    return '250ml';
+  }
+  // Spices Sticks / Quills / Whole Seeds / Vanilla
+  if (name.includes('cinnamon sticks') || name.includes('whole') || name.includes('cardamom') || name.includes('cloves') || name.includes('nutmeg') || name.includes('vanilla') || name.includes('black pepper') || name.includes('white pepper')) {
+    return '100g';
+  }
+  // Canned Fruits
+  if (name.includes('jackfruit') || name.includes('banana blossom') || name.includes('in brine')) {
+    return '400g Can';
+  }
+  // Dried Fruits
+  if (name.includes('dried')) {
+    return '100g';
+  }
+
+  return '250g';
+}
+window.getDefaultSamplePackSize = getDefaultSamplePackSize;
+
 /**
  * The CHL Database Engine (CHL_DB)
  */
@@ -405,14 +439,18 @@ const CHL_DB = {
   },
   ensureSeedData() {
     // Check synchronization version to push latest 40 products and 6 blog stories
-    const SYNC_VERSION_KEY = 'chl_db_sync_v3_2026_09_09';
+    const SYNC_VERSION_KEY = 'chl_db_sync_v4_2026_09_16';
     if (!localStorage.getItem(SYNC_VERSION_KEY)) {
       localStorage.setItem(this.STORAGE_KEYS.BLOG, JSON.stringify(CHL_DEFAULT_BLOG_POSTS));
       if (typeof PRODUCTS_DATA !== 'undefined' && Array.isArray(PRODUCTS_DATA) && PRODUCTS_DATA.length > 0) {
-        localStorage.setItem(this.STORAGE_KEYS.PRODUCTS, JSON.stringify(PRODUCTS_DATA));
+        const enriched = PRODUCTS_DATA.map(p => ({
+          ...p,
+          samplePackSize: p.samplePackSize || getDefaultSamplePackSize(p)
+        }));
+        localStorage.setItem(this.STORAGE_KEYS.PRODUCTS, JSON.stringify(enriched));
       }
       localStorage.setItem(this.STORAGE_KEYS.SAMPLE_KITS, JSON.stringify(CHL_DEFAULT_SAMPLE_KITS));
-      localStorage.setItem(SYNC_VERSION_KEY, '3.0');
+      localStorage.setItem(SYNC_VERSION_KEY, '4.0');
     }
     // 1. Categories
     if (!localStorage.getItem(this.STORAGE_KEYS.CATEGORIES)) {
@@ -427,6 +465,7 @@ const CHL_DB = {
           const docs = getDefaultProductDocs(p.name, p.category);
           return {
             ...p,
+            samplePackSize: p.samplePackSize || getDefaultSamplePackSize(p),
             availability: p.availability || "In Stock",
             certifications: p.certifications || ["EU Organic (CU 853200)", "USDA Organic", "Control Union", "HACCP", "Non-GMO"],
             bulkPriceGuidelineUSD: p.bulkPriceGuidelineUSD || (p.samplePriceUSD ? (p.samplePriceUSD * 0.45).toFixed(2) + " / kg (FOB Colombo)" : "Contact for FCL Quote"),
@@ -439,21 +478,35 @@ const CHL_DB = {
       }
       localStorage.setItem(this.STORAGE_KEYS.PRODUCTS, JSON.stringify(initialProducts));
     } else {
-      // Enrich existing stored products with default docs if missing
+      // Enrich existing stored products with default docs & samplePackSize if missing
       try {
         const stored = JSON.parse(localStorage.getItem(this.STORAGE_KEYS.PRODUCTS) || '[]');
         if (Array.isArray(stored) && stored.length > 0) {
           let updated = false;
           const mapped = stored.map(p => {
+            let itemChanged = false;
+            let samplePackSize = p.samplePackSize;
+            if (!samplePackSize) {
+              itemChanged = true;
+              samplePackSize = getDefaultSamplePackSize(p);
+            }
             if (!p.specDocUrl || !p.msdsDocUrl) {
-              updated = true;
+              itemChanged = true;
               const docs = getDefaultProductDocs(p.name, p.category);
               return {
                 ...p,
+                samplePackSize,
                 specDocUrl: p.specDocUrl || docs.specDocUrl,
                 specDocName: p.specDocName || docs.specDocName,
                 msdsDocUrl: p.msdsDocUrl || docs.msdsDocUrl,
                 msdsDocName: p.msdsDocName || docs.msdsDocName
+              };
+            }
+            if (itemChanged) {
+              updated = true;
+              return {
+                ...p,
+                samplePackSize
               };
             }
             return p;
@@ -604,6 +657,9 @@ const CHL_DB = {
       product.id = 'prod-' + Date.now().toString(36);
     }
 
+    if (!product.samplePackSize) {
+      product.samplePackSize = getDefaultSamplePackSize(product);
+    }
     if (!product.availability) product.availability = "In Stock";
     if (!product.certifications || !Array.isArray(product.certifications)) {
       product.certifications = ["EU Organic (CU 853200)", "USDA Organic"];

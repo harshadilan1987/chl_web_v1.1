@@ -250,12 +250,17 @@ function renderProductCatalog() {
       'Limited Batch': 'stock-limited',
       'Out of Stock': 'stock-out'
     }[stockStatus] || 'stock-in';
+    const sampleSize = prod.samplePackSize || '250g';
 
     return `
       <article class="product-card" data-id="${prod.id}">
         <div class="product-thumb-wrap">
           <span class="badge badge-organic product-badge-top">${prod.badge || 'Certified Organic'}</span>
           <img src="${prod.image}" alt="${prod.name}" loading="lazy" onerror="this.src='assets/images/logo/chl-logo.jpg'">
+          <button type="button" class="product-sample-size-btn" onclick="openProductModal('${prod.id}'); event.stopPropagation();" title="Sample Pack Size: ${sampleSize}">
+            <span class="sample-icon">📦</span>
+            <span>${sampleSize}</span>
+          </button>
         </div>
         <div class="product-body">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
@@ -268,7 +273,7 @@ function renderProductCatalog() {
             ${prod.shortDesc || ''}
           </p>
           <div class="product-meta-row">
-            <span>Sample Unit: <strong>${window.Cart ? window.Cart.formatPrice(prod.samplePriceUSD || 15) : '$' + (prod.samplePriceUSD || 15).toFixed(2)}</strong></span>
+            <span>Sample (${sampleSize}): <strong>${window.Cart ? window.Cart.formatPrice(prod.samplePriceUSD || 15) : '$' + (prod.samplePriceUSD || 15).toFixed(2)}</strong></span>
             <span style="font-size: 0.72rem; color: var(--color-text-subtle);">${prod.certifications ? prod.certifications.length + ' Certs' : 'Certified'}</span>
           </div>
           <div class="product-actions">
@@ -681,7 +686,7 @@ function openProductModal(id) {
   document.getElementById('modal-prod-botanical').textContent = prod.botanicalName || '';
   document.getElementById('modal-prod-desc').textContent = prod.description || prod.shortDesc;
   document.getElementById('modal-prod-grades').textContent = prod.grades || 'Export Grade';
-  document.getElementById('modal-prod-sample-price').textContent = window.Cart ? window.Cart.formatPrice(prod.samplePriceUSD || 15) : '$' + (prod.samplePriceUSD || 15);
+  document.getElementById('modal-prod-sample-price').textContent = (window.Cart ? window.Cart.formatPrice(prod.samplePriceUSD || 15) : '$' + (prod.samplePriceUSD || 15)) + (prod.samplePackSize ? ` (${prod.samplePackSize} Pack)` : ' (250g Pack)');
 
   // Benefits
   const benefitsList = document.getElementById('modal-prod-benefits');

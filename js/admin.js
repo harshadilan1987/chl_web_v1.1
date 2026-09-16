@@ -344,6 +344,11 @@ function renderProductsTable() {
         </td>
         <td><span class="badge" style="background: #f4f2eb; color: #4b5950;">${p.categoryName || p.category}</span></td>
         <td>
+          <span class="stock-badge" style="background: #e8f5ed; color: #0c4d2f; font-weight: 700; border: 1px solid #bbf7d0; font-size: 0.76rem;">
+            📦 ${p.samplePackSize || '250g'}
+          </span>
+        </td>
+        <td>
           <span style="font-weight: 700; color: #c68b2c;">$${parseFloat(p.samplePriceUSD || 0).toFixed(2)}</span>
         </td>
         <td>
@@ -452,6 +457,7 @@ function openAddProductModal() {
   document.getElementById('prod-modal-title').textContent = "Add New Product";
   document.getElementById('product-form').reset();
   document.getElementById('edit-prod-id').value = "";
+  document.getElementById('edit-prod-sample-size').value = "250g";
   document.getElementById('edit-prod-availability').value = "In Stock";
   document.getElementById('edit-prod-badge').value = "EU / USDA Organic";
 
@@ -479,6 +485,7 @@ function openEditProductModal(id) {
   document.getElementById('edit-prod-name').value = prod.name;
   document.getElementById('edit-prod-botanical').value = prod.botanicalName || '';
   document.getElementById('edit-prod-category').value = prod.category;
+  document.getElementById('edit-prod-sample-size').value = prod.samplePackSize || "250g";
   document.getElementById('edit-prod-price').value = prod.samplePriceUSD || 15.0;
   document.getElementById('edit-prod-availability').value = prod.availability || 'In Stock';
   document.getElementById('edit-prod-image').value = prod.image || '';
@@ -548,6 +555,7 @@ document.getElementById('product-form')?.addEventListener('submit', (e) => {
     botanicalName: document.getElementById('edit-prod-botanical').value.trim(),
     category: selectedCatId,
     categoryName: catObj.name,
+    samplePackSize: document.getElementById('edit-prod-sample-size')?.value.trim() || '250g',
     samplePriceUSD: parseFloat(document.getElementById('edit-prod-price').value),
     availability: document.getElementById('edit-prod-availability').value,
     certifications: selectedCerts,

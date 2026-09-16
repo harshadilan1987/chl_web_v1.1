@@ -124,6 +124,7 @@ const Cart = {
       this.items.push({
         id: product.id,
         name: product.name,
+        samplePackSize: product.samplePackSize || '250g',
         priceUSD: product.samplePriceUSD || product.priceUSD || 15.00,
         image: product.image || 'assets/images/logo/chl-logo.jpg',
         category: product.categoryName || 'Sample',
@@ -235,6 +236,7 @@ const Cart = {
           <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='assets/images/logo/chl-logo.jpg'">
           <div class="cart-item-info">
             <h5>${item.name}</h5>
+            <div style="font-size: 0.72rem; color: #0c4d2f; font-weight: 600; margin-bottom: 2px;">📦 Sample Pack: ${item.samplePackSize || '250g'}</div>
             <div class="cart-item-price">${this.formatPrice(item.priceUSD)} <span style="font-size: 0.72rem; color: var(--color-text-subtle); font-weight: 400;">/ sample</span></div>
             <div class="cart-qty-ctrl">
               <button class="qty-btn" onclick="Cart.updateQty('${item.id}', -1)" aria-label="Decrease quantity">−</button>
