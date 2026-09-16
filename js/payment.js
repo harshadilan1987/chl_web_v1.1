@@ -6,15 +6,16 @@
 const PaymentGateway = {
   activeMethod: 'card', // 'card', 'payhere', 'wire'
   config: {
-    // PayHere Sri Lanka Settings (Enter your merchant credentials from payhere.lk)
+    // PayHere Sri Lanka Settings (Live Merchant Credentials)
     payhere: {
-      merchantId: '1210000', // Replace with your live merchant ID
-      isSandbox: true,
+      merchantId: '261612',
+      merchantSecret: 'NDA4NTM2NzI0ODI0Mjg0NTk2NTMyNDM5Mzg4OTI0MTI4ODU4MTE4Mw==',
+      isSandbox: false, // Live Merchant Gateway
       sandboxUrl: 'https://sandbox.payhere.lk/pay/checkout',
       liveUrl: 'https://www.payhere.lk/pay/checkout',
       notifyUrl: 'https://www.chpl.lk/api/payhere-notify',
-      returnUrl: 'https://www.chpl.lk/order-success',
-      cancelUrl: 'https://www.chpl.lk/order-cancelled'
+      returnUrl: 'https://www.chpl.lk',
+      cancelUrl: 'https://www.chpl.lk'
     },
     // Stripe Settings
     stripe: {
@@ -366,17 +367,152 @@ const PaymentGateway = {
         <svg class="spinner" width="20" height="20" viewBox="0 0 50 50" style="animation: spin 1s linear infinite; margin-right: 8px;">
           <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="5" stroke-dasharray="31.4 31.4"></circle>
         </svg>
-        Authorizing Domestic Sri Lanka Order...
+        Connecting to PayHere Secure Gateway...
       `;
     }
 
-    setTimeout(() => {
-      const orderId = 'CHL-ORD-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
-      const subtotalUSD = Cart.getSubtotalUSD();
-      const shippingCostUSD = Cart.getShippingUSD('Sri Lanka');
-      const totalUSD = subtotalUSD + shippingCostUSD;
-      const orderedItems = [...Cart.items];
+    const orderId = 'CHL-ORD-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
+    const subtotalUSD = Cart.getSubtotalUSD();
+    const shippingCostUSD = Cart.getShippingUSD('Sri Lanka');
+    const totalUSD = subtotalUSD + shippingCostUSD;
+    const orderedItems = [...Cart.items];
 
+    // PAYHERE LIVE GATEWAY INTEGRATION
+    if (this.activeMethod === 'payhere' || this.activeMethod === 'card') {
+      // Amount calculation: PayHere accepts LKR and USD
+      const currency = (Cart.currentCurrency === 'USD') ? 'USD' : 'LKR';
+      const amountFormatted = (currency === 'USD')
+        ? totalUSD.toFixed(2)
+        : (Math.round(totalUSD * (CURRENCIES.LKR ? CURRENCIES.LKR.rate : 305.0))).toFixed(2);
+
+      const nameParts = custName.split(' ');
+      const firstName = nameParts[0] || custName;
+      const lastName = nameParts.slice(1).join(' ') || 'Customer';
+      const itemsDescription = orderedItems.map(i => `${i.name} (x${i.qty})`).join(', ').substring(0, 180) || 'Celebration Holdings Samples';
+
+      const merchantId = this.config.payhere.merchantId;
+      const merchantSecret = this.config.payhere.merchantSecret;
+      let paymentHash = '';
+
+      // Compute PayHere Hash: strtoupper(md5(merchant_id + order_id + amount + currency + strtoupper(md5(merchant_secret))))
+      if (typeof md5 === 'function') {
+        const hashedSecret = md5(merchantSecret).toUpperCase();
+        const hashString = merchantId + orderId + amountFormatted + currency + hashedSecret;
+        paymentHash = md5(hashString).toUpperCase();
+      }
+
+      const payment = {
+        sandbox: this.config.payhere.isSandbox,
+        merchant_id: merchantId,
+        return_url: this.config.payhere.returnUrl,
+        cancel_url: this.config.payhere.cancelUrl,
+        notify_url: this.config.payhere.notifyUrl,
+        order_id: orderId,
+        items: itemsDescription,
+        amount: amountFormatted,
+        currency: currency,
+        hash: paymentHash,
+        first_name: firstName,
+        last_name: lastName,
+        email: custEmail,
+        phone: custPhone,
+        address: custAddress,
+        city: custCity,
+        country: 'Sri Lanka',
+        delivery_address: custAddress,
+        delivery_city: custCity,
+        delivery_country: 'Sri Lanka',
+        custom_1: custCompany
+      };
+
+      if (typeof payhere !== 'undefined') {
+        // PayHere Payment Completed Callback
+        payhere.onCompleted = (completedOrderId) => {
+          const newOrder = {
+            id: orderId,
+            type: 'domestic_order',
+            date: new Date().toISOString(),
+            customerName: custName,
+            company: custCompany,
+            email: custEmail,
+            phone: custPhone,
+            address: custAddress,
+            city: custCity,
+            postalCode: custPostal,
+            country: 'Sri Lanka',
+            items: orderedItems,
+            subtotalUSD: subtotalUSD,
+            shippingCostUSD: shippingCostUSD,
+            totalUSD: totalUSD,
+            currency: currency,
+            paymentMethod: 'PayHere Sri Lanka Gateway (Verified)',
+            paymentStatus: 'Paid',
+            status: 'New Order',
+            notes: `Authorized via PayHere Gateway. Ref / Order: ${completedOrderId}`
+          };
+
+          if (typeof CHL_DB !== 'undefined' && typeof CHL_DB.saveOrder === 'function') {
+            CHL_DB.saveOrder(newOrder);
+          }
+
+          Cart.items = [];
+          Cart.save();
+          Cart.updateUI();
+
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            this.switchMethod(this.activeMethod);
+          }
+
+          this.closeCheckoutModal();
+          this.showSuccessModal({
+            orderId: orderId,
+            customerName: custName,
+            company: custCompany,
+            email: custEmail,
+            phone: custPhone,
+            address: `${custAddress}, ${custCity} (${custPostal})`,
+            country: 'Sri Lanka',
+            items: orderedItems,
+            subtotal: currency === 'LKR' ? `Rs. ${Math.round(subtotalUSD * 305.0).toLocaleString()}` : `$${subtotalUSD.toFixed(2)}`,
+            shipping: currency === 'LKR' ? `Rs. ${Math.round(shippingCostUSD * 305.0).toLocaleString()}` : `$${shippingCostUSD.toFixed(2)}`,
+            total: currency === 'LKR' ? `Rs. ${parseFloat(amountFormatted).toLocaleString()}` : `$${amountFormatted}`,
+            currency: currency,
+            method: 'PayHere Sri Lanka Gateway (Paid)',
+            date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+          });
+        };
+
+        // PayHere Window Dismissed / Closed by customer
+        payhere.onDismissed = () => {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            this.switchMethod(this.activeMethod);
+          }
+          showToast('PayHere checkout was closed. You can retry payment anytime.', 'info');
+        };
+
+        // PayHere Error Callback
+        payhere.onError = (error) => {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            this.switchMethod(this.activeMethod);
+          }
+          console.error('PayHere Gateway Error:', error);
+          showToast('PayHere Gateway Notice: ' + error, 'warning');
+        };
+
+        // Launch Official PayHere Popup Modal
+        payhere.startPayment(payment);
+      } else {
+        // Fallback to Hosted PayHere Checkout Form
+        this.submitPayHereForm(payment);
+      }
+      return;
+    }
+
+    // B2B Wire / Commercial Proforma Invoice fallback
+    setTimeout(() => {
       const newOrder = {
         id: orderId,
         type: 'domestic_order',
@@ -394,18 +530,16 @@ const PaymentGateway = {
         shippingCostUSD: shippingCostUSD,
         totalUSD: totalUSD,
         currency: Cart.currentCurrency,
-        paymentMethod: this.activeMethod === 'card' ? 'Visa / Mastercard 3D-Secure' : (this.activeMethod === 'payhere' ? 'PayHere Sri Lanka Gateway' : 'B2B Commercial Proforma / Bank Wire'),
-        paymentStatus: this.activeMethod === 'card' ? 'Authorized' : (this.activeMethod === 'payhere' ? 'Paid' : 'Pending Invoice Settlement'),
+        paymentMethod: 'B2B Commercial Proforma / Bank Wire',
+        paymentStatus: 'Pending Invoice Settlement',
         status: 'New Order',
-        notes: 'Domestic sample delivery within Sri Lanka.'
+        notes: 'Commercial bank proforma invoice requested.'
       };
 
-      // Persist order in CHL_DB
       if (typeof CHL_DB !== 'undefined' && typeof CHL_DB.saveOrder === 'function') {
         CHL_DB.saveOrder(newOrder);
       }
 
-      // Reset cart
       Cart.items = [];
       Cart.save();
       Cart.updateUI();
@@ -432,7 +566,30 @@ const PaymentGateway = {
         method: newOrder.paymentMethod,
         date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
       });
-    }, 1200);
+  },
+
+  submitPayHereForm(payment) {
+    const actionUrl = this.config.payhere.isSandbox
+      ? this.config.payhere.sandboxUrl
+      : this.config.payhere.liveUrl;
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = actionUrl;
+    form.style.display = 'none';
+
+    for (const key in payment) {
+      if (Object.prototype.hasOwnProperty.call(payment, key)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = payment[key];
+        form.appendChild(input);
+      }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
   },
 
   submitOverseasFreight() {

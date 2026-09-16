@@ -1695,7 +1695,7 @@
           <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.75rem;">
             When you click proceed, you will be authorized through PayHere’s secure merchant gateway. Supports Sri Lankan Rupees (LKR) and Multi-currency USD via Visa, Mastercard, AMEX, Genie, and local mobile wallets.
           </p>
-          <div class="badge badge-gold">Ready for Live Merchant Credentials</div>
+          <div class="badge badge-success" style="background: #e8f5ed; color: #0c4d2f; font-weight: 700;">🔒 Live PayHere Verified Merchant (ID: 261612)</div>
         </div>
 
         <!-- Payment Method 3: B2B Wire Transfer -->
@@ -1845,6 +1845,10 @@
       if (tab) tab.click();
     }
   </script>
+
+  <!-- PayHere Sri Lanka Official Gateway SDK & Hash Engine -->
+  <script type="text/javascript" src="https://www.payhere.lk/lib/payhere.js"></script>
+  <script src="js/md5.js"></script>
 
   <!-- Modular Scripts -->
   <script src="js/products-data.js"></script>
