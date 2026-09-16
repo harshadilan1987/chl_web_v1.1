@@ -254,11 +254,18 @@ function renderProductCatalog() {
 
     return `
       <article class="product-card" data-id="${prod.id}">
-        <div class="product-thumb-wrap">
-          <span class="badge badge-organic product-badge-top">${prod.badge || 'Certified Organic'}</span>
-          <img src="${prod.image}" alt="${prod.name}" loading="lazy" onerror="this.src='assets/images/logo/chl-logo.jpg'">
-          <button type="button" class="product-sample-size-btn" onclick="openProductModal('${prod.id}'); event.stopPropagation();" title="Sample Pack Size: ${sampleSize}">
-            <span class="sample-icon">📦</span>
+        <div class="product-thumb-wrap" style="position: relative; width: 100%; height: 220px; background: #ffffff; padding: 1.25rem; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden;">
+          <span class="badge badge-organic product-badge-top" style="position: absolute; top: 0.75rem; left: 0.75rem; z-index: 25;">${prod.badge || 'Certified Organic'}</span>
+          <img src="${prod.image}" alt="${prod.name}" loading="lazy" style="display: block; margin: 0 auto; max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='assets/images/logo/chl-logo.jpg'">
+          <button type="button" class="product-sample-size-btn" onclick="openProductModal('${prod.id}'); event.stopPropagation();" title="Eco-Friendly Sample Pack: ${sampleSize}" style="position: absolute; top: 0.75rem; right: 0.75rem; z-index: 35; display: inline-flex; align-items: center; gap: 6px; background: #082e1d; color: #f6d89b; border: 1.5px solid #22c55e; border-radius: 9999px; padding: 4px 11px 4px 8px; font-size: 0.74rem; font-weight: 700; box-shadow: 0 4px 12px rgba(8,46,29,0.35); cursor: pointer; text-decoration: none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; display: inline-block;">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="#082e1d" stroke="#22c55e" stroke-width="2"/>
+              <path d="M12 12v9" stroke="#22c55e" stroke-width="1.8"/>
+              <path d="M12 12L3.3 7.5" stroke="#22c55e" stroke-width="1.8"/>
+              <path d="M12 12l8.7-4.5" stroke="#22c55e" stroke-width="1.8"/>
+              <path d="M12 7c-1.5-2-3.5-2.5-4-1 .5 2 2.5 2.5 4 1z" fill="#4ade80" stroke="#22c55e" stroke-width="1"/>
+              <path d="M12 7c1.5-2 3.5-2.5 4-1-.5 2-2.5 2.5-4 1z" fill="#86efac" stroke="#22c55e" stroke-width="1"/>
+            </svg>
             <span>${sampleSize}</span>
           </button>
         </div>
