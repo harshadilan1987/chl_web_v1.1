@@ -335,7 +335,9 @@
     const overseasOrders = allOrders.filter(o => o.type === 'overseas_freight_inquiry');
     const pendingOrders = domesticOrders.filter(o => o.status === 'New Order' || o.status === 'Processing');
 
-    const totalRevenueUSD = domesticOrders.reduce((sum, o) => sum + (parseFloat(o.totalUSD) || 0), 0);
+    // Only dispatched (or delivered) orders count toward revenue
+    const dispatchedOrders = domesticOrders.filter(o => o.status === 'Dispatched' || o.status === 'Delivered');
+    const dispatchedRevenueUSD = dispatchedOrders.reduce((sum, o) => sum + (parseFloat(o.totalUSD) || 0), 0);
 
     const elTotal = document.getElementById('stat-total-orders');
     const elDom = document.getElementById('stat-domestic-orders');
@@ -347,7 +349,7 @@
     if (elDom) elDom.textContent = domesticOrders.length;
     if (elOver) elOver.textContent = overseasOrders.length;
     if (elPend) elPend.textContent = pendingOrders.length;
-    if (elRev) elRev.textContent = '$' + totalRevenueUSD.toFixed(2);
+    if (elRev) elRev.textContent = '$' + dispatchedRevenueUSD.toFixed(2);
   }
 
   function renderOverviewRecentTable() {
@@ -364,6 +366,7 @@
       const isDomestic = order.type === 'domestic_order';
       const itemsCount = (order.items || []).reduce((s, i) => s + (i.qty || 1), 0);
       const formattedDate = formatDateShort(order.date);
+      const isDispatched = order.status === 'Dispatched' || order.status === 'Delivered';
 
       return `
         <tr>
@@ -386,7 +389,15 @@
             ${isDomestic && order.shippingCostUSD ? `<div style="font-size: 0.72rem; color: #166534;">+$${order.shippingCostUSD.toFixed(2)} shipping</div>` : ''}
           </td>
           <td>
-            ${renderStatusBadge(order.status)}
+            <div class="status-toggle-container">
+              <label class="status-toggle-switch" title="Toggle Dispatched / Pending">
+                <input type="checkbox" ${isDispatched ? 'checked' : ''} onchange="toggleDispatchStatus('${order.id}', this.checked)">
+                <span class="status-toggle-slider"></span>
+              </label>
+              <button type="button" class="status-toggle-btn" onclick="cycleOrderStatus('${order.id}')" title="Click to cycle next status">
+                ${renderStatusBadge(order.status)} ⟳
+              </button>
+            </div>
           </td>
           <td style="text-align: right; white-space: nowrap;">
             ${isDomestic ? `
@@ -487,13 +498,24 @@
             <div style="font-size: 0.72rem; color: #79877e;">${escapeHtml(order.paymentMethod || 'Online')}</div>
           </td>
           <td>
-            <select class="form-control" onchange="updateOrderStatus('${order.id}', this.value)" style="padding: 4px 6px; font-size: 0.78rem; font-weight: 600; border-radius: 6px; width: 120px;">
-              <option value="New Order" ${order.status === 'New Order' ? 'selected' : ''}>New Order</option>
-              <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
-              <option value="Dispatched" ${order.status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
-              <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-              <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-            </select>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <div class="status-toggle-container">
+                <label class="status-toggle-switch" title="Toggle Dispatched">
+                  <input type="checkbox" ${order.status === 'Dispatched' || order.status === 'Delivered' ? 'checked' : ''} onchange="toggleDispatchStatus('${order.id}', this.checked)">
+                  <span class="status-toggle-slider"></span>
+                </label>
+                <button type="button" class="status-toggle-btn" onclick="cycleOrderStatus('${order.id}')" title="Quick toggle to next status">
+                  ${renderStatusBadge(order.status)} ⟳
+                </button>
+              </div>
+              <select class="form-control" onchange="updateOrderStatus('${order.id}', this.value)" style="padding: 2px 4px; font-size: 0.72rem; font-weight: 600; border-radius: 4px; width: 130px; margin-top: 2px; color: #475569;">
+                <option value="New Order" ${order.status === 'New Order' ? 'selected' : ''}>New Order</option>
+                <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                <option value="Dispatched" ${order.status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
+                <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+              </select>
+            </div>
           </td>
           <td style="text-align: right; white-space: nowrap;">
             <button class="btn btn-primary btn-sm" onclick="openOrderSheet('${order.id}')" style="padding: 5px 10px; font-size: 0.8rem;" title="View official dispatch sheet">
@@ -636,6 +658,29 @@
       showToast(`Order ${orderId} status changed to "${newStatus}"`, 'success');
       loadDataAndRender();
     }
+  };
+
+  window.toggleDispatchStatus = function (orderId, isDispatched) {
+    const newStatus = isDispatched ? 'Dispatched' : 'Processing';
+    window.updateOrderStatus(orderId, newStatus);
+  };
+
+  window.cycleOrderStatus = function (orderId) {
+    const order = allOrders.find(o => o.id === orderId);
+    if (!order) return;
+
+    let nextStatus = 'New Order';
+    if (order.type === 'overseas_freight_inquiry') {
+      const cycle = ['Freight Quote Requested', 'Quote Sent', 'Processing', 'Dispatched', 'Delivered'];
+      const idx = cycle.indexOf(order.status);
+      nextStatus = idx !== -1 && idx < cycle.length - 1 ? cycle[idx + 1] : cycle[0];
+    } else {
+      const cycle = ['New Order', 'Processing', 'Dispatched', 'Delivered'];
+      const idx = cycle.indexOf(order.status);
+      nextStatus = idx !== -1 && idx < cycle.length - 1 ? cycle[idx + 1] : cycle[0];
+    }
+
+    window.updateOrderStatus(orderId, nextStatus);
   };
 
   window.deleteOrderRecord = function (orderId) {

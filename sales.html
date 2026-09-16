@@ -170,6 +170,71 @@
     .order-status-cancelled { background: #fee2e2; color: #991b1b; }
     .order-status-inquiry { background: #f3e8ff; color: #6b21a8; }
 
+    /* Interactive Status Toggle */
+    .status-toggle-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+    .status-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      background: #f1f5f9;
+      color: #334155;
+    }
+    .status-toggle-btn:hover {
+      filter: brightness(0.93);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .status-toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 22px;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+    .status-toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .status-toggle-slider {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: 0.3s;
+      border-radius: 22px;
+    }
+    .status-toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .status-toggle-switch input:checked + .status-toggle-slider {
+      background-color: #2563eb;
+    }
+    .status-toggle-switch input:checked + .status-toggle-slider:before {
+      transform: translateX(22px);
+    }
+
     /* Order Sheet Modal */
     .sheet-modal-overlay {
       position: fixed;
@@ -419,7 +484,7 @@
           </div>
           <div class="stat-card">
             <h3 id="stat-sample-revenue" style="color: #0369a1;">$0.00</h3>
-            <p>Sample Order Volume (USD)</p>
+            <p>Dispatched Orders Total (USD)</p>
           </div>
         </div>
 
