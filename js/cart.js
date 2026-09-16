@@ -236,7 +236,17 @@ const Cart = {
           <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='assets/images/logo/chl-logo.jpg'">
           <div class="cart-item-info">
             <h5>${item.name}</h5>
-            <div style="font-size: 0.72rem; color: #0c4d2f; font-weight: 600; margin-bottom: 2px;">📦 Sample Pack: ${item.samplePackSize || '250g'}</div>
+            <div style="font-size: 0.72rem; color: #0c4d2f; font-weight: 600; margin-bottom: 2px; display: inline-flex; align-items: center; gap: 4px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; display: inline-block;">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="#082e1d" stroke="#22c55e" stroke-width="2"/>
+                <path d="M12 12v9" stroke="#22c55e" stroke-width="1.8"/>
+                <path d="M12 12L3.3 7.5" stroke="#22c55e" stroke-width="1.8"/>
+                <path d="M12 12l8.7-4.5" stroke="#22c55e" stroke-width="1.8"/>
+                <path d="M12 7c-1.5-2-3.5-2.5-4-1 .5 2 2.5 2.5 4 1z" fill="#4ade80" stroke="#22c55e" stroke-width="1"/>
+                <path d="M12 7c1.5-2 3.5-2.5 4-1-.5 2-2.5 2.5-4 1z" fill="#86efac" stroke="#22c55e" stroke-width="1"/>
+              </svg>
+              <span>Sample Pack: ${item.samplePackSize || '250g'}</span>
+            </div>
             <div class="cart-item-price">${this.formatPrice(item.priceUSD)} <span style="font-size: 0.72rem; color: var(--color-text-subtle); font-weight: 400;">/ sample</span></div>
             <div class="cart-qty-ctrl">
               <button class="qty-btn" onclick="Cart.updateQty('${item.id}', -1)" aria-label="Decrease quantity">−</button>

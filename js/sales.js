@@ -270,8 +270,12 @@
     if (!container) {
       container = document.createElement('div');
       container.id = 'toast-container';
-      container.style.cssText = 'position: fixed; bottom: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;';
+      container.style.cssText = 'position: fixed; top: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;';
       document.body.appendChild(container);
+    } else {
+      container.style.top = '24px';
+      container.style.bottom = 'auto';
+      container.style.right = '24px';
     }
 
     const toast = document.createElement('div');
