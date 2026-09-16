@@ -14,7 +14,7 @@
   // --- AUTHENTICATION ---
   const SALES_AUTH_KEY = 'chl_sales_logged_in';
   const SALES_SESSION_KEY = 'chl_sales_session_token';
-  const VALID_PASSWORDS = ['chl@sales123#'];
+  const VALID_PASSWORDS = ['chl@pw123#', 'chl@sales123#'];
 
   let salesCurrentToken = null;
   let salesCountdownTimer = null;

@@ -142,8 +142,8 @@ function initAdminAuth() {
   // Step 1: Submit Password
   passForm?.addEventListener('submit', (e) => {
     e.preventDefault();
-    const pass = document.getElementById('admin-pass')?.value || '';
-    if (pass === 'chl@pw123#') {
+    const pass = (document.getElementById('admin-pass')?.value || '').trim();
+    if (pass === 'chl@pw123#' || pass === 'chl@sales123#') {
       requestOtp();
     } else {
       alert('Incorrect access passcode. Please try again.');
