@@ -4,7 +4,7 @@
  */
 const crypto = require('crypto');
 
-const DEFAULT_PHONE = process.env.ADMIN_MOBILE_PHONE || '+94719803381';
+const DEFAULT_PHONE = process.env.ADMIN_MOBILE_PHONE || '+94774245678';
 const CHL_SECRET = process.env.CHL_AUTH_SECRET || 'celebration-holdings-secure-otp-secret-2026-key';
 const CHL_MASTER_PIN = process.env.CHL_MASTER_PIN || '883921';
 

@@ -7,7 +7,7 @@ const https = require('https');
 const http = require('http');
 
 // Default target phone for Celebration Holdings (can be overridden via environment variable)
-const DEFAULT_PHONE = process.env.ADMIN_MOBILE_PHONE || '+94719803381';
+const DEFAULT_PHONE = process.env.ADMIN_MOBILE_PHONE || '+94774245678';
 const CHL_SECRET = process.env.CHL_AUTH_SECRET || 'celebration-holdings-secure-otp-secret-2026-key';
 
 function maskPhoneNumber(phone) {
