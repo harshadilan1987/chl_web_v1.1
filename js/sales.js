@@ -13,12 +13,96 @@
 
   // --- AUTHENTICATION ---
   const SALES_AUTH_KEY = 'chl_sales_logged_in';
+  const SALES_SESSION_KEY = 'chl_sales_session_token';
   const VALID_PASSWORDS = ['chl@sales123#'];
+
+  let salesCurrentToken = null;
+  let salesCountdownTimer = null;
+
+  function showSalesOtpMessage(text, isError = false) {
+    const otpMsg = document.getElementById('sales-otp-msg');
+    if (!otpMsg) return;
+    otpMsg.style.display = 'block';
+    otpMsg.style.background = isError ? '#fee2e2' : '#dcfce7';
+    otpMsg.style.color = isError ? '#991b1b' : '#166534';
+    otpMsg.style.border = isError ? '1px solid #fecaca' : '1px solid #bbf7d0';
+    otpMsg.innerHTML = text;
+  }
+
+  function startSalesCountdown(seconds = 45) {
+    clearInterval(salesCountdownTimer);
+    const resendBtn = document.getElementById('btn-sales-resend-otp');
+    const countdownEl = document.getElementById('sales-otp-countdown');
+    if (resendBtn) resendBtn.disabled = true;
+    let remaining = seconds;
+    if (countdownEl) countdownEl.textContent = remaining;
+
+    salesCountdownTimer = setInterval(() => {
+      remaining--;
+      if (countdownEl) countdownEl.textContent = remaining;
+      if (remaining <= 0) {
+        clearInterval(salesCountdownTimer);
+        if (resendBtn) {
+          resendBtn.disabled = false;
+          resendBtn.innerHTML = 'Resend Code';
+        }
+      }
+    }, 1000);
+  }
+
+  async function requestSalesOtp() {
+    const passBtn = document.getElementById('btn-sales-submit-pass');
+    const passStep = document.getElementById('sales-auth-step-pass');
+    const otpStep = document.getElementById('sales-auth-step-otp');
+    const otpInput = document.getElementById('sales-otp-input');
+    const maskedPhoneEl = document.getElementById('sales-otp-masked-phone');
+
+    if (passBtn) {
+      passBtn.disabled = true;
+      passBtn.innerHTML = 'Sending code to mobile...';
+    }
+
+    try {
+      const res = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ portal: 'sales' })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to dispatch OTP');
+      }
+
+      salesCurrentToken = data.token;
+      if (data.maskedPhone && maskedPhoneEl) {
+        maskedPhoneEl.textContent = data.maskedPhone;
+      }
+
+      if (passStep) passStep.style.display = 'none';
+      if (otpStep) otpStep.style.display = 'block';
+      if (otpInput) {
+        otpInput.value = '';
+        otpInput.focus();
+      }
+
+      showSalesOtpMessage('Security code sent via SMS. Enter the 6 digits below.');
+      startSalesCountdown(45);
+    } catch (err) {
+      showToast('Error sending verification code: ' + err.message, 'error');
+    } finally {
+      if (passBtn) {
+        passBtn.disabled = false;
+        passBtn.innerHTML = 'Continue with Mobile OTP →';
+      }
+    }
+  }
 
   function checkAuth() {
     const isAuth = sessionStorage.getItem(SALES_AUTH_KEY) === 'true';
     const authGate = document.getElementById('sales-auth-gate');
     const salesApp = document.getElementById('sales-app');
+    const passStep = document.getElementById('sales-auth-step-pass');
+    const otpStep = document.getElementById('sales-auth-step-otp');
 
     if (isAuth) {
       if (authGate) authGate.style.display = 'none';
@@ -27,11 +111,22 @@
     } else {
       if (authGate) authGate.style.display = 'flex';
       if (salesApp) salesApp.style.display = 'none';
+      if (passStep) passStep.style.display = 'block';
+      if (otpStep) otpStep.style.display = 'none';
     }
   }
 
   function initAuth() {
     const authForm = document.getElementById('sales-auth-form');
+    const otpForm = document.getElementById('sales-auth-otp-form');
+    const resendBtn = document.getElementById('btn-sales-resend-otp');
+    const backPassLink = document.getElementById('link-sales-back-pass');
+    const otpInput = document.getElementById('sales-otp-input');
+    const verifyBtn = document.getElementById('btn-sales-verify-otp');
+    const passStep = document.getElementById('sales-auth-step-pass');
+    const otpStep = document.getElementById('sales-auth-step-otp');
+
+    // Step 1: Submit Password
     if (authForm) {
       authForm.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -39,9 +134,7 @@
         const pass = passInput ? passInput.value.trim() : '';
 
         if (VALID_PASSWORDS.includes(pass)) {
-          sessionStorage.setItem(SALES_AUTH_KEY, 'true');
-          showToast('Welcome to the Sales & Orders Portal', 'success');
-          checkAuth();
+          requestSalesOtp();
         } else {
           showToast('Invalid sales authorization password', 'error');
           if (passInput) {
@@ -52,10 +145,87 @@
       });
     }
 
+    // Step 2: Submit OTP
+    if (otpForm) {
+      otpForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const code = otpInput ? otpInput.value.trim() : '';
+        if (code.length !== 6) {
+          showSalesOtpMessage('Please enter all 6 digits of the code.', true);
+          return;
+        }
+
+        if (verifyBtn) {
+          verifyBtn.disabled = true;
+          verifyBtn.innerHTML = 'Verifying code...';
+        }
+
+        try {
+          const res = await fetch('/api/verify-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, token: salesCurrentToken, portal: 'sales' })
+          });
+          const data = await res.json();
+          if (!data.verified) {
+            showSalesOtpMessage(data.error || 'Verification failed. Please re-enter the code.', true);
+            if (otpInput) {
+              otpInput.value = '';
+              otpInput.focus();
+            }
+            return;
+          }
+
+          // Verified
+          sessionStorage.setItem(SALES_AUTH_KEY, 'true');
+          if (data.sessionToken) {
+            sessionStorage.setItem(SALES_SESSION_KEY, data.sessionToken);
+          }
+          showSalesOtpMessage('Verification successful! Unlocking portal...', false);
+          showToast('Welcome to the Sales & Orders Portal', 'success');
+
+          setTimeout(() => {
+            checkAuth();
+          }, 500);
+        } catch (err) {
+          showSalesOtpMessage('Network error during verification: ' + err.message, true);
+        } finally {
+          if (verifyBtn) {
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = 'Unlock Sales Portal';
+          }
+        }
+      });
+    }
+
+    // Resend OTP
+    if (resendBtn) {
+      resendBtn.addEventListener('click', function () {
+        requestSalesOtp();
+      });
+    }
+
+    // Back to Password
+    if (backPassLink) {
+      backPassLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        clearInterval(salesCountdownTimer);
+        if (otpStep) otpStep.style.display = 'none';
+        if (passStep) passStep.style.display = 'block';
+        const passInput = document.getElementById('sales-pass');
+        if (passInput) {
+          passInput.value = '';
+          passInput.focus();
+        }
+      });
+    }
+
+    // Logout
     const logoutBtn = document.getElementById('btn-sales-logout');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', function () {
         sessionStorage.removeItem(SALES_AUTH_KEY);
+        sessionStorage.removeItem(SALES_SESSION_KEY);
         showToast('Logged out of Sales Portal', 'info');
         checkAuth();
       });

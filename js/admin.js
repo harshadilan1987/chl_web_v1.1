@@ -42,8 +42,91 @@ document.addEventListener('DOMContentLoaded', () => {
 function initAdminAuth() {
   const gate = document.getElementById('auth-gate');
   const app = document.getElementById('admin-app');
-  const form = document.getElementById('auth-form');
+  const passStep = document.getElementById('admin-auth-step-pass');
+  const otpStep = document.getElementById('admin-auth-step-otp');
+  const passForm = document.getElementById('auth-form');
+  const otpForm = document.getElementById('admin-auth-otp-form');
+  const passBtn = document.getElementById('btn-admin-submit-pass');
+  const verifyBtn = document.getElementById('btn-admin-verify-otp');
+  const resendBtn = document.getElementById('btn-admin-resend-otp');
+  const countdownEl = document.getElementById('admin-otp-countdown');
+  const otpInput = document.getElementById('admin-otp-input');
+  const otpMsg = document.getElementById('admin-otp-msg');
+  const maskedPhoneEl = document.getElementById('admin-otp-masked-phone');
+  const backPassLink = document.getElementById('link-admin-back-pass');
   const logoutBtn = document.getElementById('btn-logout');
+
+  let currentToken = null;
+  let countdownTimer = null;
+
+  function showOtpMessage(text, isError = false) {
+    if (!otpMsg) return;
+    otpMsg.style.display = 'block';
+    otpMsg.style.background = isError ? '#fee2e2' : '#dcfce7';
+    otpMsg.style.color = isError ? '#991b1b' : '#166534';
+    otpMsg.style.border = isError ? '1px solid #fecaca' : '1px solid #bbf7d0';
+    otpMsg.innerHTML = text;
+  }
+
+  function startCountdown(seconds = 45) {
+    clearInterval(countdownTimer);
+    if (resendBtn) resendBtn.disabled = true;
+    let remaining = seconds;
+    if (countdownEl) countdownEl.textContent = remaining;
+
+    countdownTimer = setInterval(() => {
+      remaining--;
+      if (countdownEl) countdownEl.textContent = remaining;
+      if (remaining <= 0) {
+        clearInterval(countdownTimer);
+        if (resendBtn) {
+          resendBtn.disabled = false;
+          resendBtn.innerHTML = 'Resend Code';
+        }
+      }
+    }, 1000);
+  }
+
+  async function requestOtp() {
+    if (passBtn) {
+      passBtn.disabled = true;
+      passBtn.innerHTML = '<span>Sending code to mobile...</span>';
+    }
+    try {
+      const res = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ portal: 'admin' })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to dispatch OTP');
+      }
+
+      currentToken = data.token;
+      if (data.maskedPhone && maskedPhoneEl) {
+        maskedPhoneEl.textContent = data.maskedPhone;
+      }
+
+      // Switch to OTP step
+      if (passStep) passStep.style.display = 'none';
+      if (otpStep) otpStep.style.display = 'block';
+      if (otpInput) {
+        otpInput.value = '';
+        otpInput.focus();
+      }
+
+      showOtpMessage('Security code sent via SMS. Enter the 6 digits below.');
+      startCountdown(45);
+    } catch (err) {
+      alert('Error sending verification code: ' + err.message);
+    } finally {
+      if (passBtn) {
+        passBtn.disabled = false;
+        passBtn.innerHTML = '<span>Continue with Mobile OTP →</span>';
+      }
+    }
+  }
 
   const isAuthenticated = sessionStorage.getItem('chl_admin_logged_in') === 'true';
   if (isAuthenticated) {
@@ -52,24 +135,95 @@ function initAdminAuth() {
   } else {
     if (gate) gate.style.display = 'flex';
     if (app) app.style.display = 'none';
+    if (passStep) passStep.style.display = 'block';
+    if (otpStep) otpStep.style.display = 'none';
   }
 
-  form?.addEventListener('submit', (e) => {
+  // Step 1: Submit Password
+  passForm?.addEventListener('submit', (e) => {
     e.preventDefault();
-    const pass = document.getElementById('admin-pass').value;
-    // Default password (can be changed in settings)
+    const pass = document.getElementById('admin-pass')?.value || '';
     if (pass === 'chl@pw123#') {
-      sessionStorage.setItem('chl_admin_logged_in', 'true');
-      gate.style.display = 'none';
-      app.style.display = 'flex';
-      loadAllAdminData();
+      requestOtp();
     } else {
-      alert('Incorrect password. Please try again.');
+      alert('Incorrect access passcode. Please try again.');
     }
   });
 
+  // Step 2: Submit OTP
+  otpForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const code = otpInput?.value.trim() || '';
+    if (code.length !== 6) {
+      showOtpMessage('Please enter all 6 digits of the code.', true);
+      return;
+    }
+
+    if (verifyBtn) {
+      verifyBtn.disabled = true;
+      verifyBtn.innerHTML = '<span>Verifying code...</span>';
+    }
+
+    try {
+      const res = await fetch('/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, token: currentToken, portal: 'admin' })
+      });
+      const data = await res.json();
+      if (!data.verified) {
+        showOtpMessage(data.error || 'Verification failed. Please re-enter the code.', true);
+        if (otpInput) {
+          otpInput.value = '';
+          otpInput.focus();
+        }
+        return;
+      }
+
+      // Success! Grant access
+      sessionStorage.setItem('chl_admin_logged_in', 'true');
+      if (data.sessionToken) {
+        sessionStorage.setItem('chl_admin_session_token', data.sessionToken);
+      }
+      showOtpMessage('Verification successful! Unlocking dashboard...', false);
+
+      setTimeout(() => {
+        if (gate) gate.style.display = 'none';
+        if (app) app.style.display = 'flex';
+        loadAllAdminData();
+      }, 500);
+    } catch (err) {
+      showOtpMessage('Network error during verification: ' + err.message, true);
+    } finally {
+      if (verifyBtn) {
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = '<span>Unlock Admin Dashboard</span>';
+      }
+    }
+  });
+
+  // Resend OTP button
+  resendBtn?.addEventListener('click', () => {
+    requestOtp();
+  });
+
+  // Back to password link
+  backPassLink?.addEventListener('click', (e) => {
+    e.preventDefault();
+    clearInterval(countdownTimer);
+    if (otpStep) otpStep.style.display = 'none';
+    if (passStep) passStep.style.display = 'block';
+    const passInput = document.getElementById('admin-pass');
+    if (passInput) {
+      passInput.value = '';
+      passInput.focus();
+    }
+  });
+
+  // Logout
   logoutBtn?.addEventListener('click', () => {
     sessionStorage.removeItem('chl_admin_logged_in');
+    sessionStorage.removeItem('chl_admin_session_token');
     location.reload();
   });
 }

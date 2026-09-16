@@ -288,15 +288,50 @@
         Celebration Holdings (Pvt) Ltd • Commercial Sample Orders &amp; Overseas Freight Desk
       </p>
 
-      <form id="sales-auth-form">
-        <div style="text-align: left; margin-bottom: 1.25rem;">
-          <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #1a2e22; margin-bottom: 0.4rem;">Sales Access Password</label>
-          <input type="password" id="sales-pass" class="form-control" placeholder="Enter sales authorization password" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #cbd8ce;" required autofocus>
+      <!-- Step 1: Sales Password -->
+      <div id="sales-auth-step-pass">
+        <form id="sales-auth-form">
+          <div style="text-align: left; margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #1a2e22; margin-bottom: 0.4rem;">Sales Access Password</label>
+            <input type="password" id="sales-pass" class="form-control" placeholder="Enter sales authorization password" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #cbd8ce;" required autofocus>
+          </div>
+          <button type="submit" id="btn-sales-submit-pass" class="btn btn-primary" style="width: 100%; padding: 0.8rem; border-radius: 8px; font-weight: 700;">
+            Continue with Mobile OTP →
+          </button>
+        </form>
+      </div>
+
+      <!-- Step 2: Sales 2FA Mobile OTP Verification -->
+      <div id="sales-auth-step-otp" style="display: none; text-align: center;">
+        <div style="width: 48px; height: 48px; margin: 0 auto 0.75rem; background: #e8f5ed; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+          📱
         </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem; border-radius: 8px; font-weight: 700;">
-          Unlock Sales Portal →
-        </button>
-      </form>
+        <h3 style="font-size: 1.15rem; color: #0c4d2f; margin-bottom: 0.25rem;">Two-Factor Authentication</h3>
+        <p style="font-size: 0.82rem; color: #5f7065; margin-bottom: 1.25rem;">
+          A 6-digit security code was sent to your registered mobile phone:<br>
+          <strong id="sales-otp-masked-phone" style="color: #0c4d2f; font-size: 0.95rem; letter-spacing: 0.05em;">+94 71 ••• •381</strong>
+        </p>
+
+        <form id="sales-auth-otp-form">
+          <div style="text-align: center; margin-bottom: 1rem;">
+            <label for="sales-otp-input" style="display: block; margin-bottom: 0.4rem; font-size: 0.8rem; font-weight: 700; color: #1a2e22;">Enter 6-Digit Code</label>
+            <input type="text" id="sales-otp-input" class="form-control" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="------" style="text-align: center; font-size: 1.6rem; letter-spacing: 0.35em; font-weight: 700; padding: 0.6rem 0.5rem; border: 2px solid #0c4d2f; border-radius: 8px; font-family: monospace;" required autocomplete="one-time-code">
+          </div>
+
+          <div id="sales-otp-msg" style="display: none; padding: 0.5rem 0.75rem; margin-bottom: 1rem; border-radius: 6px; font-size: 0.82rem;"></div>
+
+          <button type="submit" id="btn-sales-verify-otp" class="btn btn-primary" style="width: 100%; padding: 0.8rem; border-radius: 8px; font-weight: 700; margin-bottom: 0.75rem;">
+            Unlock Sales Portal
+          </button>
+        </form>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; margin-top: 0.75rem; color: #5f7065;">
+          <button type="button" id="btn-sales-resend-otp" class="btn btn-sm btn-outline" style="font-size: 0.75rem; padding: 4px 10px;" disabled>
+            Resend (<span id="sales-otp-countdown">45</span>s)
+          </button>
+          <a href="#" id="link-sales-back-pass" style="color: #607266; text-decoration: underline;">Change Password</a>
+        </div>
+      </div>
 
       <div style="margin-top: 1.75rem; border-top: 1px solid #e5ede7; padding-top: 1rem; display: flex; justify-content: space-between; font-size: 0.8rem;">
         <a href="admin.html" style="color: #0c4d2f; font-weight: 600; text-decoration: none;">⚙️ Admin Panel</a>
