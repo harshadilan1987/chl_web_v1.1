@@ -390,14 +390,17 @@
           </td>
           <td style="text-align: right; white-space: nowrap;">
             ${isDomestic ? `
-              <button class="btn btn-outline btn-sm" onclick="openOrderSheet('${order.id}')" style="padding: 4px 9px; font-size: 0.8rem;">
+              <button class="btn btn-outline btn-sm" onclick="openOrderSheet('${order.id}')" style="padding: 4px 9px; font-size: 0.8rem;" title="View order sheet">
                 📄 Sheet
               </button>
             ` : `
-              <button class="btn btn-outline btn-sm" onclick="switchSalesTab('tab-overseas-freight')" style="padding: 4px 9px; font-size: 0.8rem;">
+              <button class="btn btn-outline btn-sm" onclick="switchSalesTab('tab-overseas-freight')" style="padding: 4px 9px; font-size: 0.8rem;" title="View quotation request">
                 ✈️ Quote
               </button>
             `}
+            <button class="btn btn-outline btn-sm" onclick="deleteOrderRecord('${order.id}')" style="padding: 4px 8px; font-size: 0.8rem; color: #dc2626; border-color: rgba(220, 38, 38, 0.35); margin-left: 4px;" title="Delete order record">
+              🗑️
+            </button>
           </td>
         </tr>
       `;
@@ -477,7 +480,7 @@
           </td>
           <td style="font-size: 0.82rem; white-space: nowrap;">
             <div>Items: $${subtotal}</div>
-            <div style="color: #166534; font-weight: 600;">Courier: +$${shipping}</div>
+            <div style="color: #166534; font-weight: 600;">${parseFloat(shipping) === 0 ? '<span class="badge" style="background:#dcfce7; color:#15803d; font-size:0.72rem; padding:2px 6px;">FREE Courier</span>' : 'Courier: +$' + shipping}</div>
           </td>
           <td style="white-space: nowrap;">
             <strong style="color: #0c4d2f; font-size: 0.98rem;">$${total}</strong>
@@ -493,8 +496,11 @@
             </select>
           </td>
           <td style="text-align: right; white-space: nowrap;">
-            <button class="btn btn-primary btn-sm" onclick="openOrderSheet('${order.id}')" style="padding: 5px 10px; font-size: 0.8rem;">
+            <button class="btn btn-primary btn-sm" onclick="openOrderSheet('${order.id}')" style="padding: 5px 10px; font-size: 0.8rem;" title="View official dispatch sheet">
               📄 Order Sheet
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="deleteOrderRecord('${order.id}')" style="padding: 5px 8px; font-size: 0.8rem; color: #dc2626; border-color: rgba(220, 38, 38, 0.35); margin-left: 4px;" title="Delete order record">
+              🗑️
             </button>
           </td>
         </tr>
@@ -570,6 +576,9 @@
             <button class="btn btn-outline btn-sm" onclick="openOrderSheet('${order.id}')" style="padding: 5px 8px; font-size: 0.78rem;" title="View inquiry sheet">
               📄 Sheet
             </button>
+            <button class="btn btn-outline btn-sm" onclick="deleteOrderRecord('${order.id}')" style="padding: 5px 8px; font-size: 0.78rem; color: #dc2626; border-color: rgba(220, 38, 38, 0.35); margin-left: 4px;" title="Delete inquiry record">
+              🗑️
+            </button>
           </td>
         </tr>
       `;
@@ -584,11 +593,13 @@
     const emailInput = document.getElementById('setting-sales-email');
     const usdInput = document.getElementById('setting-domestic-shipping-usd');
     const lkrInput = document.getElementById('setting-domestic-shipping-lkr');
+    const thresholdInput = document.getElementById('setting-free-shipping-threshold-lkr');
     const noteInput = document.getElementById('setting-policy-note');
 
     if (emailInput) emailInput.value = cfg.salesEmail || 'info@celebrationholdings.lk';
     if (usdInput) usdInput.value = cfg.domesticShippingUSD || 3.00;
     if (lkrInput) lkrInput.value = cfg.domesticShippingLKR || 650;
+    if (thresholdInput) thresholdInput.value = cfg.freeShippingThresholdLKR || 10000;
     if (noteInput) noteInput.value = cfg.policyNote || '';
   }
 
@@ -601,6 +612,7 @@
         const email = document.getElementById('setting-sales-email')?.value.trim() || 'info@celebrationholdings.lk';
         const usd = parseFloat(document.getElementById('setting-domestic-shipping-usd')?.value) || 3.00;
         const lkr = parseFloat(document.getElementById('setting-domestic-shipping-lkr')?.value) || 650;
+        const thresholdLKR = parseFloat(document.getElementById('setting-free-shipping-threshold-lkr')?.value) || 10000;
         const policyNote = document.getElementById('setting-policy-note')?.value.trim() || '';
 
         if (typeof CHL_DB !== 'undefined' && typeof CHL_DB.saveSalesConfig === 'function') {
@@ -608,6 +620,7 @@
             salesEmail: email,
             domesticShippingUSD: usd,
             domesticShippingLKR: lkr,
+            freeShippingThresholdLKR: thresholdLKR,
             policyNote: policyNote
           });
           showToast('Sales, Notification & Shipping rates updated successfully!', 'success');
@@ -616,12 +629,31 @@
     }
   }
 
-  // --- STATUS UPDATES ---
+  // --- STATUS UPDATES & DELETION ---
   window.updateOrderStatus = function (orderId, newStatus) {
     if (typeof CHL_DB !== 'undefined' && typeof CHL_DB.updateOrderStatus === 'function') {
       CHL_DB.updateOrderStatus(orderId, newStatus);
       showToast(`Order ${orderId} status changed to "${newStatus}"`, 'success');
       loadDataAndRender();
+    }
+  };
+
+  window.deleteOrderRecord = function (orderId) {
+    if (confirm(`Are you sure you want to permanently delete order record "${orderId}"? This action cannot be undone.`)) {
+      if (typeof CHL_DB !== 'undefined' && typeof CHL_DB.deleteOrder === 'function') {
+        CHL_DB.deleteOrder(orderId);
+        showToast(`Order ${orderId} has been deleted permanently.`, 'info');
+        loadDataAndRender();
+        if (activeOrderForModal && activeOrderForModal.id === orderId) {
+          closeOrderSheetModal();
+        }
+      }
+    }
+  };
+
+  window.deleteCurrentModalOrder = function () {
+    if (activeOrderForModal && activeOrderForModal.id) {
+      window.deleteOrderRecord(activeOrderForModal.id);
     }
   };
 
@@ -799,7 +831,7 @@
           </div>
           <div style="display: flex; justify-content: space-between; padding: 4px 0; color: #166534;">
             <span>${isDomestic ? '🇱🇰 Sri Lanka Courier Delivery:' : '✈️ Air Courier Freight:'}</span>
-            <strong>${isDomestic ? '+$' + shipping + ' USD' : '<span style="color:#7c3aed;">Quote on request</span>'}</strong>
+            <strong>${isDomestic ? (parseFloat(shipping) === 0 ? '<span style="color:#15803d; font-weight:800;">FREE DELIVERY (Order > Rs. 10,000)</span>' : '+$' + shipping + ' USD') : '<span style="color:#7c3aed;">Quote on request</span>'}</strong>
           </div>
           <div style="display: flex; justify-content: space-between; padding: 8px 0 0 0; margin-top: 6px; border-top: 2px solid #0c4d2f; font-size: 1.08rem; color: #0c4d2f;">
             <span style="font-weight: 800;">Grand Total Payable:</span>

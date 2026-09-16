@@ -297,6 +297,7 @@ const CHL_DEFAULT_SALES_CONFIG = {
   salesEmail: "info@celebrationholdings.lk",
   domesticShippingUSD: 3.00,
   domesticShippingLKR: 650,
+  freeShippingThresholdLKR: 10000,
   policyNote: "For the time being, sample orders are directly accepted within Sri Lanka only. International requests are submitted for direct Air Express freight calculation."
 };
 

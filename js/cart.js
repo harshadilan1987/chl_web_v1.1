@@ -165,10 +165,32 @@ const Cart = {
     return this.items.reduce((sum, item) => sum + (item.priceUSD * item.qty), 0);
   },
 
+  getFreeShippingThresholdUSD() {
+    let thresholdLKR = 10000;
+    if (typeof CHL_DB !== 'undefined' && typeof CHL_DB.getSalesConfig === 'function') {
+      const cfg = CHL_DB.getSalesConfig();
+      if (cfg.freeShippingThresholdLKR) {
+        thresholdLKR = parseFloat(cfg.freeShippingThresholdLKR);
+      }
+    }
+    const lkrRate = (CURRENCIES.LKR && CURRENCIES.LKR.rate) ? CURRENCIES.LKR.rate : 305.0;
+    return thresholdLKR / lkrRate;
+  },
+
+  isFreeShipping(country = 'Sri Lanka') {
+    if (country !== 'Sri Lanka' || this.items.length === 0) return false;
+    const subtotalUSD = this.getSubtotalUSD();
+    return subtotalUSD >= this.getFreeShippingThresholdUSD();
+  },
+
   getShippingUSD(country = 'Sri Lanka') {
     if (this.items.length === 0) return 0;
     if (country !== 'Sri Lanka') {
       return 0; // Overseas freight calculated on request
+    }
+    // Free delivery for orders meeting or exceeding LKR 10,000 (converted to USD equivalent)
+    if (this.isFreeShipping(country)) {
+      return 0;
     }
     if (typeof CHL_DB !== 'undefined' && typeof CHL_DB.getSalesConfig === 'function') {
       const cfg = CHL_DB.getSalesConfig();
@@ -270,7 +292,16 @@ const Cart = {
     const totalEl = document.getElementById('cart-total-val');
 
     if (subtotalEl) subtotalEl.textContent = this.formatPrice(this.getSubtotalUSD());
-    if (shippingEl) shippingEl.textContent = this.items.length > 0 ? this.formatPrice(this.getShippingUSD()) : this.formatPrice(0);
+    if (shippingEl) {
+      if (this.items.length === 0) {
+        shippingEl.textContent = this.formatPrice(0);
+      } else if (this.isFreeShipping('Sri Lanka')) {
+        const standardRate = this.currentCurrency === 'LKR' ? (650 / 305.0) : 3.00;
+        shippingEl.innerHTML = `<span style="text-decoration: line-through; color: #94a3b8; font-size: 0.8rem; margin-right: 6px;">${this.formatPrice(standardRate)}</span><span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 0.76rem;">FREE (Orders > ${this.formatPrice(this.getFreeShippingThresholdUSD())})</span>`;
+      } else {
+        shippingEl.textContent = this.formatPrice(this.getShippingUSD());
+      }
+    }
     if (totalEl) totalEl.textContent = this.formatPrice(this.getTotalUSD());
   }
 };

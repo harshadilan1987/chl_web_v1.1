@@ -586,6 +586,16 @@
               </div>
             </div>
 
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <label class="form-label" style="font-weight: 700; color: #1a2e22; margin-bottom: 0.4rem; display: block;">
+                🎁 Free Islandwide Delivery Threshold (LKR) *
+              </label>
+              <input type="number" step="500" id="setting-free-shipping-threshold-lkr" class="form-control" style="max-width: 340px;" value="10000" required>
+              <small style="color: #166534; font-weight: 600; display: block; margin-top: 4px;">
+                Orders exceeding this amount receive 100% Free Islandwide Courier Delivery. Automatically converted into customer's chosen currency (USD, EUR, GBP, AUD, JPY).
+              </small>
+            </div>
+
             <h3 style="color: #0c4d2f; font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1.25rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5ede7;">
               3. Fulfillment Scope &amp; Policy Notice
             </h3>
@@ -616,8 +626,9 @@
     <div class="order-sheet-card">
       <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #e5ede7;">
         <span style="font-weight: 700; color: #0c4d2f;">📄 Official Commercial Document Preview</span>
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 8px; align-items: center;">
           <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print Order Sheet</button>
+          <button class="btn btn-outline btn-sm" id="btn-modal-delete-order" onclick="deleteCurrentModalOrder()" style="color: #dc2626; border-color: rgba(220, 38, 38, 0.4);" title="Delete this order record">🗑️ Delete</button>
           <button class="btn btn-outline btn-sm" onclick="closeOrderSheetModal()">✕ Close</button>
         </div>
       </div>

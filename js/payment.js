@@ -346,7 +346,12 @@ const PaymentGateway = {
 
     if (shippingEl) {
       if (isDomestic) {
-        shippingEl.textContent = Cart.formatPrice(shipping);
+        if (Cart.isFreeShipping && Cart.isFreeShipping('Sri Lanka')) {
+          const standardRate = Cart.currentCurrency === 'LKR' ? (650 / 305.0) : 3.00;
+          shippingEl.innerHTML = `<span style="text-decoration: line-through; color: #94a3b8; font-size: 0.8rem; margin-right: 6px;">${Cart.formatPrice(standardRate)}</span><span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 0.76rem;">FREE (Orders > ${Cart.formatPrice(Cart.getFreeShippingThresholdUSD())})</span>`;
+        } else {
+          shippingEl.textContent = Cart.formatPrice(shipping);
+        }
       } else {
         shippingEl.innerHTML = `<span class="badge" style="background:#fef3c7; color:#92400e; font-size:0.75rem;">To be quoted (Air Courier)</span>`;
       }
