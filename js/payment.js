@@ -94,6 +94,61 @@ const PaymentGateway = {
       });
     }
 
+    // Live verification for Email & Contact Number
+    const emailInput = document.getElementById('cust-email');
+    if (emailInput) {
+      emailInput.addEventListener('blur', () => {
+        const val = emailInput.value.trim();
+        if (val && !this.validateEmail(val)) {
+          emailInput.style.borderColor = '#dc2626';
+          emailInput.style.boxShadow = '0 0 0 3px rgba(220, 38, 38, 0.15)';
+          showToast('Invalid email format. Please enter a valid email (e.g. name@domain.com)', 'warning');
+        } else if (val) {
+          emailInput.style.borderColor = '#16a34a';
+          emailInput.style.boxShadow = '0 0 0 3px rgba(22, 163, 74, 0.12)';
+        } else {
+          emailInput.style.borderColor = '';
+          emailInput.style.boxShadow = '';
+        }
+      });
+      emailInput.addEventListener('input', () => {
+        if (emailInput.style.borderColor === 'rgb(220, 38, 38)') {
+          const val = emailInput.value.trim();
+          if (this.validateEmail(val)) {
+            emailInput.style.borderColor = '#16a34a';
+            emailInput.style.boxShadow = '0 0 0 3px rgba(22, 163, 74, 0.12)';
+          }
+        }
+      });
+    }
+
+    const phoneInput = document.getElementById('cust-phone');
+    if (phoneInput) {
+      phoneInput.addEventListener('blur', () => {
+        const val = phoneInput.value.trim();
+        if (val && !this.validatePhone(val)) {
+          phoneInput.style.borderColor = '#dc2626';
+          phoneInput.style.boxShadow = '0 0 0 3px rgba(220, 38, 38, 0.15)';
+          showToast('Invalid contact number. Must contain exactly 10 digits (e.g. 0771234567) or start with + and country code (e.g. +94771234567)', 'warning');
+        } else if (val) {
+          phoneInput.style.borderColor = '#16a34a';
+          phoneInput.style.boxShadow = '0 0 0 3px rgba(22, 163, 74, 0.12)';
+        } else {
+          phoneInput.style.borderColor = '';
+          phoneInput.style.boxShadow = '';
+        }
+      });
+      phoneInput.addEventListener('input', () => {
+        if (phoneInput.style.borderColor === 'rgb(220, 38, 38)') {
+          const val = phoneInput.value.trim();
+          if (this.validatePhone(val)) {
+            phoneInput.style.borderColor = '#16a34a';
+            phoneInput.style.boxShadow = '0 0 0 3px rgba(22, 163, 74, 0.12)';
+          }
+        }
+      });
+    }
+
     // Checkout form submission
     const form = document.getElementById('checkout-form');
     if (form) {
@@ -143,6 +198,37 @@ const PaymentGateway = {
     } else {
       brandDisplay.textContent = 'CARD';
     }
+  },
+
+  // Email validation: must have correct @ and .xxx format (e.g. name@domain.com)
+  validateEmail(email) {
+    if (!email) return false;
+    // Standard RFC 5322 compatible regex requiring @ and at least 2 char TLD after dot
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+    if (!emailRegex.test(email)) return false;
+    const parts = email.split('@');
+    if (parts.length !== 2) return false;
+    const domain = parts[1];
+    const dotIndex = domain.lastIndexOf('.');
+    if (dotIndex === -1) return false;
+    const tld = domain.substring(dotIndex + 1);
+    return tld.length >= 2;
+  },
+
+  // Contact number validation: exactly 10 digits or international number with leading '+' followed by 9-15 digits
+  validatePhone(phone) {
+    if (!phone) return false;
+    const trimmed = phone.trim();
+    const cleanDigits = trimmed.replace(/\D/g, '');
+    
+    // Check if starts with +
+    if (trimmed.startsWith('+')) {
+      // Must have + followed by 9 to 15 digits
+      return cleanDigits.length >= 9 && cleanDigits.length <= 15;
+    }
+    
+    // If not starting with +, must contain exactly 10 digits (standard domestic mobile/landline e.g. 0771234567)
+    return cleanDigits.length === 10;
   },
 
   // Luhn algorithm check
@@ -317,12 +403,31 @@ const PaymentGateway = {
     }
     if (!custEmail) {
       showToast('Please enter your Email Address for order dispatch updates', 'warning');
-      document.getElementById('cust-email')?.focus();
+      const el = document.getElementById('cust-email');
+      el?.focus();
+      if (el) el.style.borderColor = '#dc2626';
       return;
     }
+    if (!this.validateEmail(custEmail)) {
+      showToast('Invalid Email Address. Please include a valid "@" and domain extension (e.g. name@domain.com)', 'danger');
+      const el = document.getElementById('cust-email');
+      el?.focus();
+      if (el) el.style.borderColor = '#dc2626';
+      return;
+    }
+
     if (!custPhone) {
       showToast('Contact Number (Phone/WhatsApp) is mandatory for delivery courier coordination', 'warning');
-      document.getElementById('cust-phone')?.focus();
+      const el = document.getElementById('cust-phone');
+      el?.focus();
+      if (el) el.style.borderColor = '#dc2626';
+      return;
+    }
+    if (!this.validatePhone(custPhone)) {
+      showToast('Invalid Contact Number. Please enter exactly 10 digits (e.g. 0771234567) or include country code with "+" (e.g. +94771234567)', 'danger');
+      const el = document.getElementById('cust-phone');
+      el?.focus();
+      if (el) el.style.borderColor = '#dc2626';
       return;
     }
     if (!custAddress) {
@@ -611,12 +716,31 @@ const PaymentGateway = {
     }
     if (!custEmail) {
       showToast('Please enter your Email Address to receive the freight quotation', 'warning');
-      document.getElementById('cust-email')?.focus();
+      const el = document.getElementById('cust-email');
+      el?.focus();
+      if (el) el.style.borderColor = '#dc2626';
       return;
     }
+    if (!this.validateEmail(custEmail)) {
+      showToast('Invalid Email Address. Please include a valid "@" and domain extension (e.g. name@domain.com)', 'danger');
+      const el = document.getElementById('cust-email');
+      el?.focus();
+      if (el) el.style.borderColor = '#dc2626';
+      return;
+    }
+
     if (!custPhone) {
       showToast('Contact Number (Phone / WhatsApp) is mandatory for international courier booking', 'warning');
-      document.getElementById('cust-phone')?.focus();
+      const el = document.getElementById('cust-phone');
+      el?.focus();
+      if (el) el.style.borderColor = '#dc2626';
+      return;
+    }
+    if (!this.validatePhone(custPhone)) {
+      showToast('Invalid Contact Number. Please enter exactly 10 digits or include country code with "+" (e.g. +94771234567)', 'danger');
+      const el = document.getElementById('cust-phone');
+      el?.focus();
+      if (el) el.style.borderColor = '#dc2626';
       return;
     }
     if (!custAddress) {
