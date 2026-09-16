@@ -4,11 +4,41 @@
  */
 
 const CHL_DEFAULT_CATEGORIES = [
-  { id: "coconut", name: "Organic Coconut Range", icon: "🥥", order: 1, desc: "Certified organic virgin coconut oil, MCT, milk powder, flour, and aminos." },
-  { id: "spices", name: "Ceylon Spices & Herbs", icon: "🌿", order: 2, desc: "True Ceylon Cinnamon (Alba/5C), 550 GL Black Pepper, Turmeric, and Moringa." },
-  { id: "sesame", name: "Sesame & Sekku Oils", icon: "🌱", order: 3, desc: "Traditional Sekku stone-squeezed oils, raw whole seeds, and gourmet tahini." },
-  { id: "fruits", name: "Tropical Fruits & Jackfruit", icon: "🍍", order: 4, desc: "Young green jackfruit in brine, dried mango strips, and pineapple in natural juice." },
-  { id: "oils", name: "Pure Essential Oils", icon: "💧", order: 5, desc: "Therapeutic steam-distilled Ceylon Cinnamon bark, lemongrass, clove, and pepper oils." }
+  {
+    "id": "coconut",
+    "name": "Organic Coconut Range",
+    "icon": "🥥",
+    "order": 1,
+    "desc": "Certified organic virgin coconut oil, MCT, milk powder, flour, and aminos."
+  },
+  {
+    "id": "spices",
+    "name": "Ceylon Spices & Herbs",
+    "icon": "🌿",
+    "order": 2,
+    "desc": "True Ceylon Cinnamon (Alba/5C), 550 GL Black Pepper, Turmeric, and Moringa."
+  },
+  {
+    "id": "sesame",
+    "name": "Sesame & Sekku Oils",
+    "icon": "🌱",
+    "order": 3,
+    "desc": "Traditional Sekku stone-squeezed oils, raw whole seeds, and gourmet tahini."
+  },
+  {
+    "id": "fruits",
+    "name": "Tropical & Dehydrated Fruits",
+    "icon": "🍍",
+    "order": 4,
+    "desc": "Young green jackfruit in brine, dried mango strips, and pineapple in natural juice."
+  },
+  {
+    "id": "oils",
+    "name": "Pure Essential Oils",
+    "icon": "💧",
+    "order": 5,
+    "desc": "Therapeutic steam-distilled Ceylon Cinnamon bark, lemongrass, clove, and pepper oils."
+  }
 ];
 
 const CHL_DEFAULT_BLOG_POSTS = [
@@ -140,44 +170,44 @@ const CHL_DEFAULT_BLOG_POSTS = [
 // Default 5 Sri Lanka Organic Coconut Harvest Line Products
 const CHL_DEFAULT_COCONUT_HARVEST = [
   {
-    id: "harvest-01",
-    title: "Virgin Coconut Oil",
-    sub: "Centrifuge Extracted < 38°C",
-    badge: "Cold Pressed",
-    image: "assets/images/products/coconut/Virgin Coconut Oil.jpeg",
-    category: "coconut"
+    "id": "harvest-01",
+    "title": "Virgin Coconut Oil",
+    "sub": "Centrifuge Extracted < 38°C",
+    "badge": "Cold Pressed",
+    "image": "assets/images/products/coconut/Virgin Coconut Oil.jpeg",
+    "category": "coconut"
   },
   {
-    id: "harvest-02",
-    title: "King Coconut Water",
-    sub: "100% Native Thambili",
-    badge: "Indigenous Ceylon",
-    image: "assets/images/products/coconut/King Coconut Water.jpeg",
-    category: "coconut"
+    "id": "harvest-02",
+    "title": "Desiccated Coconut",
+    "sub": "High Fat Fine & Medium Shreds",
+    "badge": "Gourmet Bakery",
+    "image": "assets/images/products/coconut/Desiccated Coconut (High Fat Medium).jpeg",
+    "category": "coconut"
   },
   {
-    id: "harvest-03",
-    title: "Coconut Milk & Cream",
-    sub: "17% & 22% Fat Formulations",
-    badge: "Rich & Aseptic",
-    image: "assets/images/products/coconut/Coconut Milk.jpeg",
-    category: "coconut"
+    "id": "harvest-03",
+    "title": "Coconut Milk & Cream",
+    "sub": "17% & 22% Fat Formulations",
+    "badge": "Rich & Aseptic",
+    "image": "assets/images/products/coconut/Coconut Milk.jpeg",
+    "category": "coconut"
   },
   {
-    id: "harvest-04",
-    title: "Desiccated Coconut",
-    sub: "High Fat Fine & Medium Shreds",
-    badge: "Gourmet Bakery",
-    image: "assets/images/products/coconut/Desiccated Coconut (High Fat Medium).jpeg",
-    category: "coconut"
+    "id": "harvest-04",
+    "title": "Organic Coconut Milk Powder",
+    "sub": "Extra Value for money",
+    "badge": "Gluten-Free / Low GI",
+    "image": "assets/images/products/coconut/Coconut Milk Powder.jpeg",
+    "category": "coconut"
   },
   {
-    id: "harvest-05",
-    title: "Organic Coconut Flour",
-    sub: "Rich in Fiber & Low Carb",
-    badge: "Gluten-Free / Low GI",
-    image: "assets/images/products/coconut/Coconut Flour.jpeg",
-    category: "coconut"
+    "id": "harvest-05",
+    "title": "Coconut Butter",
+    "sub": "Extra Creamy",
+    "badge": "Indigenous Ceylon",
+    "image": "assets/images/products/coconut/Coconut Butter.jpeg",
+    "category": "coconut"
   }
 ];
 
@@ -439,18 +469,16 @@ const CHL_DB = {
   },
   ensureSeedData() {
     // Check synchronization version to push latest 40 products and 6 blog stories
-    const SYNC_VERSION_KEY = 'chl_db_sync_v4_2026_09_16';
+    const SYNC_VERSION_KEY = 'chl_db_sync_v5_2026_09_16_1900';
     if (!localStorage.getItem(SYNC_VERSION_KEY)) {
       localStorage.setItem(this.STORAGE_KEYS.BLOG, JSON.stringify(CHL_DEFAULT_BLOG_POSTS));
       if (typeof PRODUCTS_DATA !== 'undefined' && Array.isArray(PRODUCTS_DATA) && PRODUCTS_DATA.length > 0) {
-        const enriched = PRODUCTS_DATA.map(p => ({
-          ...p,
-          samplePackSize: p.samplePackSize || getDefaultSamplePackSize(p)
-        }));
-        localStorage.setItem(this.STORAGE_KEYS.PRODUCTS, JSON.stringify(enriched));
+        localStorage.setItem(this.STORAGE_KEYS.PRODUCTS, JSON.stringify(PRODUCTS_DATA));
       }
+      localStorage.setItem(this.STORAGE_KEYS.CATEGORIES, JSON.stringify(CHL_DEFAULT_CATEGORIES));
+      localStorage.setItem(this.STORAGE_KEYS.COCONUT_HARVEST, JSON.stringify(CHL_DEFAULT_COCONUT_HARVEST));
       localStorage.setItem(this.STORAGE_KEYS.SAMPLE_KITS, JSON.stringify(CHL_DEFAULT_SAMPLE_KITS));
-      localStorage.setItem(SYNC_VERSION_KEY, '4.0');
+      localStorage.setItem(SYNC_VERSION_KEY, '5.0');
     }
     // 1. Categories
     if (!localStorage.getItem(this.STORAGE_KEYS.CATEGORIES)) {

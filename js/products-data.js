@@ -1,7 +1,7 @@
 /**
  * Celebration Holdings (Pvt) Ltd - Master Products Database
  * Authentic Sri Lankan Organic Export Range (40 Catalog Items)
- * Updated with Sample Pack Sizes
+ * Updated: 2026-09-16 with Exact Production Database Values
  */
 
 const PRODUCTS_DATA = [
@@ -41,7 +41,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Organic MCT Coconut Oil - C8 -99%Min.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Organic Virgin Coconut Oil.pdf",
         "msdsDocName": "MSDS - Organic Virgin Coconut Oil.pdf",
-        "samplePackSize": "250ml"
+        "samplePackSize": "1 L"
     },
     {
         "id": "coco-02",
@@ -77,7 +77,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Organic MCT Coconut Oil - C8 -99%Min.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Organic Coconut MCT (C8).pdf",
         "msdsDocName": "MSDS - Organic Coconut MCT (C8).pdf",
-        "samplePackSize": "250ml"
+        "samplePackSize": "1 L"
     },
     {
         "id": "prod-mtttdy39",
@@ -116,12 +116,12 @@ const PRODUCTS_DATA = [
         "packaging": [
             "250g, 500g, 1kg retail pouches; 20kg bulk kraft bags"
         ],
-        "samplePackSize": "250g"
+        "samplePackSize": "250 g"
     },
     {
         "id": "coco-03",
         "category": "coconut",
-        "categoryName": "Coconut Range",
+        "categoryName": "Organic Coconut Range",
         "name": "Organic Coconut Milk Powder",
         "botanicalName": "Cocos nucifera",
         "image": "assets/images/products/coconut/Coconut Milk Powder.jpeg",
@@ -153,12 +153,12 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Organic MCT Powder.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Organic Coconut Milk Powder.pdf",
         "msdsDocName": "MSDS - Organic Coconut Milk Powder.pdf",
-        "samplePackSize": "250g"
+        "samplePackSize": "1 kg"
     },
     {
         "id": "coco-04",
         "category": "coconut",
-        "categoryName": "Coconut Range",
+        "categoryName": "Organic Coconut Range",
         "name": "Desiccated Coconut (High & Low Fat)",
         "botanicalName": "Cocos nucifera",
         "image": "assets/images/products/coconut/Desiccated Coconut (High Fat Medium).jpeg",
@@ -190,12 +190,12 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Defatted Desiccated Coconut.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Full Products List.pdf",
         "msdsDocName": "MSDS - Full Products List.pdf",
-        "samplePackSize": "250g"
+        "samplePackSize": "1 kg"
     },
     {
         "id": "coco-05",
         "category": "coconut",
-        "categoryName": "Coconut Range",
+        "categoryName": "Organic Coconut Range",
         "name": "Organic Coconut Flour",
         "botanicalName": "Cocos nucifera",
         "image": "assets/images/products/coconut/Coconut Flour.jpeg",
@@ -227,12 +227,12 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Organic MCT Powder.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Full Products List.pdf",
         "msdsDocName": "MSDS - Full Products List.pdf",
-        "samplePackSize": "250g"
+        "samplePackSize": "1 kg"
     },
     {
         "id": "coco-06",
         "category": "coconut",
-        "categoryName": "Coconut Range",
+        "categoryName": "Organic Coconut Range",
         "name": "Organic Coconut Butter / Creamed Coconut",
         "botanicalName": "Cocos nucifera",
         "image": "assets/images/products/coconut/Coconut Butter.jpeg",
@@ -264,7 +264,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Organic MCT Powder.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Organic Coconut Cream (22% FAT).pdf",
         "msdsDocName": "MSDS - Organic Coconut Cream (22% FAT).pdf",
-        "samplePackSize": "250g"
+        "samplePackSize": "300 g"
     },
     {
         "id": "coco-07",
@@ -301,7 +301,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Organic MCT Powder.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Full Products List.pdf",
         "msdsDocName": "MSDS - Full Products List.pdf",
-        "samplePackSize": "250ml"
+        "samplePackSize": "250 ml"
     },
     {
         "id": "prod-mtttp2i9",
@@ -341,7 +341,7 @@ const PRODUCTS_DATA = [
             "Bottles: 250ml, 500ml, 1000ml glass / PET",
             "Bulk: 20L food pails, 200L drums, 1000L IBC"
         ],
-        "samplePackSize": "250ml"
+        "samplePackSize": "250 ml"
     },
     {
         "id": "prod-mtttm26d",
@@ -381,7 +381,7 @@ const PRODUCTS_DATA = [
             "Bottles: 250ml, 500ml, 1000ml glass / PET",
             "Bulk: 20L food pails, 200L drums, 1000L IBC"
         ],
-        "samplePackSize": "250ml"
+        "samplePackSize": "250 ml"
     },
     {
         "id": "coco-08",
@@ -426,7 +426,7 @@ const PRODUCTS_DATA = [
         "botanicalName": "Sesamum indicum",
         "category": "sesame",
         "categoryName": "Sesame & Sekku Oils",
-        "samplePriceUSD": 20,
+        "samplePriceUSD": 9,
         "availability": "In Stock",
         "certifications": [
             "EU Organic (CU 853200)",
@@ -458,7 +458,7 @@ const PRODUCTS_DATA = [
             "Glass Bottles: 250ml, 500ml, 750ml, 1000ml",
             "Bulk: 20L Jerrycans, 200L Food-grade drums"
         ],
-        "samplePackSize": "250ml"
+        "samplePackSize": "500 ml"
     },
     {
         "id": "sesame-01",
@@ -481,7 +481,7 @@ const PRODUCTS_DATA = [
             "Bulk: 20L Jerrycans, 200L Food-grade drums"
         ],
         "grades": "Stone Squeezed, Expeller Pressed",
-        "samplePriceUSD": 20,
+        "samplePriceUSD": 9,
         "availability": "In Stock",
         "certifications": [
             "EU Organic (CU 853200)",
@@ -498,7 +498,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Organic MCT Powder.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Full Products List.pdf",
         "msdsDocName": "MSDS - Full Products List.pdf",
-        "samplePackSize": "250ml"
+        "samplePackSize": "500 ml"
     },
     {
         "id": "prod-mtttz95p",
@@ -506,7 +506,7 @@ const PRODUCTS_DATA = [
         "botanicalName": "Sesamum indicum",
         "category": "sesame",
         "categoryName": "Sesame & Sekku Oils",
-        "samplePriceUSD": 14,
+        "samplePriceUSD": 6,
         "availability": "In Stock",
         "certifications": [
             "EU Organic (CU 853200)",
@@ -537,7 +537,7 @@ const PRODUCTS_DATA = [
             "Glass Bottles: 250ml, 500ml, 750ml, 1000ml",
             "Bulk: 20L Jerrycans, 200L Food-grade drums"
         ],
-        "samplePackSize": "250ml"
+        "samplePackSize": "500 ml"
     },
     {
         "id": "prod-mttu1thc",
@@ -545,7 +545,7 @@ const PRODUCTS_DATA = [
         "botanicalName": "Sesamum indicum",
         "category": "sesame",
         "categoryName": "Sesame & Sekku Oils",
-        "samplePriceUSD": 14,
+        "samplePriceUSD": 6,
         "availability": "In Stock",
         "certifications": [
             "EU Organic (CU 853200)",
@@ -576,12 +576,12 @@ const PRODUCTS_DATA = [
             "Glass Bottles: 250ml, 500ml, 750ml, 1000ml",
             "Bulk: 20L Jerrycans, 200L Food-grade drums"
         ],
-        "samplePackSize": "250ml"
+        "samplePackSize": "500 ml"
     },
     {
         "id": "sesame-02",
         "category": "sesame",
-        "categoryName": "Sesame Range",
+        "categoryName": "Sesame & Sekku Oils",
         "name": "Stone-Ground Organic Tahini Paste",
         "botanicalName": "Sesamum indicum",
         "image": "assets/images/products/sesame/Tahini.jpeg",
@@ -595,11 +595,11 @@ const PRODUCTS_DATA = [
             "Single-ingredient formulation: 100% Certified Organic Sesame"
         ],
         "packaging": [
-            "Glass Jars: 200g, 350g, 500g, 900g",
+            "Glass Jars: 200g, 300g, 500g, 900g",
             "Food Pails: 5kg, 18kg, 200kg drums"
         ],
         "grades": "Hulled Tahini, Whole Seed (Unhulled) Tahini",
-        "samplePriceUSD": 13,
+        "samplePriceUSD": 6,
         "availability": "In Stock",
         "certifications": [
             "EU Organic (CU 853200)",
@@ -613,12 +613,12 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Organic MCT Powder.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Full Products List.pdf",
         "msdsDocName": "MSDS - Full Products List.pdf",
-        "samplePackSize": "250g"
+        "samplePackSize": "300 g"
     },
     {
         "id": "sesame-03",
         "category": "sesame",
-        "categoryName": "Sesame Range",
+        "categoryName": "Sesame & Sekku Oils",
         "name": "Whole Ceylon Sesame Seeds (White & Black)",
         "botanicalName": "Sesamum indicum",
         "image": "assets/images/products/sesame/Whole White Sesseme Seeds.jpg",
@@ -650,7 +650,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Organic MCT Powder.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Full Products List.pdf",
         "msdsDocName": "MSDS - Full Products List.pdf",
-        "samplePackSize": "100g"
+        "samplePackSize": "1 kg"
     },
     {
         "id": "prod-mttu5tjq",
@@ -690,7 +690,7 @@ const PRODUCTS_DATA = [
             "Retail: 250g, 500g, 1kg craft stand-up pouches",
             "Bulk: 25kg / 50kg polypropylene woven bags with PE inner liner"
         ],
-        "samplePackSize": "100g"
+        "samplePackSize": "1 kg"
     },
     {
         "id": "spice-01",
@@ -727,7 +727,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Defatted Desiccated Coconut.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Organic Cinnamon Sticks.pdf",
         "msdsDocName": "MSDS - Organic Cinnamon Sticks.pdf",
-        "samplePackSize": "100g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "prod-mttuxktc",
@@ -766,7 +766,7 @@ const PRODUCTS_DATA = [
             "Retail: 100g glass grinder bottles, 250g kraft pouches",
             "Bulk: 25kg / 50kg multi-layer jute / PP bags"
         ],
-        "samplePackSize": "250g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "spice-02",
@@ -803,7 +803,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Defatted Desiccated Coconut.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Organic Black Pepper Whole.pdf",
         "msdsDocName": "MSDS - Organic Black Pepper Whole.pdf",
-        "samplePackSize": "100g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "prod-mttucutn",
@@ -843,7 +843,7 @@ const PRODUCTS_DATA = [
             "Retail: 100g glass grinder bottles, 250g kraft pouches",
             "Bulk: 25kg / 50kg multi-layer jute / PP bags"
         ],
-        "samplePackSize": "100g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "spice-06",
@@ -880,7 +880,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Defatted Desiccated Coconut.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Organic Clove Whole.pdf",
         "msdsDocName": "MSDS - Organic Clove Whole.pdf",
-        "samplePackSize": "100g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "prod-mttuu21m",
@@ -919,7 +919,7 @@ const PRODUCTS_DATA = [
             "Retail: 100g glass grinder bottles, 250g kraft pouches",
             "Bulk: 25kg / 50kg multi-layer jute / PP bags"
         ],
-        "samplePackSize": "100g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "prod-mttum6x0",
@@ -958,7 +958,7 @@ const PRODUCTS_DATA = [
             "Retail: 100g glass grinder bottles, 250g kraft pouches",
             "Bulk: 25kg / 50kg multi-layer jute / PP bags"
         ],
-        "samplePackSize": "100g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "spice-03",
@@ -995,12 +995,12 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Defatted Desiccated Coconut.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Organic Turmeric Powder.pdf",
         "msdsDocName": "MSDS - Organic Turmeric Powder.pdf",
-        "samplePackSize": "250g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "spice-04",
         "category": "spices",
-        "categoryName": "Spices & Herbs",
+        "categoryName": "Ceylon Spices & Herbs",
         "name": "Organic Moringa Leaf Powder",
         "botanicalName": "Moringa oleifera",
         "image": "assets/images/products/spices/Moringa Powder.jpg",
@@ -1032,7 +1032,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Organic MCT Powder.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Full Products List.pdf",
         "msdsDocName": "MSDS - Full Products List.pdf",
-        "samplePackSize": "250g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "spice-05",
@@ -1069,7 +1069,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Organic MCT Powder.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Full Products List.pdf",
         "msdsDocName": "MSDS - Full Products List.pdf",
-        "samplePackSize": "100g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "prod-mttveeji",
@@ -1108,7 +1108,7 @@ const PRODUCTS_DATA = [
             "Retail: 50g, 100g, 250g nitrogen-flushed barrier pouches",
             "Bulk: 10kg corrugated export cartons with PE liner"
         ],
-        "samplePackSize": "100g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "prod-mttv7c3p",
@@ -1147,7 +1147,7 @@ const PRODUCTS_DATA = [
             "Retail: 50g, 100g, 250g nitrogen-flushed barrier pouches",
             "Bulk: 10kg corrugated export cartons with PE liner"
         ],
-        "samplePackSize": "100g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "prod-mttvgo97",
@@ -1186,7 +1186,7 @@ const PRODUCTS_DATA = [
             "Retail: 50g, 100g, 250g nitrogen-flushed barrier pouches",
             "Bulk: 10kg corrugated export cartons with PE liner"
         ],
-        "samplePackSize": "100g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "prod-mttvbrv8",
@@ -1225,7 +1225,7 @@ const PRODUCTS_DATA = [
             "Retail: 50g, 100g, 250g nitrogen-flushed barrier pouches",
             "Bulk: 10kg corrugated export cartons with PE liner"
         ],
-        "samplePackSize": "100g"
+        "samplePackSize": "100 g"
     },
     {
         "id": "fruit-04",
@@ -1261,12 +1261,12 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Organic MCT Powder.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Full Products List.pdf",
         "msdsDocName": "MSDS - Full Products List.pdf",
-        "samplePackSize": "400g Can"
+        "samplePackSize": "425 g can"
     },
     {
         "id": "fruit-01",
         "category": "fruits",
-        "categoryName": "Tropical Fruits",
+        "categoryName": "Tropical & Dehydrated Fruits",
         "name": "Young Green Jackfruit in Brine / Salt",
         "botanicalName": "Artocarpus heterophyllus",
         "image": "assets/images/products/fruits/Young Jackfruit in Brine.jpg",
@@ -1298,12 +1298,12 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Organic MCT Powder.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Full Products List.pdf",
         "msdsDocName": "MSDS - Full Products List.pdf",
-        "samplePackSize": "400g Can"
+        "samplePackSize": "425 g can"
     },
     {
         "id": "oil-01",
         "category": "oils",
-        "categoryName": "Essential Oils",
+        "categoryName": "Pure Essential Oils",
         "name": "Ceylon Cinnamon Bark Oil (60-75% Cinnamaldehyde)",
         "botanicalName": "Cinnamomum verum",
         "image": "assets/images/products/oils/Cinnamon Bark Oil.jpg",
@@ -1335,7 +1335,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Organic MCT Coconut Oil - C8 -99%Min.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Cinnamon Oil.pdf",
         "msdsDocName": "MSDS - Cinnamon Oil.pdf",
-        "samplePackSize": "50ml"
+        "samplePackSize": "20 ml"
     },
     {
         "id": "oil-02",
@@ -1372,7 +1372,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Organic MCT Coconut Oil - C8 -99%Min.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Cinnamon Oil.pdf",
         "msdsDocName": "MSDS - Cinnamon Oil.pdf",
-        "samplePackSize": "50ml"
+        "samplePackSize": "20 ml"
     },
     {
         "id": "prod-mttvqv3p",
@@ -1409,7 +1409,7 @@ const PRODUCTS_DATA = [
             "Bottles: 10ml, 30ml, 100ml amber dropper bottles",
             "Bulk: 1kg, 5kg aluminum flasks; 25kg, 180kg UN-certified steel drums"
         ],
-        "samplePackSize": "50ml"
+        "samplePackSize": "20 ml"
     },
     {
         "id": "prod-mttvw4on",
@@ -1445,7 +1445,7 @@ const PRODUCTS_DATA = [
             "Bottles: 10ml, 30ml, 100ml amber dropper bottles",
             "Bulk: 1kg, 5kg aluminum flasks; 25kg, 180kg UN-certified steel drums"
         ],
-        "samplePackSize": "50ml"
+        "samplePackSize": "20 ml"
     },
     {
         "id": "oil-03",
@@ -1482,7 +1482,7 @@ const PRODUCTS_DATA = [
         "specDocName": "Product Specification - Defatted Desiccated Coconut.pdf",
         "msdsDocUrl": "assets/docs/MSDS - Organic Black Pepper Whole.pdf",
         "msdsDocName": "MSDS - Organic Black Pepper Whole.pdf",
-        "samplePackSize": "50ml"
+        "samplePackSize": "20 ml"
     },
     {
         "id": "prod-mttvzzpr",
@@ -1519,6 +1519,6 @@ const PRODUCTS_DATA = [
             "Bottles: 10ml, 30ml, 100ml amber dropper bottles",
             "Bulk: 1kg, 5kg aluminum flasks; 25kg, 180kg UN-certified steel drums"
         ],
-        "samplePackSize": "50ml"
+        "samplePackSize": "20 ml"
     }
 ];
