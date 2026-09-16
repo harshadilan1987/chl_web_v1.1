@@ -21,35 +21,67 @@ function maskPhoneNumber(phone) {
 /**
  * Dispatch SMS via configured gateway
  */
-async function dispatchSMS(phone, message) {
-  // 1. Notify.lk (Sri Lanka)
-  if (process.env.NOTIFYLK_USER_ID && process.env.NOTIFYLK_API_KEY) {
-    return new Promise((resolve) => {
-      const cleanPhone = phone.replace(/^\+/, '');
-      const senderId = process.env.NOTIFYLK_SENDER_ID || 'NotifyDEMO';
-      const postData = new URLSearchParams({
-        user_id: process.env.NOTIFYLK_USER_ID,
-        api_key: process.env.NOTIFYLK_API_KEY,
-        sender_id: senderId,
-        to: cleanPhone,
-        message: message
-      }).toString();
+const NOTIFYLK_USER_ID = process.env.NOTIFYLK_USER_ID || '32992';
+const NOTIFYLK_API_KEY = process.env.NOTIFYLK_API_KEY || 'SnouBoVtLFzkOtaVg8HM';
 
-      const req = https.request('https://app.notify.lk/api/v1/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': Buffer.byteLength(postData)
+function sendNotifyLkRequest(userId, apiKey, senderId, phone, message) {
+  return new Promise((resolve) => {
+    const cleanPhone = phone.replace(/^\+/, '');
+    const postData = new URLSearchParams({
+      user_id: userId,
+      api_key: apiKey,
+      sender_id: senderId,
+      to: cleanPhone,
+      message: message
+    }).toString();
+
+    const req = https.request('https://app.notify.lk/api/v1/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data);
+          resolve({ status: res.statusCode, data: parsed });
+        } catch (e) {
+          resolve({ status: res.statusCode, data });
         }
-      }, (res) => {
-        let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => resolve({ provider: 'notifylk', status: res.statusCode, data }));
       });
-      req.on('error', (err) => resolve({ provider: 'notifylk', error: err.message }));
-      req.write(postData);
-      req.end();
     });
+    req.on('error', (err) => resolve({ status: 500, error: err.message }));
+    req.write(postData);
+    req.end();
+  });
+}
+
+/**
+ * Dispatch SMS via configured gateway
+ */
+async function dispatchSMS(phone, message) {
+  // 1. Notify.lk (Sri Lanka) - Primary gateway for Celebration Holdings
+  if (NOTIFYLK_USER_ID && NOTIFYLK_API_KEY) {
+    const preferredSender = process.env.NOTIFYLK_SENDER_ID || 'Celebration';
+    // Try preferred sender first
+    let result = await sendNotifyLkRequest(NOTIFYLK_USER_ID, NOTIFYLK_API_KEY, preferredSender, phone, message);
+
+    // If preferred sender fails (e.g. 'Celebration' is still under review), fallback immediately to 'NotifyDEMO'
+    if (result.status !== 200 || (result.data && result.data.status === 'error')) {
+      if (preferredSender !== 'NotifyDEMO') {
+        result = await sendNotifyLkRequest(NOTIFYLK_USER_ID, NOTIFYLK_API_KEY, 'NotifyDEMO', phone, message);
+      }
+    }
+
+    return {
+      provider: 'notifylk',
+      status: result.status,
+      success: result.status === 200 && result.data && result.data.status === 'success',
+      data: result.data
+    };
   }
 
   // 2. ShoutOUT (Sri Lanka)
