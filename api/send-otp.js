@@ -23,6 +23,7 @@ function maskPhoneNumber(phone) {
  */
 const NOTIFYLK_USER_ID = process.env.NOTIFYLK_USER_ID || '32992';
 const NOTIFYLK_API_KEY = process.env.NOTIFYLK_API_KEY || 'SnouBoVtLFzkOtaVg8HM';
+const NOTIFYLK_SENDER_ID = process.env.NOTIFYLK_SENDER_ID || 'Celebration';
 
 function sendNotifyLkRequest(userId, apiKey, senderId, phone, message) {
   return new Promise((resolve) => {
@@ -65,8 +66,8 @@ function sendNotifyLkRequest(userId, apiKey, senderId, phone, message) {
 async function dispatchSMS(phone, message) {
   // 1. Notify.lk (Sri Lanka) - Primary gateway for Celebration Holdings
   if (NOTIFYLK_USER_ID && NOTIFYLK_API_KEY) {
-    const preferredSender = process.env.NOTIFYLK_SENDER_ID || 'Celebration';
-    // Try preferred sender first
+    const preferredSender = NOTIFYLK_SENDER_ID;
+    // Try preferred sender first ('Celebration')
     let result = await sendNotifyLkRequest(NOTIFYLK_USER_ID, NOTIFYLK_API_KEY, preferredSender, phone, message);
 
     // If preferred sender fails (e.g. 'Celebration' is still under review), fallback immediately to 'NotifyDEMO'
@@ -207,7 +208,7 @@ module.exports = async (req, res) => {
     const token = `${expiresAt}.${hmac}`;
 
     // 4. Craft official SMS message
-    const message = `[Celebration Holdings] Your 2FA login verification code for ${portalName} is ${otp}. Valid for 5 minutes. Do not share this code.`;
+    const message = `[Celebration] Your 2FA login verification code for ${portalName} is ${otp}. Valid for 5 minutes. Do not share this code.`;
 
     // 5. Send SMS
     const smsResult = await dispatchSMS(DEFAULT_PHONE, message);
