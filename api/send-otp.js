@@ -213,6 +213,17 @@ module.exports = async (req, res) => {
     // 5. Send SMS
     const smsResult = await dispatchSMS(DEFAULT_PHONE, message);
 
+    // If gateway explicitly returned an error (e.g. insufficient credit)
+    if (smsResult && smsResult.success === false && smsResult.data && smsResult.data.message) {
+      const errMsg = smsResult.data.message;
+      return res.status(200).json({
+        success: false,
+        error: `SMS Gateway (${smsResult.provider}): ${errMsg}`,
+        provider: smsResult.provider,
+        data: smsResult.data
+      });
+    }
+
     // 6. Return response (code is never exposed to client; client only receives token)
     const response = {
       success: true,
