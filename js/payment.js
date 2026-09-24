@@ -9,7 +9,6 @@ const PaymentGateway = {
     // PayHere Sri Lanka Settings (Live Merchant Credentials)
     payhere: {
       merchantId: '261612',
-      merchantSecret: 'NDA4NTM2NzI0ODI0Mjg0NTk2NTMyNDM5Mzg4OTI0MTI4ODU4MTE4Mw==',
       isSandbox: false, // Live Merchant Gateway
       sandboxUrl: 'https://sandbox.payhere.lk/pay/checkout',
       liveUrl: 'https://www.payhere.lk/pay/checkout',
@@ -389,7 +388,7 @@ const PaymentGateway = {
     `).join('');
   },
 
-  processPayment() {
+  async processPayment() {
     const submitBtn = document.getElementById('pay-submit-btn');
     const custName = document.getElementById('cust-name')?.value.trim();
     const custEmail = document.getElementById('cust-email')?.value.trim();
@@ -501,14 +500,33 @@ const PaymentGateway = {
       const itemsDescription = orderedItems.map(i => `${i.name} (x${i.qty})`).join(', ').substring(0, 180) || 'Celebration Holdings Samples';
 
       const merchantId = this.config.payhere.merchantId;
-      const merchantSecret = this.config.payhere.merchantSecret;
       let paymentHash = '';
 
-      // Compute PayHere Hash: strtoupper(md5(merchant_id + order_id + amount + currency + strtoupper(md5(merchant_secret))))
-      if (typeof md5 === 'function') {
-        const hashedSecret = md5(merchantSecret).toUpperCase();
-        const hashString = merchantId + orderId + amountFormatted + currency + hashedSecret;
-        paymentHash = md5(hashString).toUpperCase();
+      // Secure Server-Side PayHere Hash Generation (Serverless API)
+      try {
+        const hashRes = await fetch('/api/payhere-hash', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            order_id: orderId,
+            amount: amountFormatted,
+            currency: currency
+          })
+        });
+        const hashData = await hashRes.json();
+        if (hashData && hashData.hash) {
+          paymentHash = hashData.hash;
+        } else {
+          throw new Error(hashData.error || 'Security signature failed');
+        }
+      } catch (err) {
+        console.error('[PayHere Hash Generation Error]', err);
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>Proceed to Secure Checkout</span>`;
+        }
+        showToast('Payment initialization failed: ' + (err.message || 'Could not connect to payment security service. Please try again.'), 'danger');
+        return;
       }
 
       const payment = {

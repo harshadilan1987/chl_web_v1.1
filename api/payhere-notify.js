@@ -18,7 +18,11 @@ module.exports = async (req, res) => {
     const status_code = body.status_code; // 2 = success, 0 = pending, -1 = canceled, -2 = failed, -3 = chargedback
     const md5sig = body.md5sig;
 
-    const merchant_secret = process.env.PAYHERE_MERCHANT_SECRET || 'NDA4NTM2NzI0ODI0Mjg0NTk2NTMyNDM5Mzg4OTI0MTI4ODU4MTE4Mw==';
+    const merchant_secret = process.env.PAYHERE_MERCHANT_SECRET;
+    if (!merchant_secret) {
+      console.error('[PayHere Webhook Error] PAYHERE_MERCHANT_SECRET is not configured in environment variables');
+      return res.status(500).send('Configuration Error');
+    }
     const hashedSecret = crypto.createHash('md5').update(merchant_secret).digest('hex').toUpperCase();
 
     // md5sig = strtoupper(md5(merchant_id + order_id + payhere_amount + payhere_currency + status_code + strtoupper(md5(merchant_secret))))

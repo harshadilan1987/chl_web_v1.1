@@ -33,8 +33,13 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Missing order_id, amount, or currency' });
     }
 
-    const merchant_id = process.env.PAYHERE_MERCHANT_ID || '261612';
-    const merchant_secret = process.env.PAYHERE_MERCHANT_SECRET || 'NDA4NTM2NzI0ODI0Mjg0NTk2NTMyNDM5Mzg4OTI0MTI4ODU4MTE4Mw==';
+    const merchant_id = process.env.PAYHERE_MERCHANT_ID;
+    const merchant_secret = process.env.PAYHERE_MERCHANT_SECRET;
+
+    if (!merchant_id || !merchant_secret) {
+      console.error('[PayHere Hash] Missing PAYHERE_MERCHANT_ID or PAYHERE_MERCHANT_SECRET in environment variables');
+      return res.status(500).json({ error: 'Payment gateway configuration error: credentials not set.' });
+    }
 
     const hashedSecret = crypto.createHash('md5').update(merchant_secret).digest('hex').toUpperCase();
     const amountFormatted = parseFloat(amount).toFixed(2);

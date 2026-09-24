@@ -21,8 +21,8 @@ function maskPhoneNumber(phone) {
 /**
  * Dispatch SMS via configured gateway
  */
-const NOTIFYLK_USER_ID = process.env.NOTIFYLK_USER_ID || '32992';
-const NOTIFYLK_API_KEY = process.env.NOTIFYLK_API_KEY || 'SnouBoVtLFzkOtaVg8HM';
+const NOTIFYLK_USER_ID = process.env.NOTIFYLK_USER_ID;
+const NOTIFYLK_API_KEY = process.env.NOTIFYLK_API_KEY;
 const NOTIFYLK_SENDER_ID = process.env.NOTIFYLK_SENDER_ID || 'Celebration';
 
 function sendNotifyLkRequest(userId, apiKey, senderId, phone, message) {
