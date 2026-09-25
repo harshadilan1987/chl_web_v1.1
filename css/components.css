@@ -304,6 +304,12 @@ body {
   position: relative;
   padding-block: 0.5rem;
   transition: color var(--transition-fast);
+  text-align: center;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.25;
 }
 
 .nav-link::after {
@@ -330,7 +336,8 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.15rem;
+  margin-left: clamp(1.5rem, 2.5vw, 3rem); /* Distance between Contact button and WhatsApp logo */
 }
 
 /* Cart Button */
@@ -3611,81 +3618,66 @@ body {
 }
 
 /* ==========================================================================
-   Modern Creative WhatsApp Header Button
+   3D WhatsApp Circular Badge Button (Inspired by 3D Clay/Ceramic Badge)
    ========================================================================== */
-.whatsapp-header-btn {
+.whatsapp-3d-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.38rem 0.95rem 0.38rem 0.65rem;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-  color: #ffffff !important;
-  text-decoration: none;
-  font-family: inherit;
-  box-shadow: 0 3px 12px rgba(37, 211, 102, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  overflow: visible;
-  user-select: none;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  flex-shrink: 0;
-}
-
-.whatsapp-header-btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.48), 0 0 0 3px rgba(37, 211, 102, 0.2);
-  color: #ffffff !important;
-}
-
-.whatsapp-header-btn:active {
-  transform: translateY(0) scale(0.98);
-}
-
-.whatsapp-icon-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.22);
+  background: transparent;
+  text-decoration: none;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.28s ease;
+  filter: drop-shadow(0 4px 10px rgba(18, 140, 126, 0.28));
   flex-shrink: 0;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  user-select: none;
 }
 
-.whatsapp-svg {
-  width: 18px;
-  height: 18px;
-  fill: #ffffff;
-  transition: transform 0.25s ease;
+.whatsapp-3d-btn:hover {
+  transform: translateY(-3px) scale(1.08);
+  filter: drop-shadow(0 8px 18px rgba(37, 211, 102, 0.5));
 }
 
-.whatsapp-header-btn:hover .whatsapp-svg {
-  transform: scale(1.12) rotate(-6deg);
+.whatsapp-3d-btn:active {
+  transform: translateY(0) scale(0.96);
 }
 
-/* Glowing live indicator */
-.whatsapp-live-dot {
+.whatsapp-3d-img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.28s ease;
+  pointer-events: none;
+}
+
+.whatsapp-3d-btn:hover .whatsapp-3d-img {
+  transform: rotate(-6deg);
+}
+
+/* Glowing live indicator on 3D badge */
+.whatsapp-3d-btn .whatsapp-live-dot {
   position: absolute;
   top: 1px;
   right: 1px;
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: #a3ffc2;
-  border: 1.5px solid #128C7E;
+  background: #25D366;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 6px rgba(37, 211, 102, 0.85);
   z-index: 2;
 }
 
-.whatsapp-ping-ring {
+.whatsapp-3d-btn .whatsapp-ping-ring {
   position: absolute;
   top: 1px;
   right: 1px;
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #25D366;
   opacity: 0.85;
@@ -3699,51 +3691,19 @@ body {
     opacity: 0.9;
   }
   75%, 100% {
-    transform: scale(2.8);
+    transform: scale(2.6);
     opacity: 0;
   }
 }
 
-.whatsapp-text-block {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.15;
-  text-align: left;
-}
-
-.whatsapp-badge-title {
-  font-size: 0.68rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.94;
-}
-
-.whatsapp-badge-phone {
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-}
-
-/* Responsive adaptation for tablets & mobile */
-@media (max-width: 991px) {
-  .whatsapp-header-btn {
-    padding: 0;
+@media (max-width: 640px) {
+  .whatsapp-3d-btn {
     width: 42px;
     height: 42px;
-    border-radius: 50%;
-    justify-content: center;
   }
-
-  .whatsapp-text-block {
-    display: none;
-  }
-
-  .whatsapp-icon-wrap {
-    width: 100%;
-    height: 100%;
-    background: transparent;
+  .whatsapp-3d-img {
+    width: 40px;
+    height: 40px;
   }
 }
 
