@@ -3082,12 +3082,6 @@ body {
   border-color: #B88B4A;
   box-shadow: 0 0 0 1.5px #B88B4A;
 }
-.sister-card-palmpoet .sister-logo-wrap img {
-  transform: scale(1.5);
-}
-.sister-card-palmpoet:hover .sister-logo-wrap img {
-  transform: scale(1.59);
-}
 
 .sister-card-nexgrid:hover {
   border-color: #009FE3;
@@ -3109,8 +3103,8 @@ body {
   border-radius: var(--radius-md);
   margin-bottom: 1.1rem;
   overflow: hidden;
-  border: 1px solid transparent;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+  border: 1px solid var(--color-border);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
   flex-shrink: 0;
   transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
