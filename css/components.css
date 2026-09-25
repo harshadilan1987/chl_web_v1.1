@@ -3082,6 +3082,12 @@ body {
   border-color: #B88B4A;
   box-shadow: 0 0 0 1.5px #B88B4A;
 }
+.sister-card-palmpoet .sister-logo-wrap img {
+  transform: scale(1.5);
+}
+.sister-card-palmpoet:hover .sister-logo-wrap img {
+  transform: scale(1.59);
+}
 
 .sister-card-nexgrid:hover {
   border-color: #009FE3;
